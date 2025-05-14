@@ -1,4 +1,5 @@
 package pill;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,12 +23,14 @@ import dbConnection.DBManager;
  */
 public class PillManager {
     private HashMap<String, PillDTO> pillsMap;   // 약 정보를 저장하는 맵 (약 이름을 키로 사용)
+    private HashMap<String, PillYnDTO> pillYnsMap; // 등록된 약의 정보를 저장하는 맵
     private static PillManager instance;         // Singleton 인스턴스
-    public static int nextid = 0;                // 다음 ID 값
+    public static int nextid = 0;
 
     // private 생성자: Singleton 패턴 구현
     private PillManager() {
         pillsMap = new HashMap<>();
+        pillYnsMap = new HashMap<>();
     }
 
     /**
@@ -48,8 +51,8 @@ public class PillManager {
      * 
      * @param dto 추가할 PillDTO 객체
      */
-    public void addData(PillDTO dto) {
-        pillsMap.put(dto.getPillName(), dto);
+    public void addYnData(PillYnDTO dto) {
+        pillYnsMap.put(dto.getId(), dto);
     }
 
     /**
@@ -58,8 +61,12 @@ public class PillManager {
      * @param pillName 조회할 약 이름
      * @return 해당 약의 PillDTO 객체
      */
-    public PillDTO getData(String pillName) {
-        return pillsMap.get(pillName);
+    public PillDTO getDatabyId(String id) {
+        return pillsMap.get(id);
+    }
+
+    public PillDTO getPillDataByYn(PillYnDTO dto) {
+        return pillsMap.get(dto.getId());
     }
 
     /**
@@ -86,15 +93,25 @@ public class PillManager {
                 pillDTO.setPillAmount(rs.getInt(4));           // 약 수량 설정
                 pillDTO.setDate(rs.getDate(5));                // 날짜 설정
 
-                // 최대 ID 값 갱신
-                nextid = Math.max(nextid, Integer.parseInt(pillDTO.getId()));
-
                 // 약 정보를 맵에 추가
-                pillsMap.put(pillDTO.getPillName(), pillDTO);
+                pillsMap.put(pillDTO.getId(), pillDTO);
             }
-            // 다음 ID 증가
-            nextid++;
 
+            sql = "SELECT id, pillYn, date FROM PillYn";
+            pstmt = con.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+
+            while(rs.next()) {
+                PillYnDTO pillYnDTO = new PillYnDTO();
+                pillYnDTO.setId(rs.getString(1));
+                pillYnDTO.setPillYn(rs.getString(2));
+                pillYnDTO.setDate(rs.getDate(3));
+
+                pillYnsMap.put(pillYnDTO.getId(), pillYnDTO);
+
+                nextid = Math.max(nextid, Integer.parseInt(pillYnDTO.getId()));
+            }
+            nextid++;
             // 자원 해제
             rs.close();
             pstmt.close();
@@ -111,5 +128,9 @@ public class PillManager {
      */
     public HashMap<String, PillDTO> getPillsMap() {
         return pillsMap;
+    }
+
+    public HashMap<String,PillYnDTO> getPillYnsMap() {
+        return pillYnsMap;
     }
 }

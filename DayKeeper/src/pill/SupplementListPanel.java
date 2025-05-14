@@ -2,12 +2,14 @@ package pill;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /*
  * 수업명 : Project DayKeeper
  * 이름 : 임해균
  * 작성자 : 임해균
+ * 수정자 : 김관호
  * 작성일 : 2025.05.14
  * 파일명 : SupplementListPanel.java
  */
@@ -34,8 +36,11 @@ public class SupplementListPanel extends JPanel {
         gridPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // 예시 영양제 항목 생성
-        for (int i = 1; i <= 20; i++) {
-            gridPanel.add(createPillCard("영양제 " + i));
+        HashMap<String, PillYnDTO> pillYnsMap = PillManager.getInst().getPillYnsMap();
+        Iterator<String> iterator = pillYnsMap.keySet().iterator();
+        while(iterator.hasNext()){
+            String id = iterator.next();
+            gridPanel.add(createPillCard(id));
         }
 
         // 스크롤 패널로 감싸기
@@ -50,11 +55,12 @@ public class SupplementListPanel extends JPanel {
         JButton addBtn = new JButton("➕ 추가");
         JButton homeBtn = new JButton("🏠 처음으로");
 
-        addBtn.setFont(new Font("맑은 고딕", Font.PLAIN, 13));
-        homeBtn.setFont(new Font("맑은 고딕", Font.PLAIN, 13));
+        // 한글 깨짐 방지를 위한 폰트 지정
+        Font buttonFont = new Font("맑은 고딕", Font.PLAIN, 13);
+        addBtn.setFont(buttonFont);
+        homeBtn.setFont(buttonFont);
 
-        // ❌ 여기는 아직 다른 페이지로 연결 안 함
-        addBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "새 페이지 준비 중입니다."));
+        addBtn.addActionListener(e -> app.showPanel("add"));
         homeBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "처음으로 돌아갑니다."));
 
         bottom.add(addBtn);
@@ -63,11 +69,14 @@ public class SupplementListPanel extends JPanel {
     }
 
     // 개별 영양제 카드 생성
-    private JPanel createPillCard(String pillName) {
-        JPanel wrapper = new JPanel(new BorderLayout());
+    private JPanel createPillCard(String pillYnId) {
+        JPanel wrapper = new JPanel();
+        wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
         wrapper.setBackground(new Color(245, 245, 245));
+        wrapper.setMaximumSize(new Dimension(150, 180)); // 적절한 고정 크기
 
-        // 이름 라벨
+        // 라벨: 카드 상단 제목처럼
+        String pillName = PillManager.getInst().getPillsMap().get(pillYnId).getPillName();
         JLabel nameLabel = new JLabel(pillName);
         nameLabel.setFont(new Font("맑은 고딕", Font.BOLD, 13));
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -75,26 +84,28 @@ public class SupplementListPanel extends JPanel {
 
         // 카드 본체
         JPanel card = new JPanel();
-        card.setPreferredSize(new Dimension(100, 100));
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setPreferredSize(new Dimension(120, 120));
+        card.setMaximumSize(new Dimension(120, 120));
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180), 1));
-        card.setLayout(new BorderLayout());
-
-        JLabel iconLabel = new JLabel("🔳", SwingConstants.CENTER);
-        iconLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 24));
-        card.add(iconLabel, BorderLayout.CENTER);
+        try {
+            // 이미지 불러오기
+            Image image = ResourcesManager.getInst().getImagebyId(pillYnId);
+            // 크기 조정
+            Image scaledImage = image.getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+            // 다시 ImageIcon으로 감싸기
+            JLabel iconLabel = new JLabel(new ImageIcon(scaledImage));
+            iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            card.add(iconLabel, BorderLayout.CENTER);
+        } catch (Exception e) {
+            System.out.println("이미지 로드 오류: " + e.getMessage());
+            JLabel errorLabel = new JLabel("이미지 없음", SwingConstants.CENTER);
+            card.add(errorLabel, BorderLayout.CENTER);
+        }
 
         wrapper.add(nameLabel, BorderLayout.NORTH);
         wrapper.add(card, BorderLayout.CENTER);
-
-        // ✅ 클릭 시 AddSupplementPanel로 이동
-        wrapper.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        wrapper.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                app.showPanel("add");
-            }
-        });
 
         return wrapper;
     }

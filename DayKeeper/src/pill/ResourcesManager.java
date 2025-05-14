@@ -2,6 +2,7 @@ package pill;
 
 import javax.swing.ImageIcon;
 import java.awt.Image;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -19,7 +20,7 @@ import java.util.Iterator;
  * 이미지 파일을 메모리에 로드하여 HashMap으로 관리합니다.
  */
 public class ResourcesManager {
-    // 이미지 리소스를 저장하는 HashMap (키: 이미지 이름 대문자, 값: Image 객체)
+    // 이미지 리소스를 저장하는 HashMap (키: id 대문자, 값: Image 객체)
     private HashMap<String, Image> resourcesMap;
 
     // 싱글톤 인스턴스
@@ -62,15 +63,15 @@ public class ResourcesManager {
 
         // 모든 약품 이름을 대문자로 변환하여 이미지로 매핑
         while (iterator.hasNext()) {
-            String name = iterator.next();
+            String id = iterator.next();
+            String name = pillsMap.get(id).getPillName();
             String upperName = name.toUpperCase();
-
             // 이미지 파일 경로 설정 (프로젝트 루트 기준)
             String filePath = System.getProperty("user.dir") + "/DayKeeper/img/" + upperName + ".png";
 
             // 이미지 로드 및 맵에 저장
             Image image = new ImageIcon(filePath).getImage();
-            resourcesMap.put(upperName, image);
+            resourcesMap.put(id, image);
 
             // 이미지 로드 여부 확인 로그
             if (image == null) {
@@ -87,10 +88,28 @@ public class ResourcesManager {
      * @param name 이미지 이름
      * @return Image 객체 (없을 경우 null)
      */
-    public Image getImage(String name) {
+    public Image getImagebyName(String name) {
         // 대문자로 변환하여 이미지 맵에서 검색
-        String upperName = name.toUpperCase();
-        return resourcesMap.get(upperName);
+        Iterator<String> iter = resourcesMap.keySet().iterator();
+        while(iter.hasNext()){
+            String id = iter.next();
+            String pillName = PillManager.getInst().getDatabyId(id).getPillName();
+            if(name.equals(pillName))
+            {
+                return getImagebyId(id);
+            }
+        }
+
+        System.out.println(name+"이미지가 존재하지 않습니다.");
+        return null;
+    }
+
+    public Image getImagebyId(String id) {
+        return resourcesMap.get(id);
+    }
+
+    public String getNamebyId(String id){
+        return PillManager.getInst().getPillsMap().get(id).getPillName();
     }
 
     /**
