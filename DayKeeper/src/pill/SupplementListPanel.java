@@ -2,12 +2,12 @@ package pill;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
 /*
  * 수업명 : Project DayKeeper
  * 이름 : 임해균
  * 작성자 : 임해균
- * 수정자 : 
  * 작성일 : 2025.05.14
  * 파일명 : SupplementListPanel.java
  */
@@ -50,12 +50,11 @@ public class SupplementListPanel extends JPanel {
         JButton addBtn = new JButton("➕ 추가");
         JButton homeBtn = new JButton("🏠 처음으로");
 
-        // 한글 깨짐 방지를 위한 폰트 지정
-        Font buttonFont = new Font("맑은 고딕", Font.PLAIN, 13);
-        addBtn.setFont(buttonFont);
-        homeBtn.setFont(buttonFont);
+        addBtn.setFont(new Font("맑은 고딕", Font.PLAIN, 13));
+        homeBtn.setFont(new Font("맑은 고딕", Font.PLAIN, 13));
 
-        addBtn.addActionListener(e -> app.showPanel("add"));
+        // ❌ 여기는 아직 다른 페이지로 연결 안 함
+        addBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "새 페이지 준비 중입니다."));
         homeBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "처음으로 돌아갑니다."));
 
         bottom.add(addBtn);
@@ -65,11 +64,10 @@ public class SupplementListPanel extends JPanel {
 
     // 개별 영양제 카드 생성
     private JPanel createPillCard(String pillName) {
-        JPanel wrapper = new JPanel();
-        wrapper.setLayout(new BorderLayout());
+        JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setBackground(new Color(245, 245, 245));
 
-        // 라벨: 카드 상단 제목처럼
+        // 이름 라벨
         JLabel nameLabel = new JLabel(pillName);
         nameLabel.setFont(new Font("맑은 고딕", Font.BOLD, 13));
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -82,12 +80,21 @@ public class SupplementListPanel extends JPanel {
         card.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180), 1));
         card.setLayout(new BorderLayout());
 
-        JLabel iconLabel = new JLabel("💊", SwingConstants.CENTER);
-        iconLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 28));
+        JLabel iconLabel = new JLabel("🔳", SwingConstants.CENTER);
+        iconLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 24));
         card.add(iconLabel, BorderLayout.CENTER);
 
         wrapper.add(nameLabel, BorderLayout.NORTH);
         wrapper.add(card, BorderLayout.CENTER);
+
+        // ✅ 클릭 시 AddSupplementPanel로 이동
+        wrapper.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        wrapper.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                app.showPanel("add");
+            }
+        });
 
         return wrapper;
     }
