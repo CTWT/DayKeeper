@@ -103,6 +103,14 @@ public class Login extends JPanel {
         JLabel forgotLabel = new JLabel("아이디&비밀번호 찾기"); // 아이디&비밀번호 찾기
         forgotLabel.setForeground(Color.BLUE.darker()); // 파란색
         forgotLabel.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 클릭 가능 커서
+        // 회원가입 라벨을 클릭하면 현재 로그인 패널이 속한 최상위 프레임을 부모로 하여
+        // ForgotDialog(아이디&비밀번호 찾기창)를 모달로 띄움
+        forgotLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // new ForgotDialog((JFrame) SwingUtilities.getWindowAncestor(Login.this));
+            }
+        });
 
         linkPanel.add(signupLabel); // 링크 추가
         linkPanel.add(forgotLabel); // 링크 추가
@@ -111,16 +119,23 @@ public class Login extends JPanel {
 
     // 로그인 시도 메서드
     private void attemptLogin() {
-        String id = usernameField.getText(); // 아이디 입력값
-        String pw = new String(passwordField.getPassword()); // 비밀번호 입력값
+        // 사용자로부터 입력받은 아이디와 비밀번호를 가져오고, 앞뒤 공백을 제거
+        String id = usernameField.getText().trim();
+        String pw = new String(passwordField.getPassword()).trim();
 
-        // 향후 DB 연동 예정
-        if (id.equals("user") && pw.equals("1234")) { // 임시 로그인 성공 조건
-            messageLabel.setText(""); // 메시지 제거
-            JOptionPane.showMessageDialog(this, "로그인 성공!"); // 알림창
-            // TODO: 통계 페이지 전환 연결
+        // 아이디나 비밀번호가 비어있는지 체크
+        // 비어 있다면, 오류 메시지를 출력하고 로그인 절차를 종료
+        if (id.isEmpty() || pw.isEmpty()) {
+            messageLabel.setText("아이디와 비밀번호를 모두 입력하세요."); // 오류 메시지 출력
+            return;
+        }
+
+        UserDAO dao = new UserDAO(); // UserDAO 객체 생성 후, 로그인 시도
+        if (dao.login(id, pw)) {
+            messageLabel.setText(""); // 로그인 성공 시 메시지 초기화
+            JOptionPane.showMessageDialog(this, "로그인 성공!");
         } else {
-            messageLabel.setText("아이디 또는 비밀번호가 잘못되었습니다."); // 오류 메시지
+            messageLabel.setText("아이디 또는 비밀번호가 잘못되었습니다.");
         }
     }
 
