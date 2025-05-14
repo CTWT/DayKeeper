@@ -1,154 +1,153 @@
 package pill;
 
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.event.ActionListener;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
-/*
- * 수업명 : Project DayKeeper 
- * 이름 : 임해균 
- * 작성자 : 임해균 
- * 수정자 : 
- * 작성일 : 25.05.14 
- * 파일명 : SupApp.java 
- */
-
-// 메인 프레임 클래스
 public class SupApp extends JFrame {
-    private CardLayout cardLayout = new CardLayout(); // 화면 전환용 레이아웃
-    private JPanel mainPanel = new JPanel(cardLayout); // 화면을 담을 메인 패널
+	private CardLayout cardLayout = new CardLayout();
+	private JPanel mainPanel = new JPanel(cardLayout);
 
-    private SupplementDetailPanel detailPanel; // 상세화면 클래스
+	private SupplementListPanel listPanel;
+	private AddSupplementPanel addPanel;
 
-    public SupApp() {
-        setTitle("daykeeper"); // 프레임 제목 설정
-        setSize(500, 600); // 프레임 크기 설정
-        setDefaultCloseOperation(EXIT_ON_CLOSE); // 닫기 버튼 누르면 종료
-        setLocationRelativeTo(null); // 화면 중앙에 배치
+	public SupApp() {
+		setTitle("daykeeper");
+		setSize(600, 500);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
 
-        // 첫 화면, 상세 화면 생성
-        SupplementImagePanel imagePanel = new SupplementImagePanel();
-        detailPanel = new SupplementDetailPanel();
+		SupplementImagePanel imagePanel = new SupplementImagePanel();
+		listPanel = new SupplementListPanel();
+		addPanel = new AddSupplementPanel();
 
-        // 화면 등록
-        mainPanel.add(imagePanel, "image");
-        mainPanel.add(detailPanel, "detail");
+		mainPanel.add(imagePanel, "image");
+		mainPanel.add(listPanel, "list");
+		mainPanel.add(addPanel, "add");
 
-        add(mainPanel); // 프레임에 메인패널 부착
+		add(mainPanel);
 
-        // 버튼 클릭 시 화면 전환 이벤트 설정
-        imagePanel.addImageClickListener(e -> cardLayout.show(mainPanel, "detail"));
-        detailPanel.addBackButtonListener(e -> cardLayout.show(mainPanel, "image"));
+		imagePanel.addImageClickListener(e -> cardLayout.show(mainPanel, "list"));
+		listPanel.addAddButtonListener(e -> cardLayout.show(mainPanel, "add"));
+		listPanel.addBackButtonListener(e -> cardLayout.show(mainPanel, "image"));
+		addPanel.addRegisterListener(name -> {
+			listPanel.addSupplement(name);
+			cardLayout.show(mainPanel, "list");
+		});
 
-        cardLayout.show(mainPanel, "image"); // 첫 화면을 보여줌
-        setVisible(true); // 화면 표시
-    }
+		cardLayout.show(mainPanel, "image");
+		setVisible(true);
+	}
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(SupApp::new); // GUI는 EDT에서 실행
-    }
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(() -> new SupApp());
+	}
 }
 
-// 첫 화면 (영양제 이미지 버튼만 있음)
+// 📌 처음 영양제 이미지 화면
 class SupplementImagePanel extends JPanel {
-    private JButton imageButton = new JButton("영양제 이미지");
+	private JButton imageButton = new JButton("영양제 이미지");
 
-    public SupplementImagePanel() {
-        setLayout(new BorderLayout());
+	public SupplementImagePanel() {
+		setLayout(new BorderLayout());
+		JLabel title = new JLabel("daykeeper", SwingConstants.CENTER);
+		title.setFont(new Font("Arial", Font.BOLD, 20));
+		add(title, BorderLayout.NORTH);
 
-        // 상단 제목
-        JLabel title = new JLabel("daykeeper", SwingConstants.CENTER);
-        title.setFont(new Font("맑은 고딕", Font.BOLD, 20));
-        add(title, BorderLayout.NORTH);
+		imageButton.setPreferredSize(new Dimension(150, 150));
+		imageButton.setBackground(Color.ORANGE);
+		add(imageButton, BorderLayout.CENTER);
+	}
 
-        // 중앙에 큰 버튼
-        imageButton.setPreferredSize(new Dimension(150, 150));
-        imageButton.setBackground(Color.ORANGE);
-        add(imageButton, BorderLayout.CENTER);
-    }
-
-    // 버튼 클릭 이벤트 등록 메서드
-    public void addImageClickListener(ActionListener listener) {
-        imageButton.addActionListener(listener);
-    }
+	public void addImageClickListener(ActionListener listener) {
+		imageButton.addActionListener(listener);
+	}
 }
 
-// 상세화면 클래스 (사진 여러 개 2열, 이름 위에 표시)
-class SupplementDetailPanel extends JPanel {
-    private JButton addButton = new JButton("영양제 추가하기");
-    private JButton backButton = new JButton("뒤로가기");
+// 📌 영양제 목록 화면
+class SupplementListPanel extends JPanel {
+	private JPanel supplementContainer = new JPanel(new FlowLayout());
+	private JButton addButton = new JButton("영양제 추가하기");
+	private JButton backButton = new JButton("뒤로가기");
 
-    public SupplementDetailPanel() {
-        setLayout(new BorderLayout());
+	public SupplementListPanel() {
+		setLayout(new BorderLayout());
+		JLabel title = new JLabel("daykeeper", SwingConstants.CENTER);
+		title.setFont(new Font("Arial", Font.BOLD, 20));
+		add(title, BorderLayout.NORTH);
 
-        // 상단 제목
-        JLabel titleLabel = new JLabel("daykeeper", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("맑은 고딕", Font.BOLD, 20));
-        add(titleLabel, BorderLayout.NORTH);
+		add(new JScrollPane(supplementContainer), BorderLayout.CENTER);
 
-        // 중앙 컨텐츠 영역
-        JPanel centerPanel = new JPanel(new BorderLayout());
-        centerPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+		JPanel btnPanel = new JPanel();
+		btnPanel.add(addButton);
+		btnPanel.add(backButton);
+		add(btnPanel, BorderLayout.SOUTH);
+	}
 
-        // 목록 타이틀
-        JLabel nameLabel = new JLabel("영양제 목록");
-        nameLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 18));
-        nameLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        centerPanel.add(nameLabel, BorderLayout.NORTH);
+	public void addSupplement(String name) {
+		JLabel supLabel = new JLabel(name, SwingConstants.CENTER);
+		supLabel.setOpaque(true);
+		supLabel.setBackground(Color.ORANGE);
+		supLabel.setPreferredSize(new Dimension(100, 100));
+		supplementContainer.add(supLabel);
+		revalidate();
+		repaint();
+	}
 
-        // 2열 그리드로 사진 카드 나열할 패널
-        JPanel gridPanel = new JPanel(new GridLayout(0, 2, 10, 10));
+	public void addAddButtonListener(ActionListener listener) {
+		addButton.addActionListener(listener);
+	}
 
-        // 예시 영양제 10개 추가
-        for (int i = 1; i <= 10; i++) {
-            gridPanel.add(createSupplementCard("영양제" + i));
-        }
+	public void addBackButtonListener(ActionListener listener) {
+		backButton.addActionListener(listener);
+	}
+}
 
-        // 스크롤 패널로 감싸기 (세로 스크롤만)
-        JScrollPane scrollPane = new JScrollPane(gridPanel,
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+// 📌 영양제 추가 화면
+class AddSupplementPanel extends JPanel {
+	private JTextField nameField = new JTextField(20);
+	private JButton registerButton = new JButton("등록하기");
 
-        scrollPane.setPreferredSize(new Dimension(440, 320));
-        centerPanel.add(scrollPane, BorderLayout.CENTER);
+	public AddSupplementPanel() {
+		setLayout(new BorderLayout());
+		JLabel title = new JLabel("daykeeper", SwingConstants.CENTER);
+		title.setFont(new Font("Arial", Font.BOLD, 20));
+		add(title, BorderLayout.NORTH);
 
-        // 중앙 패널 추가
-        add(centerPanel, BorderLayout.CENTER);
+		JPanel center = new JPanel(new FlowLayout());
+		center.add(new JLabel("영양제 이름:"));
+		center.add(nameField);
+		center.add(registerButton);
+		add(center, BorderLayout.CENTER);
+	}
 
-        // 하단 버튼 영역
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.add(addButton);
-        bottomPanel.add(backButton);
-        add(bottomPanel, BorderLayout.SOUTH);
-    }
+	public void addRegisterListener(SupplementRegisterListener listener) {
+		registerButton.addActionListener(e -> {
+			String name = nameField.getText().trim();
+			if (!name.isEmpty()) {
+				listener.onRegister(name);
+				nameField.setText("");
+			} else {
+				JOptionPane.showMessageDialog(this, "이름을 입력해주세요.");
+			}
+		});
+	}
 
-    // 카드 형식의 영양제 UI 생성
-    private JPanel createSupplementCard(String name) {
-        JPanel cardPanel = new JPanel();
-        cardPanel.setLayout(new BorderLayout());
-        cardPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY)); // 카드 테두리
-
-        // 상단: 이름 표시
-        JLabel nameLabel = new JLabel(name);
-        nameLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 13));
-        nameLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 0));
-
-        // 중앙: 사진 영역
-        JLabel photoBox = new JLabel("사진", SwingConstants.CENTER);
-        photoBox.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
-        photoBox.setOpaque(true);
-        photoBox.setBackground(Color.LIGHT_GRAY);
-        photoBox.setPreferredSize(new Dimension(100, 100));
-
-        cardPanel.add(nameLabel, BorderLayout.NORTH);
-        cardPanel.add(photoBox, BorderLayout.CENTER);
-
-        return cardPanel;
-    }
-
-    // 뒤로가기 버튼에 이벤트 연결
-    public void addBackButtonListener(ActionListener listener) {
-        backButton.addActionListener(listener);
-    }
+	interface SupplementRegisterListener {
+		void onRegister(String name);
+	}
 }

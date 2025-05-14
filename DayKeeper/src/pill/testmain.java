@@ -15,5 +15,6 @@ public class testmain {
         }
 
         System.out.println(ResourcesManager.getInst().getResourceMap().size());
+
     }
 }
