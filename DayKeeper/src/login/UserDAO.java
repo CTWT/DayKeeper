@@ -5,6 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import dbConnection.DBManager; // DBManager 임포트
 
+/*
+ * 생성자 : 문원주
+ * 생성일 : 25.05.17
+ * 파일명 : UserDAO.java
+ * 수정자 : 
+ * 수정일 :
+ * 설명 : 로그인DAO 관리 파일
+ */
+
 public class UserDAO {
 
     // 로그인 메서드
