@@ -10,7 +10,7 @@ import java.awt.event.*;
 
 /*
  * 생성자 : 문원주
- * 생성일 : 25.05.17
+ * 생성일 : 25.05.15
  * 파일명 : Login.java
  * 수정자 : 
  * 수정일 :
@@ -136,7 +136,7 @@ public class Login extends JPanel {
             messageLabel.setText(""); // 로그인 성공 시 메시지 초기화
             JOptionPane.showMessageDialog(this, "로그인 성공!");
             BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
-            frame.showScreen(ScreenType.TODOLIST);
+            frame.showScreen(ScreenType.LOGIN);
         } else {
             messageLabel.setText("아이디 또는 비밀번호가 잘못되었습니다.");
         }
@@ -144,14 +144,7 @@ public class Login extends JPanel {
 
     // 테스트용 메인 메서드
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            BaseFrame frame = new BaseFrame(); // 기본 프레임 생성
-            frame.setContentPane(new Login()); // Login 패널 삽입
-            frame.setSize(400, 500); // 프레임 크기 지정 (적절히 조절)
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 종료 설정
-            frame.setLocationRelativeTo(null); // 중앙 정렬
-            frame.setVisible(true); // 보이기
-        });
+        new BaseFrame();
     }
 
 }
