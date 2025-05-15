@@ -1,12 +1,29 @@
 package login;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JPasswordField;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.BorderFactory;
+
+import common.CommonStyle;
 
 import config.BaseFrame;
 import config.ScreenType;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.FlowLayout;
+import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /*
  * 생성자 : 문원주
@@ -31,9 +48,7 @@ public class Login extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // 상단 제목: DAY-KEEPER
-        JLabel header = new JLabel("DAY-KEEPER", SwingConstants.CENTER); // 프로젝트 제목
-        header.setFont(new Font("SansSerif", Font.BOLD, 40)); // 제목 폰트 크기 증가
-        header.setForeground(new Color(30, 100, 180)); // 파란색 계열
+        JLabel header = CommonStyle.createTitleLabel();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -43,23 +58,23 @@ public class Login extends JPanel {
         gbc.gridwidth = 1; // 열 너비 설정
         gbc.gridy++; // 위치 변경
         gbc.gridx = 0; // 첫 번째 열
-        add(new JLabel("USER NAME"), gbc); // 라벨 추가
+        add(CommonStyle.createLabel("USER NAME"), gbc); // 라벨 추가
 
         // 사용자 이름 입력 필드
         gbc.gridx = 1; // 두 번째 열
         usernameField = new JTextField(); // 입력 필드
-        usernameField.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK)); // 밑줄 스타일
+        CommonStyle.underline(usernameField); // 밑줄 스타일
         add(usernameField, gbc);
 
         // PASSWORD 라벨
         gbc.gridy++; // 위치 변경
         gbc.gridx = 0; // 첫 번째 열
-        add(new JLabel("PASSWORD"), gbc); // 라벨 추가
+        add(CommonStyle.createLabel("PASSWORD"), gbc); // 라벨 추가
 
         // 비밀번호 입력 필드
         gbc.gridx = 1; // 두 번째 열
         passwordField = new JPasswordField(); // 비밀번호 필드
-        passwordField.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK)); // 밑줄 스타일
+        CommonStyle.underline(passwordField); // 밑줄 스타일
         add(passwordField, gbc);
 
         // 로그인 버튼
@@ -67,20 +82,14 @@ public class Login extends JPanel {
         gbc.gridx = 0; // 첫 번째 열
         gbc.gridwidth = 2; // 두 열에 걸쳐 버튼 배치
         JButton loginButton = new JButton("LOGIN"); // 로그인 버튼 생성
-        loginButton.setBackground(new Color(30, 100, 180)); // 파란 배경
-        loginButton.setForeground(Color.WHITE); // 흰 글자
-        loginButton.setFont(new Font("SansSerif", Font.BOLD, 14)); // 글꼴 설정
-        loginButton.setFocusPainted(false); // 포커스 테두리 제거
-        loginButton.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 커서 모양 손
-        loginButton.setBorder(BorderFactory.createLineBorder(new Color(30, 100, 180), 10, true)); // 둥근 테두리
-        loginButton.setOpaque(true); // 불투명 설정
+        CommonStyle.stylePrimaryButton(loginButton);
         loginButton.addActionListener(e -> attemptLogin()); // 클릭 이벤트
         add(loginButton, gbc);
 
         // 메시지 출력 라벨
         gbc.gridy++; // 위치 변경
         messageLabel = new JLabel("", SwingConstants.CENTER); // 메시지용 라벨
-        messageLabel.setForeground(Color.RED); // 빨간 텍스트
+        messageLabel.setForeground(CommonStyle.ERROR_COLOR); // 빨간 텍스트
         add(messageLabel, gbc);
 
         // 하단 링크 패널
@@ -89,7 +98,7 @@ public class Login extends JPanel {
         linkPanel.setBackground(Color.WHITE); // 배경 흰색
 
         JLabel signupLabel = new JLabel("회원가입"); // 회원가입
-        signupLabel.setForeground(Color.BLUE.darker()); // 파란색
+        signupLabel.setForeground(CommonStyle.LINK_COLOR); // 파란색
         signupLabel.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 클릭 가능 커서
 
         // 회원가입 라벨을 클릭하면 현재 로그인 패널이 속한 최상위 프레임을 부모로 하여
@@ -102,7 +111,7 @@ public class Login extends JPanel {
         });
 
         JLabel forgotLabel = new JLabel("아이디&비밀번호 찾기"); // 아이디&비밀번호 찾기
-        forgotLabel.setForeground(Color.BLUE.darker()); // 파란색
+        forgotLabel.setForeground(CommonStyle.LINK_COLOR); // 파란색
         forgotLabel.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 클릭 가능 커서
         // 회원가입 라벨을 클릭하면 현재 로그인 패널이 속한 최상위 프레임을 부모로 하여
         // ForgotDialog(아이디&비밀번호 찾기창)를 모달로 띄움
@@ -136,7 +145,7 @@ public class Login extends JPanel {
             messageLabel.setText(""); // 로그인 성공 시 메시지 초기화
             JOptionPane.showMessageDialog(this, "로그인 성공!");
             BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
-            frame.showScreen(ScreenType.LOGIN);
+            frame.showScreen(ScreenType.TODOLIST);
         } else {
             messageLabel.setText("아이디 또는 비밀번호가 잘못되었습니다.");
         }
