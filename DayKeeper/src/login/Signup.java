@@ -33,7 +33,7 @@ public class Signup extends JPanel {
     private JPasswordField newPwField; // 비밀번호 입력 필드
     private JTextField usernameField; // 사용자 이름 입력 필드
 
-    public Signup(){
+    public Signup() {
         setLayout(new GridBagLayout()); // 레이아웃 설정
         setBackground(Color.WHITE); // 배경 흰색
 
@@ -42,14 +42,13 @@ public class Signup extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // 상단 제목: Sign Up
-        JLabel headLabel = new JLabel("Sign Up" , SwingConstants.CENTER); // 회원가입 제목
-        headLabel.setFont(new Font("SansSerif", Font.BOLD, 40)); // 제목 폰트 크기 
+        JLabel headLabel = new JLabel("Sign Up", SwingConstants.CENTER); // 회원가입 제목
+        headLabel.setFont(new Font("SansSerif", Font.BOLD, 40)); // 제목 폰트 크기
         headLabel.setForeground(new Color(30, 100, 180)); // 파란색 계열
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         add(headLabel, gbc); // 패널에 추가
-        
 
         // User Id 라벨
         gbc.gridwidth = 1; // 열 너비 설정
@@ -68,7 +67,7 @@ public class Signup extends JPanel {
         gbc.gridx = 3; // 세 번째 열
         JButton checkButton = new JButton("중복확인");
         common.CommonStyle.stylePrimaryButton(checkButton);
-        checkButton.addActionListener(e->{
+        checkButton.addActionListener(e -> {
             String id = newIdField.getText();
 
             if (id.isEmpty()) {
@@ -77,15 +76,17 @@ public class Signup extends JPanel {
             }
 
             UserDAO dao = new UserDAO();
-            if(dao.isDuplicateId(id)){
-                JOptionPane.showMessageDialog(this,"이미 사용 중인 아이디입니다.");
-            }else {
-                JOptionPane.showMessageDialog(this,"사용 가능한 아이디입니다!");
+            UserDTO user = new UserDTO();
+            user.setId(id);
+            if (dao.isDuplicateId(user)) {
+                JOptionPane.showMessageDialog(this, "이미 사용 중인 아이디입니다.");
+            } else {
+                JOptionPane.showMessageDialog(this, "사용 가능한 아이디입니다!");
             }
 
         });
-        add(checkButton,gbc);
-        
+        add(checkButton, gbc);
+
         // Password 라벨
         gbc.gridy++; // 위치 변경
         gbc.gridx = 0; // 첫 번째 열
@@ -99,7 +100,7 @@ public class Signup extends JPanel {
         add(newPwField, gbc);
 
         // User name 입력 라벨
-        gbc.gridy ++; // 위치 변경
+        gbc.gridy++; // 위치 변경
         gbc.gridx = 0; // 첫 번째 열
         add(common.CommonStyle.createLabel("이름"), gbc); // 라벨 추가
 
@@ -121,7 +122,7 @@ public class Signup extends JPanel {
             frame.revalidate();
             frame.repaint();
         }); // 로그인 화면으로 돌아가기
-        add(backButton,gbc);
+        add(backButton, gbc);
 
         // 회원가입 버튼
         gbc.gridx = 1; // 두 번째 열
@@ -131,7 +132,6 @@ public class Signup extends JPanel {
             String id = newIdField.getText().trim();
             String pw = new String(newPwField.getPassword()).trim();
             String name = usernameField.getText().trim();
-
 
             if (!id.isEmpty() && !pw.isEmpty() && !name.isEmpty()) {
                 UserDAO dao = new UserDAO();
@@ -152,9 +152,8 @@ public class Signup extends JPanel {
 
         }); // 클릭 이벤트
 
-
         add(singupButton, gbc);
 
-}
+    }
 
 }

@@ -15,6 +15,7 @@ import common.CommonStyle;
 
 import config.BaseFrame;
 import config.ScreenType;
+import login.Login.UserSearch;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -109,7 +110,7 @@ public class Login extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 // new JoinDialog((JFrame) SwingUtilities.getWindowAncestor(Login.this));
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(Login.this);
-                frame.setContentPane(new Signup());  // Signup 패널로 전환
+                frame.setContentPane(new Signup()); // Signup 패널로 전환
                 frame.revalidate();
                 frame.repaint();
             }
@@ -118,13 +119,48 @@ public class Login extends JPanel {
         JLabel forgotLabel = new JLabel("아이디&비밀번호 찾기"); // 아이디&비밀번호 찾기
         forgotLabel.setForeground(CommonStyle.LINK_COLOR); // 파란색
         forgotLabel.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 클릭 가능 커서
+
         // 회원가입 라벨을 클릭하면 현재 로그인 패널이 속한 최상위 프레임을 부모로 하여
         // ForgotDialog(아이디&비밀번호 찾기창)를 모달로 띄움
         forgotLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 // new ForgotDialog((JFrame) SwingUtilities.getWindowAncestor(Login.this));
-            
+                String[] options = { "아이디 찾기", "비밀번호 찾기" };
+                int choice = JOptionPane.showOptionDialog(Login.this, "원하는 기능을 선택하세요.", "아이디/비밀번호 찾기",
+                        JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+
+                UserDAO dao = new UserDAO();
+
+                // 아이디&비밀번호 찾기
+                if (choice == 0) { // 아이디 찾기
+                    String name = JOptionPane.showInputDialog(Login.this, "이름을 입력해주세요:");
+                    if (name != null && !name.trim().isEmpty()) {
+                        UserDTO user = new UserDTO();
+                        user.setName(name.trim());
+                        String foundId = dao.findIdByName(user);
+
+                        if (foundId != null) {
+                            JOptionPane.showMessageDialog(Login.this, "아이디: " + foundId);
+                        } else {
+                            JOptionPane.showMessageDialog(Login.this, "입력하신 이름으로 등록된 아이디가 없습니다.");
+                        }
+                    }
+                } else if (choice == 1) { // 비밀번호 찾기
+                    String id = JOptionPane.showInputDialog(Login.this, "아이디를 입력해주세요:");
+                    String name = JOptionPane.showInputDialog(Login.this, "이름을 입력해주세요:");
+                    if (id != null && name != null && !id.trim().isEmpty() && !name.trim().isEmpty()) {
+                        UserDTO user = new UserDTO();
+                        user.setId(id.trim());
+                        user.setName(name.trim());
+                        String foundPw = dao.findPwByIdAndName(user);
+                        if (foundPw != null) {
+                            JOptionPane.showMessageDialog(Login.this, "비밀번호: " + foundPw);
+                        } else {
+                            JOptionPane.showMessageDialog(Login.this, "일치하는 정보가 없습니다.");
+                        }
+                    }
+                }
             }
         });
 
@@ -147,7 +183,10 @@ public class Login extends JPanel {
         }
 
         UserDAO dao = new UserDAO(); // UserDAO 객체 생성 후, 로그인 시도
-        if (dao.login(id, pw)) {
+        UserDTO user = new UserDTO();
+        user.setId(id);
+        user.setPw(pw);
+        if (dao.login(user)) {
             messageLabel.setText(""); // 로그인 성공 시 메시지 초기화
             UserSearch.curUserID = id;
             JOptionPane.showMessageDialog(this, "로그인 성공!");
