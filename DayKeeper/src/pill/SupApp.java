@@ -1,52 +1,61 @@
 package pill;
 
 import javax.swing.*;
-
-import config.BaseFrame;
-
 import java.awt.*;
 
 /*
  * 수업명 : Project DayKeeper
  * 이름 : 임해균
  * 작성자 : 임해균
- * 수정자 : 김관호
- * 작성일 : 2025.05.14
+ * 작성일 : 25.05.14
  * 파일명 : SupApp.java
+ * 설명 : 메인 프레임. CardLayout으로 화면 전환을 제어함
  */
 
-// 메인 프레임 클래스: 전체 화면 전환과 초기화 담당
-public class SupApp extends BaseFrame {
-    private CardLayout cardLayout = new CardLayout(); // 화면 전환용 CardLayout
-    private JPanel mainPanel = new JPanel(cardLayout); // 카드 레이아웃이 적용된 메인 패널
+public class SupApp extends JFrame {
+    private CardLayout cardLayout = new CardLayout();
+    private JPanel mainPanel = new JPanel(cardLayout);
 
-    // 생성자: 프레임 초기 설정 및 화면 패널 추가
+    private SupplementListPanel listPanel;
+    private AddSupplementPanel addPanel;
+    private SupplementDetailPanel detailPanel;
+
     public SupApp() {
-        PillManager.getInst().LoadDBData();
+        setTitle("daykeeper");
+        setSize(500, 600);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
 
-        // 각 화면 패널 생성 (this = SupApp 참조 넘김)
-        SupplementListPanel listPanel = new SupplementListPanel(this);
-        AddSupplementPanel addPanel = new AddSupplementPanel(this);
-        SupplementDetailPanel detailPanel = new SupplementDetailPanel(this);
+        // 화면 구성
+        listPanel = new SupplementListPanel(this);
+        addPanel = new AddSupplementPanel();
+        detailPanel = new SupplementDetailPanel();
 
-        // 카드 레이아웃에 화면 등록
-        mainPanel.add(listPanel, "list");     // 영양제 목록 화면
-        mainPanel.add(addPanel, "add");       // 영양제 추가 화면
-        mainPanel.add(detailPanel, "detail"); // 상세 보기 화면
+        mainPanel.add(listPanel, "list");
+        mainPanel.add(addPanel, "add");
+        mainPanel.add(detailPanel, "detail");
 
-        add(mainPanel); // 메인 패널을 프레임에 추가
-        cardLayout.show(mainPanel, "list"); // 첫 화면은 목록 화면
-
-        setVisible(true); // 화면 표시
+        add(mainPanel, BorderLayout.CENTER);
+        cardLayout.show(mainPanel, "list");
     }
 
-    // 화면 전환 메서드
-    public void showPanel(String name) {
-        cardLayout.show(mainPanel, name);
+    // 상세 보기 패널로 이동
+    public void showAddSupplementPanel(String name) {
+        addPanel.loadSupplementInfo(name); // 등록 또는 보기 용도
+        cardLayout.show(mainPanel, "add");
     }
 
-    // 실행 시작점
+    public void showDetailPanel(String name) {
+        detailPanel.loadSupplementInfo(name);
+        cardLayout.show(mainPanel, "detail");
+    }
+
+    public void showListPanel() {
+        cardLayout.show(mainPanel, "list");
+    }
+
     public static void main(String[] args) {
-        new SupApp(); // 앱 실행
+        SwingUtilities.invokeLater(() -> new SupApp().setVisible(true));
     }
 }

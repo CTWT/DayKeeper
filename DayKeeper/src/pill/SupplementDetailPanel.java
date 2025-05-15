@@ -7,27 +7,34 @@ import java.awt.*;
  * 수업명 : Project DayKeeper
  * 이름 : 임해균
  * 작성자 : 임해균
- * 수정자 : 
- * 작성일 : 2025.05.14
+ * 작성일 : 25.05.14
  * 파일명 : SupplementDetailPanel.java
+ * 설명 : 선택한 영양제의 상세 정보를 보여주는 전용 패널
  */
 
-// 영양제 상세 정보를 표시하는 패널 클래스
 public class SupplementDetailPanel extends JPanel {
-    private SupApp app; // 메인 프레임 참조
+    private JLabel titleLabel;
+    private JTextArea detailArea;
 
-    // 생성자: 메인 프레임 참조를 받아서 화면 전환에 사용
-    public SupplementDetailPanel(SupApp app) {
-        this.app = app;
+    public SupplementDetailPanel() {
         setLayout(new BorderLayout());
+        setBackground(Color.WHITE);
 
-        // 중앙에 표시할 라벨 (임시 텍스트)
-        JLabel label = new JLabel("영양제 상세 화면", SwingConstants.CENTER);
-        add(label, BorderLayout.CENTER);
+        titleLabel = new JLabel("영양제 상세 정보", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+        add(titleLabel, BorderLayout.NORTH);
 
-        // 하단 '뒤로가기' 버튼
-        JButton backButton = new JButton("뒤로가기");
-        backButton.addActionListener(e -> app.showPanel("list"));
-        add(backButton, BorderLayout.SOUTH);
+        detailArea = new JTextArea("상세 내용이 여기에 표시됩니다.");
+        detailArea.setLineWrap(true);
+        detailArea.setWrapStyleWord(true);
+        detailArea.setEditable(false);
+        detailArea.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        detailArea.setMargin(new Insets(20, 20, 20, 20));
+        add(new JScrollPane(detailArea), BorderLayout.CENTER);
+    }
+
+    public void loadSupplementInfo(String name) {
+        titleLabel.setText(name + " 상세 정보");
+        detailArea.setText("[" + name + "]에 대한 자세한 설명을 여기에 출력합니다.");
     }
 }
