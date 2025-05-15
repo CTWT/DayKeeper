@@ -18,7 +18,7 @@ public class UserDAO {
 
     // 로그인 메서드
     public boolean login(String id, String password) {
-        String sql = "SELECT * FROM users WHERE id = ? AND password = ?"; // 로그인 쿼리
+        String sql = "SELECT * FROM users WHERE id = ? AND pw = ?"; // 로그인 쿼리
 
         // DB 연결
         try (Connection conn = DBManager.getConnection(); // DB 연결
