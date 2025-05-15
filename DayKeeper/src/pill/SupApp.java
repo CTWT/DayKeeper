@@ -18,10 +18,11 @@ public class SupApp extends JFrame {
 
     private SupplementListPanel listPanel;
     private SupplementDetailPanel detailPanel;
+    private AddSupplementPanel addPanel;
 
     public SupApp() {
         setTitle("daykeeper");
-        setSize(500, 600);
+        setSize(800, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -30,23 +31,18 @@ public class SupApp extends JFrame {
 
         listPanel = new SupplementListPanel(this);
         detailPanel = new SupplementDetailPanel(this);
+        addPanel = new AddSupplementPanel(this);
 
         mainPanel.add(listPanel, "list");
         mainPanel.add(detailPanel, "detail");
+        mainPanel.add(addPanel, "add");
 
         add(mainPanel);
         cardLayout.show(mainPanel, "list");
     }
 
-    // 리스트 화면으로 이동
-    public void showListPanel() {
-        cardLayout.show(mainPanel, "list");
-    }
-
-    // 상세 보기 화면으로 이동
-    public void showDetailPanel(String name) {
-        detailPanel.loadSupplementInfo(name);
-        cardLayout.show(mainPanel, "detail");
+    public void showPanel(String name){
+        cardLayout.show(mainPanel,name);
     }
 
     public static void main(String[] args) {

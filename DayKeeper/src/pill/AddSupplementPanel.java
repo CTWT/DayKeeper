@@ -3,55 +3,77 @@ package pill;
 import javax.swing.*;
 import java.awt.*;
 
-/*
- * 수업명 : Project DayKeeper
- * 이름 : 임해균
- * 작성자 : 임해균
- * 작성일 : 25.05.14
- * 파일명 : AddSupplementPanel.java
- * 설명 : 영양제 등록 또는 상세 보기 패널
- */
-
 public class AddSupplementPanel extends JPanel {
+    private SupApp parent;
     private JLabel nameLabel;
-    private JLabel descriptionLabel;
+    private JComboBox<String> timeComboBox;
 
-    public AddSupplementPanel() {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    public AddSupplementPanel(SupApp parent) {
+        this.parent = parent;
+        setLayout(new BorderLayout());
         setBackground(Color.WHITE);
-        setBorder(BorderFactory.createEmptyBorder(40, 20, 20, 20));
 
-        nameLabel = new JLabel("영양제 이름");
-        nameLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
-        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // 약 선택 안내
+        nameLabel = new JLabel("약을 선택해주세요", SwingConstants.CENTER);
+        nameLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
+        nameLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
+        add(nameLabel, BorderLayout.NORTH);
 
-        descriptionLabel = new JLabel("상세 설명이 여기에 표시됩니다.");
-        descriptionLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // 약 버튼 그리드
+        JPanel buttonGrid = new JPanel(new GridLayout(4, 2, 10, 10));
+        buttonGrid.setBorder(BorderFactory.createEmptyBorder(0, 40, 10, 40));
+        buttonGrid.setBackground(Color.WHITE);
 
-        JButton backButton = new JButton("뒤로가기");
-        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        backButton.addActionListener(e -> {
-            JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-            if (topFrame instanceof SupApp) {
-                ((SupApp) topFrame).showListPanel();
-            }
-        });
+        String[] drugList = {
+            "필로폰", "마리화나",
+            "양귀비", "코카인",
+            "헤로인", "아편",
+            "모르핀", "펜타민"
+        };
 
-        add(nameLabel);
-        add(Box.createVerticalStrut(10));
-        add(descriptionLabel);
-        add(Box.createVerticalStrut(20));
-        add(backButton);
-    }
-
-    public void loadSupplementInfo(String name) {
-        if (name == null) {
-            nameLabel.setText("새로운 영양제 등록");
-            descriptionLabel.setText("이곳에 등록할 내용을 표시하거나 입력할 수 있습니다.");
-        } else {
-            nameLabel.setText("영양제: " + name);
-            descriptionLabel.setText(name + "의 상세 정보를 표시합니다.");
+        for (String drug : drugList) {
+            JButton btn = new JButton(drug);
+            btn.setFocusPainted(false);
+            btn.setBackground(new Color(230, 230, 250));
+            btn.setFont(new Font("맑은 고딕", Font.PLAIN, 13));
+            btn.addActionListener(e -> parent.showPanel("detail"));  // 연동!
+            buttonGrid.add(btn);
         }
+
+        // 하단 Time + 버튼
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        bottomPanel.setBackground(Color.WHITE);
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
+
+        JLabel timeLabel = new JLabel("Time:");
+        String[] hours = new String[25];
+        for (int i = 0; i <= 24; i++) hours[i] = String.format("%02d시", i);
+        timeComboBox = new JComboBox<>(hours);
+        timeComboBox.setPreferredSize(new Dimension(80, 30));
+
+        JButton addBtn = new JButton("...");
+        addBtn.setPreferredSize(new Dimension(40, 40));
+        addBtn.setBackground(new Color(120, 60, 255));
+        addBtn.setForeground(Color.WHITE);
+        addBtn.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+
+        bottomPanel.add(timeLabel);
+        bottomPanel.add(timeComboBox);
+        bottomPanel.add(addBtn);
+
+        // 조립
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.setBackground(Color.WHITE);
+
+        JLabel selectLabel = new JLabel("추가할 약을 선택하세요", SwingConstants.CENTER);
+        selectLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+        selectLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+
+        centerPanel.add(selectLabel);
+        centerPanel.add(buttonGrid);
+        centerPanel.add(bottomPanel);
+
+        add(centerPanel, BorderLayout.CENTER);
     }
 }

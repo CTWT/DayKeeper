@@ -5,113 +5,67 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
+
 import dbConnection.DBManager;
 
-/*
- * 생성자 : 김관호
- * 생성일 : 25.05.12
- * 파일명 : PillManager.java
- * 수정자 : 
- * 수정일 :
- * 설명 : 영양제 인스턴스들을 관리해주는 Manager 클래스
- */
-
-/**
- * Singleton 클래스: PillManager
- * 약 정보를 관리하는 클래스입니다.
- * 데이터베이스로부터 약 정보를 불러와 관리할 수 있습니다.
- */
 public class PillManager {
-    private HashMap<String, PillDTO> pillsMap;   // 약 정보를 저장하는 맵 (약 이름을 키로 사용)
-    private HashMap<String, PillYnDTO> pillYnsMap; // 등록된 약의 정보를 저장하는 맵
-    private static PillManager instance;         // Singleton 인스턴스
-    public static int nextid = 0;
+    private HashMap<String, String> pillInfo;
+    private HashMap<Integer, PillDTO> pillsMap;
 
-    // private 생성자: Singleton 패턴 구현
+    private static PillManager instance;
+
     private PillManager() {
+        pillInfo = new HashMap<>();
         pillsMap = new HashMap<>();
-        pillYnsMap = new HashMap<>();
+
+        pillInfo.put("비타민C", "피로 회복, 항산화 작용, 감기 예방에 도움을 줍니다.");
+        pillInfo.put("오메가3", "혈중 중성지방 감소와 혈관 건강 개선에 효과가 있습니다.");
+        pillInfo.put("루테인", "눈의 황반을 보호하고 시력 저하를 예방합니다.");
+        pillInfo.put("유산균", "장내 환경을 개선하고 배변 활동에 도움을 줍니다.");
+        pillInfo.put("철분", "빈혈 예방 및 피로 개선에 도움을 줍니다.");
+        pillInfo.put("아연", "면역력 증진과 상처 치유에 효과적입니다.");
+        pillInfo.put("비타민D", "뼈 건강과 칼슘 흡수에 중요한 역할을 합니다.");
+        pillInfo.put("칼슘", "뼈와 치아 형성에 필요하며 골다공증 예방에 도움을 줍니다.");
+        pillInfo.put("홍삼", "피로 개선과 면역력 증진에 도움이 됩니다.");
+        pillInfo.put("마그네슘", "근육 기능 유지와 신경 안정에 도움을 줍니다.");
+        pillInfo.put("멀티비타민", "여러 영양소를 보충하여 전반적인 건강 유지에 효과적입니다.");
+        pillInfo.put("비오틴", "모발과 손톱 건강, 에너지 대사에 도움을 줍니다.");
+
     }
 
-    /**
-     * Singleton 인스턴스를 반환합니다.
-     * 인스턴스가 없으면 새로 생성합니다.
-     * 
-     * @return PillManager 인스턴스
-     */
-    public static PillManager getInst() {
-        if (instance == null) {
+    public static PillManager getInst(){
+        if(instance == null) {
             instance = new PillManager();
         }
+
         return instance;
     }
-
-    /**
-     * 약 데이터를 추가합니다.
-     * 
-     * @param dto 추가할 PillDTO 객체
-     */
-    public void addYnData(PillYnDTO dto) {
-        pillYnsMap.put(dto.getId(), dto);
-    }
-
-    /**
-     * 약 이름으로 데이터를 조회합니다.
-     * 
-     * @param pillName 조회할 약 이름
-     * @return 해당 약의 PillDTO 객체
-     */
-    public PillDTO getDatabyId(String id) {
-        return pillsMap.get(id);
-    }
-
-    public PillDTO getPillDataByYn(PillYnDTO dto) {
-        return pillsMap.get(dto.getId());
-    }
-
-    /**
-     * 데이터베이스에서 약 정보를 불러옵니다.
-     * 기존 데이터를 초기화한 후, 새로운 데이터를 저장합니다.
-     */
     public void LoadDBData() {
         try {
-            // 기존 데이터 초기화
             pillsMap.clear();
 
-            // 데이터베이스 연결 및 SQL 실행
             Connection con = DBManager.getConnection();
-            String sql = "SELECT id, pillName, pillDetail, pillAmount, date FROM Pill";
+            String sql = "SELECT pill_id, id, pillName, pillDetail, pillAmount, date FROM Pill WHERE id = ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
-
+            String curUserId = "12345";//Login.UserSearch.curUserID;
+            pstmt.setString(1, curUserId);
             ResultSet rs = pstmt.executeQuery();
+
             while (rs.next()) {
-                // PillDTO 객체 생성 및 데이터 설정
                 PillDTO pillDTO = new PillDTO();
-                pillDTO.setId(rs.getString(1));               // ID 설정
-                pillDTO.setPillName(rs.getString(2));          // 약 이름 설정
-                pillDTO.setPillDetail(rs.getString(3));        // 약 상세 정보 설정
-                pillDTO.setPillAmount(rs.getInt(4));           // 약 수량 설정
-                pillDTO.setDate(rs.getDate(5));                // 날짜 설정
+                pillDTO.setPill_id(rs.getInt(1));
+                pillDTO.setId(rs.getString(2));
+                pillDTO.setPillName(rs.getString(3));
+                pillDTO.setPillDetail(rs.getString(4));
+                pillDTO.setPillAmount(rs.getInt(5));
+                pillDTO.setDate(rs.getDate(6));           
 
                 // 약 정보를 맵에 추가
-                pillsMap.put(pillDTO.getId(), pillDTO);
-            }
+                pillsMap.put(pillDTO.getPill_id(), pillDTO);
+                System.out.println(pillDTO);
+           }
 
-            sql = "SELECT id, pillYn, date FROM PillYn";
-            pstmt = con.prepareStatement(sql);
-            rs = pstmt.executeQuery();
-
-            while(rs.next()) {
-                PillYnDTO pillYnDTO = new PillYnDTO();
-                pillYnDTO.setId(rs.getString(1));
-                pillYnDTO.setPillYn(rs.getString(2));
-                pillYnDTO.setDate(rs.getDate(3));
-
-                pillYnsMap.put(pillYnDTO.getId(), pillYnDTO);
-
-                nextid = Math.max(nextid, Integer.parseInt(pillYnDTO.getId()));
-            }
-            nextid++;
             // 자원 해제
             rs.close();
             pstmt.close();
@@ -121,16 +75,40 @@ public class PillManager {
         }
     }
 
-    /**
-     * 모든 약 정보를 포함하는 맵을 반환합니다.
-     * 
-     * @return 약 정보가 담긴 HashMap
-     */
-    public HashMap<String, PillDTO> getPillsMap() {
+    public void clearPillsData(){
+        pillsMap.clear();
+    }
+
+    public HashMap<Integer, PillDTO> getPillsMap() {
         return pillsMap;
     }
 
-    public HashMap<String,PillYnDTO> getPillYnsMap() {
-        return pillYnsMap;
+    public HashMap<String, String> getPillInfo(){
+        return pillInfo;
+    }
+
+    public String getDescription(String name){
+        if(!pillInfo.containsKey(name)){
+            System.out.println("없는 영양제에 대한 정보를 찾으려 했습니다.");
+            return null;
+        }
+
+        return pillInfo.get(name);
+    }
+
+    public PillDTO getDatabyId(Integer id) {
+        return pillsMap.get(id);
+    }
+
+    public PillDTO getDatabyName(String name){
+        Iterator<Integer> iter = pillsMap.keySet().iterator();
+        while(iter.hasNext()){
+            PillDTO dto = pillsMap.get(iter.next());
+            if(dto.getPillName() == name){
+                return dto;
+            }
+        }
+
+        return null;
     }
 }

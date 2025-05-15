@@ -3,8 +3,8 @@ import java.sql.Date;
 
 /*
  * 생성자 : 김관호
- * 생성일 : 25.05.14
- * 파일명 : SupplementDTO.java
+ * 생성일 : 25.05.15
+ * 파일명 : PillDTO.java
  * 수정자 : 
  * 수정일 :
  * 설명 : 영양제의 DTO
@@ -12,7 +12,10 @@ import java.sql.Date;
 
 public class PillDTO {
 
-    // 영양제 아이디
+    // 영양제 고유번호
+    private int pill_id;
+
+    // 사용자 아이디
     private String id;
 
     // 영양제 이름
@@ -26,6 +29,14 @@ public class PillDTO {
 
     // 영양제 일자
     private Date date;
+
+    public int getPill_id() {
+        return pill_id;
+    }
+
+    public void setPill_id(int pill_id) {
+        this.pill_id = pill_id;
+    }
 
     public String getId() {
         return id;
@@ -69,8 +80,8 @@ public class PillDTO {
 
     @Override
     public String toString() {
-        return "PillDTO [id=" + id + ", pillName=" + pillName + ", pillDetail=" + pillDetail + ", pillAmount="
-                + pillAmount + ", date=" + date + "]";
+        return "PillDTO [pill_id=" + pill_id + ", id=" + id + ", pillName=" + pillName + ", pillDetail=" + pillDetail
+                + ", pillAmount=" + pillAmount + ", date=" + date + "]";
     }
 
 }

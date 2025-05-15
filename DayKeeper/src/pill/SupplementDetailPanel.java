@@ -42,7 +42,7 @@ public class SupplementDetailPanel extends JPanel {
         backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         backButton.setPreferredSize(new Dimension(80, 30));
         backButton.setMaximumSize(new Dimension(80, 30));
-        backButton.addActionListener(e -> parent.showListPanel());
+        backButton.addActionListener(e -> parent.showPanel("list"));
         add(backButton);
 
         initSupplementDescriptions();
