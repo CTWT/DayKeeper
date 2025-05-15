@@ -4,13 +4,13 @@
   "settings": {
     "width": 2000,
     "height": 2000,
-    "scrollTop": -25,
-    "scrollLeft": -6.6667,
+    "scrollTop": -203.3333,
+    "scrollLeft": -20.0001,
     "zoomLevel": 1,
     "show": 431,
     "database": 1,
     "databaseName": "daykeeper",
-    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
+    "canvasType": "ERD",
     "language": 4,
     "tableNameCase": 2,
     "columnNameCase": 2,
@@ -279,18 +279,18 @@
         "tableId": "aZq7GX8QW9H4DiQcEEVLf",
         "name": "date",
         "comment": "일자",
-        "dataType": "DATE",
+        "dataType": "DATETIME",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
           "widthComment": 60,
-          "widthDataType": 60,
+          "widthDataType": 61,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1747021151775,
+          "updateAt": 1747308126397,
           "createAt": 1747020169969
         }
       },
@@ -379,18 +379,18 @@
         "tableId": "6R_fAv_2cZSKo10oQpvwQ",
         "name": "date",
         "comment": "일자",
-        "dataType": "DATE",
+        "dataType": "DATETIME",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
           "widthComment": 60,
-          "widthDataType": 60,
+          "widthDataType": 61,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1747021148162,
+          "updateAt": 1747308145826,
           "createAt": 1747021067410
         }
       },
@@ -479,18 +479,18 @@
         "tableId": "21D7a8khH07KM_dM0wTYx",
         "name": "date",
         "comment": "일자",
-        "dataType": "DATE",
+        "dataType": "DATETIME",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
           "widthComment": 60,
-          "widthDataType": 60,
+          "widthDataType": 61,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1747021273313,
+          "updateAt": 1747308142609,
           "createAt": 1747021178123
         }
       },
@@ -539,18 +539,18 @@
         "tableId": "orvHnL3MT2y1pE9OBG42F",
         "name": "date",
         "comment": "일자",
-        "dataType": "DATE",
+        "dataType": "DATETIME",
         "default": "",
         "options": 10,
         "ui": {
           "keys": 1,
           "widthName": 60,
           "widthComment": 60,
-          "widthDataType": 60,
+          "widthDataType": 61,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1747270198014,
+          "updateAt": 1747308153632,
           "createAt": 1747021301044
         }
       },
