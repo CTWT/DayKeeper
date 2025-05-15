@@ -16,13 +16,14 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 /*
  * 생성자 : 이주하
  * 생성일 : 25.05.15
  * 파일명 : Signup.java
- * 수정자 : 
- * 수정일 :
+ * 수정자 : 이주하
+ * 수정일 : 25.05.15
  * 설명 : 회원가입 기본 프레임 설정
  */
 
@@ -54,25 +55,19 @@ public class Signup extends JPanel {
         gbc.gridwidth = 1; // 열 너비 설정
         gbc.gridy++; // 위치 변경
         gbc.gridx = 0; // 첫 번째 열
-        add(new JLabel("ID"), gbc); // 라벨 추가
+        add(common.CommonStyle.createLabel("USER NAME"), gbc); // 라벨 추가
 
         // User Id 입력 필드
         gbc.gridx = 1; // 두 번째 열
         newIdField = new JTextField(); // 입력 필드
+        common.CommonStyle.underline(newIdField);
         newIdField.setPreferredSize(new java.awt.Dimension(200, 20));
-        newIdField.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK)); // 밑줄 스타일
         add(newIdField, gbc);
 
         // User Id 중복확인 버튼
         gbc.gridx = 3; // 세 번째 열
         JButton checkButton = new JButton("중복확인");
-        checkButton.setBackground(new Color(30, 100, 180)); // 파란 배경
-        checkButton.setForeground(Color.WHITE); // 흰 글자
-        checkButton.setFont(new Font("SansSerif", Font.BOLD, 11)); // 글꼴 설정
-        checkButton.setFocusPainted(false); // 포커스 테두리 제거
-        checkButton.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 커서 모양 손
-        checkButton.setBorder(BorderFactory.createLineBorder(new Color(30, 100, 180), 10, true)); // 둥근 테두리
-        checkButton.setOpaque(true); // 불투명 설정
+        common.CommonStyle.stylePrimaryButton(checkButton);
         checkButton.addActionListener(e->{
             String id = newIdField.getText();
 
@@ -94,38 +89,32 @@ public class Signup extends JPanel {
         // Password 라벨
         gbc.gridy++; // 위치 변경
         gbc.gridx = 0; // 첫 번째 열
-        add(new JLabel("PASSWORD"), gbc); // 라벨 추가
+        add(common.CommonStyle.createLabel("PASSWORD"), gbc); // 라벨 추가
 
         // Password 입력 필드
         gbc.gridx = 1; // 두 번째 열
         newPwField = new JPasswordField(); // 비밀번호 필드
+        common.CommonStyle.underline(newPwField);
         newPwField.setPreferredSize(new java.awt.Dimension(200, 20));
-        newPwField.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK)); // 밑줄 스타일
         add(newPwField, gbc);
 
         // User name 입력 라벨
         gbc.gridy ++; // 위치 변경
         gbc.gridx = 0; // 첫 번째 열
-        add(new JLabel("USER NAME"), gbc); // 라벨 추가
+        add(common.CommonStyle.createLabel("이름"), gbc); // 라벨 추가
 
         // User name 입력 필드
         gbc.gridx = 1; // 두 번째 열
         usernameField = new JTextField(); // 비밀번호 필드
+        common.CommonStyle.underline(usernameField);
         usernameField.setPreferredSize(new java.awt.Dimension(200, 20));
-        usernameField.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK)); // 밑줄 스타일
         add(usernameField, gbc);
 
         // 뒤로가기 버튼
         gbc.gridy++; // 위치 변경
         gbc.gridx = 0; // 첫 번째 열
         JButton backButton = new JButton("뒤로가기"); // 뒤로가기 버튼 생성
-        backButton.setBackground(new Color(30, 100, 180)); // 파란 배경
-        backButton.setForeground(Color.WHITE); // 흰 글자
-        backButton.setFont(new Font("SansSerif", Font.BOLD, 14)); // 글꼴 설정
-        backButton.setFocusPainted(false); // 포커스 테두리 제거
-        backButton.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 커서 모양 손
-        backButton.setBorder(BorderFactory.createLineBorder(new Color(30, 100, 180), 10, true)); // 둥근 테두리
-        backButton.setOpaque(true); // 불투명 설정
+        common.CommonStyle.stylePrimaryButton(backButton);
         backButton.addActionListener(e -> {
             JFrame frame = (JFrame) javax.swing.SwingUtilities.getWindowAncestor(this);
             frame.setContentPane(new Login());
@@ -137,34 +126,33 @@ public class Signup extends JPanel {
         // 회원가입 버튼
         gbc.gridx = 1; // 두 번째 열
         JButton singupButton = new JButton("회원가입"); // 회원가입 버튼 생성
-        singupButton.setBackground(new Color(30, 100, 180)); // 파란 배경
-        singupButton.setForeground(Color.WHITE); // 흰 글자
-        singupButton.setFont(new Font("SansSerif", Font.BOLD, 14)); // 글꼴 설정
-        singupButton.setFocusPainted(false); // 포커스 테두리 제거
-        singupButton.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 커서 모양 손
-        singupButton.setBorder(BorderFactory.createLineBorder(new Color(30, 100, 180), 10, true)); // 둥근 테두리
-        singupButton.setOpaque(true); // 불투명 설정
+        common.CommonStyle.stylePrimaryButton(singupButton);
         singupButton.addActionListener(e -> {
             String id = newIdField.getText().trim();
             String pw = new String(newPwField.getPassword()).trim();
             String name = usernameField.getText().trim();
 
-            if (id.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "아이디를 입력해주세요.");
-                return;
+
+            if (!id.isEmpty() && !pw.isEmpty() && !name.isEmpty()) {
+                UserDAO dao = new UserDAO();
+                UserDTO user = new UserDTO(id, pw, name);
+                if (dao.insertUser(user)) {
+                    JOptionPane.showMessageDialog(this, "회원가입이 완료되었습니다!");
+                    // 로그인 화면으로 이동
+                    JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+                    frame.setContentPane(new Login());
+                    frame.revalidate();
+                    frame.repaint();
+                } else {
+                    JOptionPane.showMessageDialog(this, "회원가입에 실패했습니다.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "모든 필드를 입력해주세요.");
             }
 
-            if (pw.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "비밀번호를 입력해주세요.");
-                return;
-            }
-            if (name.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "이름을 입력해주세요.");
-                return;
-            }
-
-            JOptionPane.showMessageDialog(this, "회원가입이 완료되었습니다!");
         }); // 클릭 이벤트
+
+
         add(singupButton, gbc);
 
 }
