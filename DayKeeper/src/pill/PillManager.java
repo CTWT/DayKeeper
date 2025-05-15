@@ -5,20 +5,47 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import dbConnection.DBManager;
 
+/*
+ * 생성자 : 김관호
+ * 생성일 : 25.05.12
+ * 파일명 : PillManager.java
+ * 수정자 : 
+ * 수정일 :
+ * 설명 : 알약의 정보 들과 DTO를 관리하는 클래스
+ */
+
+/**
+ * Singleton 클래스: 영양제 정보를 관리하는 클래스
+ * 데이터베이스로부터 영양제 정보를 로드하여 관리합니다.
+ */
 public class PillManager {
-    private HashMap<String, String> pillInfo;
-    private HashMap<Integer, PillDTO> pillsMap;
+    private HashMap<String, String> pillInfo;  // 영양제 기본 정보
+    private HashMap<Integer, PillDTO> pillsMap; // DTOMap
+    private static PillManager instance;        // 싱글톤 인스턴스
 
-    private static PillManager instance;
-
+    // private 생성자: 싱글톤 패턴을 위한 private 접근 제어자 사용
     private PillManager() {
         pillInfo = new HashMap<>();
         pillsMap = new HashMap<>();
+        initPillInfo();
+    }
 
+    // 싱글톤 인스턴스 반환 메서드
+    public static PillManager getInst() {
+        if (instance == null) {
+            instance = new PillManager();
+        }
+        return instance;
+    }
+
+    /**
+     * 영양제 기본 정보를 초기화합니다.
+     * 이름과 효능을 매핑하여 HashMap에 저장합니다.
+     */
+    private void initPillInfo() {
         pillInfo.put("비타민C", "피로 회복, 항산화 작용, 감기 예방에 도움을 줍니다.");
         pillInfo.put("오메가3", "혈중 중성지방 감소와 혈관 건강 개선에 효과가 있습니다.");
         pillInfo.put("루테인", "눈의 황반을 보호하고 시력 저하를 예방합니다.");
@@ -31,84 +58,103 @@ public class PillManager {
         pillInfo.put("마그네슘", "근육 기능 유지와 신경 안정에 도움을 줍니다.");
         pillInfo.put("멀티비타민", "여러 영양소를 보충하여 전반적인 건강 유지에 효과적입니다.");
         pillInfo.put("비오틴", "모발과 손톱 건강, 에너지 대사에 도움을 줍니다.");
-
     }
 
-    public static PillManager getInst(){
-        if(instance == null) {
-            instance = new PillManager();
-        }
+    /**
+     * 데이터베이스에서 영양제 정보를 로드합니다.
+     */
+    public void loadDBData() {
+        String sql = "SELECT pill_id, id, pillName, pillDetail, pillAmount, date FROM Pill WHERE id = ?";
+        String curUserId = "12345"; // 현재 사용자 ID (예시)
 
-        return instance;
-    }
-    public void LoadDBData() {
-        try {
-            pillsMap.clear();
-
-            Connection con = DBManager.getConnection();
-            String sql = "SELECT pill_id, id, pillName, pillDetail, pillAmount, date FROM Pill WHERE id = ?";
-            PreparedStatement pstmt = con.prepareStatement(sql);
-            String curUserId = "12345";//Login.UserSearch.curUserID;
+        try (Connection con = DBManager.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+             
             pstmt.setString(1, curUserId);
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 PillDTO pillDTO = new PillDTO();
-                pillDTO.setPill_id(rs.getInt(1));
-                pillDTO.setId(rs.getString(2));
-                pillDTO.setPillName(rs.getString(3));
-                pillDTO.setPillDetail(rs.getString(4));
-                pillDTO.setPillAmount(rs.getInt(5));
-                pillDTO.setDate(rs.getDate(6));           
+                pillDTO.setPill_id(rs.getInt("pill_id"));
+                pillDTO.setId(rs.getString("id"));
+                pillDTO.setPillName(rs.getString("pillName"));
+                pillDTO.setPillDetail(rs.getString("pillDetail"));
+                pillDTO.setPillAmount(rs.getInt("pillAmount"));
+                pillDTO.setDate(rs.getDate("date"));
 
-                // 약 정보를 맵에 추가
+                // 로드된 데이터를 Map에 저장
                 pillsMap.put(pillDTO.getPill_id(), pillDTO);
-                System.out.println(pillDTO);
-           }
-
-            // 자원 해제
+                System.out.println("Loaded: " + pillDTO);
+            }
             rs.close();
-            pstmt.close();
-            con.close();
         } catch (SQLException e) {
+            System.err.println("데이터 로드 오류: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    public void clearPillsData(){
+    /**
+     * 영양제 데이터 초기화 (맵 비우기)
+     */
+    public void clearPillsData() {
         pillsMap.clear();
     }
 
+    /**
+     * 영양제 상세 정보를 ID로 조회합니다.
+     *
+     * @param id 영양제 ID
+     * @return PillDTO 객체 또는 null
+     */
+    public PillDTO getDataById(Integer id) {
+        return pillsMap.get(id);
+    }
+
+    /**
+     * 영양제 상세 정보를 이름으로 조회합니다.
+     *
+     * @param name 영양제 이름
+     * @return PillDTO 객체 또는 null
+     */
+    public PillDTO getDataByName(String name) {
+        for (Integer id : pillsMap.keySet()) {
+            PillDTO dto = pillsMap.get(id);
+            if (dto.getPillName().equals(name)) {
+                return dto;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 영양제 설명을 이름으로 조회합니다.
+     *
+     * @param name 영양제 이름
+     * @return 설명 문자열 또는 null
+     */
+    public String getDescription(String name) {
+        if (!pillInfo.containsKey(name)) {
+            System.out.println("영양제 정보가 없습니다: " + name);
+            return null;
+        }
+        return pillInfo.get(name);
+    }
+
+    /**
+     * 모든 영양제 정보를 반환합니다.
+     *
+     * @return 영양제 정보를 담고 있는 Map
+     */
     public HashMap<Integer, PillDTO> getPillsMap() {
         return pillsMap;
     }
 
-    public HashMap<String, String> getPillInfo(){
+    /**
+     * 기본 영양제 정보를 반환합니다.
+     *
+     * @return 영양제 설명 Map
+     */
+    public HashMap<String, String> getPillInfo() {
         return pillInfo;
-    }
-
-    public String getDescription(String name){
-        if(!pillInfo.containsKey(name)){
-            System.out.println("없는 영양제에 대한 정보를 찾으려 했습니다.");
-            return null;
-        }
-
-        return pillInfo.get(name);
-    }
-
-    public PillDTO getDatabyId(Integer id) {
-        return pillsMap.get(id);
-    }
-
-    public PillDTO getDatabyName(String name){
-        Iterator<Integer> iter = pillsMap.keySet().iterator();
-        while(iter.hasNext()){
-            PillDTO dto = pillsMap.get(iter.next());
-            if(dto.getPillName() == name){
-                return dto;
-            }
-        }
-
-        return null;
     }
 }
