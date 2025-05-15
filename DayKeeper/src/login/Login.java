@@ -1,6 +1,7 @@
 package login;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -29,8 +30,8 @@ import java.awt.event.MouseEvent;
  * 생성자 : 문원주
  * 생성일 : 25.05.15
  * 파일명 : Login.java
- * 수정자 : 
- * 수정일 :
+ * 수정자 : 이주하
+ * 수정일 : 25.05.15
  * 설명 : 로그인 기본 프레임 설정
  */
 
@@ -107,6 +108,10 @@ public class Login extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 // new JoinDialog((JFrame) SwingUtilities.getWindowAncestor(Login.this));
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(Login.this);
+                frame.setContentPane(new Signup());  // Signup 패널로 전환
+                frame.revalidate();
+                frame.repaint();
             }
         });
 
@@ -119,6 +124,7 @@ public class Login extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 // new ForgotDialog((JFrame) SwingUtilities.getWindowAncestor(Login.this));
+            
             }
         });
 
