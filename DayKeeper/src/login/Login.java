@@ -143,12 +143,17 @@ public class Login extends JPanel {
         UserDAO dao = new UserDAO(); // UserDAO 객체 생성 후, 로그인 시도
         if (dao.login(id, pw)) {
             messageLabel.setText(""); // 로그인 성공 시 메시지 초기화
+            UserSearch.curUserID = id;
             JOptionPane.showMessageDialog(this, "로그인 성공!");
             BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
             frame.showScreen(ScreenType.TODOLIST);
         } else {
             messageLabel.setText("아이디 또는 비밀번호가 잘못되었습니다.");
         }
+    }
+
+    public class UserSearch {
+        public static String curUserID;
     }
 
     // 테스트용 메인 메서드
