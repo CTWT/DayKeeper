@@ -2,39 +2,74 @@ package pill;
 
 import javax.swing.*;
 import java.awt.*;
-
-/*
- * 수업명 : Project DayKeeper
- * 이름 : 임해균
- * 작성자 : 임해균
- * 작성일 : 25.05.14
- * 파일명 : SupplementDetailPanel.java
- * 설명 : 선택한 영양제의 상세 정보를 보여주는 전용 패널
- */
+import java.util.HashMap;
+import java.util.Map;
 
 public class SupplementDetailPanel extends JPanel {
-    private JLabel titleLabel;
-    private JTextArea detailArea;
+    private JLabel nameLabel;
+    private JLabel imageLabel;
+    private JLabel descriptionLabel;
+    private SupApp parent;
+    private Map<String, String> supplementDescriptions;
 
-    public SupplementDetailPanel() {
-        setLayout(new BorderLayout());
+    public SupplementDetailPanel(SupApp parent) {
+        this.parent = parent;
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.WHITE);
 
-        titleLabel = new JLabel("영양제 상세 정보", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
-        add(titleLabel, BorderLayout.NORTH);
+        nameLabel = new JLabel("약 이름", SwingConstants.CENTER);
+        nameLabel.setFont(new Font("맑은 고딕", Font.BOLD, 20));
+        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        nameLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
+        add(nameLabel);
 
-        detailArea = new JTextArea("상세 내용이 여기에 표시됩니다.");
-        detailArea.setLineWrap(true);
-        detailArea.setWrapStyleWord(true);
-        detailArea.setEditable(false);
-        detailArea.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        detailArea.setMargin(new Insets(20, 20, 20, 20));
-        add(new JScrollPane(detailArea), BorderLayout.CENTER);
+        imageLabel = new JLabel();
+        imageLabel.setPreferredSize(new Dimension(200, 150));
+        imageLabel.setOpaque(true);
+        imageLabel.setBackground(new Color(245, 245, 245));
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        imageLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        add(imageLabel);
+
+        descriptionLabel = new JLabel("<html><div style='text-align:center;'>영양제 설명이 여기에 표시됩니다.</div></html>");
+        descriptionLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
+        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        descriptionLabel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        add(descriptionLabel);
+
+        JButton backButton = new JButton("뒤로");
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backButton.setPreferredSize(new Dimension(80, 30));
+        backButton.setMaximumSize(new Dimension(80, 30));
+        backButton.addActionListener(e -> parent.showListPanel());
+        add(backButton);
+
+        initSupplementDescriptions();
     }
 
     public void loadSupplementInfo(String name) {
-        titleLabel.setText(name + " 상세 정보");
-        detailArea.setText("[" + name + "]에 대한 자세한 설명을 여기에 출력합니다.");
+        nameLabel.setText(name);
+
+        ImageIcon icon = new ImageIcon("img/" + name + ".png");
+        if (icon.getIconWidth() > 0) {
+            Image scaled = icon.getImage().getScaledInstance(200, 150, Image.SCALE_SMOOTH);
+            imageLabel.setIcon(new ImageIcon(scaled));
+            imageLabel.setText("");
+        } else {
+            imageLabel.setIcon(null);
+            imageLabel.setText("이미지 없음");
+        }
+
+        String desc = supplementDescriptions.getOrDefault(name, "해당 약에 대한 설명이 없습니다.");
+        descriptionLabel.setText("<html><div style='text-align:center;'>" + desc + "</div></html>");
+    }
+
+    private void initSupplementDescriptions() {
+        supplementDescriptions = new HashMap<>();
+        supplementDescriptions.put("코카인", "중추신경계를 자극하는 강력한 약물입니다.<br>남용 시 심각한 중독과 건강 문제를 유발합니다.");
+        supplementDescriptions.put("마리화나", "환각 작용이 있는 대마초에서 추출된 물질입니다.<br>일부 국가에서는 의료용으로 사용됩니다.");
+        supplementDescriptions.put("헤로인", "마약성 진통제로, 강력한 중독성을 지닌 약물입니다.");
+        // ... 필요시 추가 가능
     }
 }
