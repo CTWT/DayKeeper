@@ -3,6 +3,7 @@ package login;
 import javax.swing.*;
 
 import config.BaseFrame;
+import config.ScreenType;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -134,6 +135,8 @@ public class Login extends JPanel {
         if (dao.login(id, pw)) {
             messageLabel.setText(""); // 로그인 성공 시 메시지 초기화
             JOptionPane.showMessageDialog(this, "로그인 성공!");
+            BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+            frame.showScreen(ScreenType.TODOLIST);
         } else {
             messageLabel.setText("아이디 또는 비밀번호가 잘못되었습니다.");
         }
@@ -141,9 +144,14 @@ public class Login extends JPanel {
 
     // 테스트용 메인 메서드
     public static void main(String[] args) {
-        BaseFrame frame = new BaseFrame(); // 기본 프레임 생성
-        frame.setContentPane(new Login()); // Login 패널 삽입
-        frame.setVisible(true); // 화면에 표시
+        SwingUtilities.invokeLater(() -> {
+            BaseFrame frame = new BaseFrame(); // 기본 프레임 생성
+            frame.setContentPane(new Login()); // Login 패널 삽입
+            frame.setSize(400, 500); // 프레임 크기 지정 (적절히 조절)
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // 종료 설정
+            frame.setLocationRelativeTo(null); // 중앙 정렬
+            frame.setVisible(true); // 보이기
+        });
     }
 
 }
