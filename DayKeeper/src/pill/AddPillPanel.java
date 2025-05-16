@@ -160,15 +160,27 @@ public class AddPillPanel extends JPanel {
     // DB insert
     public void insertDrugToDB(String pillName, int amount) {
         try (Connection con = DBManager.getConnection()) {
-            String sql = "INSERT INTO pill(pill_id, id, pillName, pillDetail, pillAmount, date) VALUES (?, ?, ?, ?, ?, ?)";
-            PreparedStatement pstmt = con.prepareStatement(sql);
-            pstmt.setInt(1, PillManager.nextInt++);
-            pstmt.setString(2, "12345");
-            pstmt.setString(3, pillName);
-            pstmt.setString(4, PillManager.getInst().getDescription(pillName));
-            pstmt.setInt(5, amount);
-            pstmt.setString(6, LocalDateTime.now().toLocalDate().toString());
-            pstmt.executeUpdate();
+            if(PillManager.getInst().getDataByName(pillName) != null)
+            {
+                String sql = "UPDATE pill SET pillAmount = ? WHERE pillName = ?";
+                PreparedStatement pstmt = con.prepareStatement(sql);
+
+                int resultAmount = PillManager.getInst().getDataByName(pillName).getPillAmount()+amount;
+
+                pstmt.setInt(1, resultAmount);
+                pstmt.setString(2, pillName);
+                pstmt.executeUpdate();
+            }
+            else {
+                String sql = "INSERT INTO pill(pill_id, id, pillName, pillAmount, date) VALUES (?, ?, ?, ?, now())";
+                PreparedStatement pstmt = con.prepareStatement(sql);
+                pstmt.setInt(1, PillManager.nextInt++);
+                pstmt.setString(2, "12345");
+                pstmt.setString(3, pillName);
+                pstmt.setInt(4, amount);
+                pstmt.executeUpdate();
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

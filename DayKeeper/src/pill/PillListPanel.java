@@ -30,6 +30,7 @@ public class PillListPanel extends JPanel {
     public PillListPanel(PillApp app) {
         this.app = app;
 
+        PillManager.getInst().releaseData();
         PillManager.getInst().loadDBData();
 
         setLayout(new BorderLayout());
@@ -98,6 +99,7 @@ public class PillListPanel extends JPanel {
                 updateCountLabel(id);
             }
             JOptionPane.showMessageDialog(this, "전체 영양제를 1개씩 섭취 처리했습니다.");
+            app.showPanel("list");
         });
 
         add(bottom, BorderLayout.SOUTH);

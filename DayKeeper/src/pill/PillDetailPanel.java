@@ -80,6 +80,10 @@ public class PillDetailPanel extends JPanel {
         deleteBtn.setFont(CommonStyle.TEXT_FONT);
         deleteBtn.setBackground(new Color(255, 230, 230));
         deleteBtn.setFocusPainted(false);
+        deleteBtn.addActionListener(e->{
+            deleteData(parent);
+            parent.showPanel("list");
+        });
 
         btnPanel.add(backBtn);
         btnPanel.add(deleteBtn);
@@ -130,5 +134,9 @@ public class PillDetailPanel extends JPanel {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    private void deleteData(PillApp parent){
+        PillManager.getInst().deleteDataById(parent.getDetailId());
     }
 }

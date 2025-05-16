@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import dbConnection.DBManager;
 
@@ -124,7 +125,7 @@ public class PillManager {
      * 데이터베이스에서 영양제 정보를 로드합니다.
      */
     public void loadDBData() {
-        String sql = "SELECT pill_id, id, pillName, pillDetail, pillAmount, date FROM Pill WHERE id = ?";
+        String sql = "SELECT pill_id, id, pillName, pillAmount, date FROM Pill WHERE id = ?";
         String curUserId = "12345"; // 현재 사용자 ID (예시)
 
         try (Connection con = DBManager.getConnection();
@@ -138,9 +139,8 @@ public class PillManager {
                 pillDTO.setPill_id(rs.getInt("pill_id"));
                 pillDTO.setId(rs.getString("id"));
                 pillDTO.setPillName(rs.getString("pillName"));
-                pillDTO.setPillDetail(rs.getString("pillDetail"));
                 pillDTO.setPillAmount(rs.getInt("pillAmount"));
-                pillDTO.setDate(rs.getDate("date"));
+                pillDTO.setDate(rs.getTimestamp("date").toLocalDateTime());
 
                 // 로드된 데이터를 Map에 저장
                 pillsMap.put(pillDTO.getPill_id(), pillDTO);
@@ -151,6 +151,29 @@ public class PillManager {
             rs.close();
         } catch (SQLException e) {
             System.err.println("데이터 로드 오류: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void releaseData(){
+        String sql = "SELECT pill_id, pillAmount FROM pill WHERE id = ?";
+        String curUserId = "12345"; // 현재 사용자 ID (예시)
+
+        try (Connection con = DBManager.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+            pstmt.setString(1, curUserId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int pill_id = rs.getInt(1);
+                int amount = rs.getInt(2);
+                if(amount <= 0){
+                    deleteDataById(pill_id);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("데이터 릴리즈 오류: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -209,6 +232,43 @@ public class PillManager {
         }
         return pillInfo.get(name).intakeTip;
     }
+
+    public void deleteDataById(int id){
+        if(pillsMap.containsKey(id)){
+            pillsMap.remove(Integer.valueOf(id));
+        }
+
+        String sql = "delete from pill where pill_id =?";
+
+        try (Connection con = DBManager.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+             
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("데이터 로드 오류: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+
+    public void deleteDataByName(String name) {
+        Iterator<PillDTO> iter = pillsMap.values().iterator();
+        
+        while(iter.hasNext()){
+            PillDTO dto = iter.next();
+            if(dto.getPillName() == name){
+                deleteDataById(dto.getPill_id());
+                return;
+            }
+        }
+
+        System.out.println("해당 이름의 데이터가 없습니다.");
+
+    }
+
+
 
     /**
      * 모든 영양제 정보를 반환합니다.

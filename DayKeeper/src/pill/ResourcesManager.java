@@ -39,7 +39,7 @@ public class ResourcesManager {
         }
     }
 
-    public Image getImagebyName(String name) {
+    public Image  getImagebyName(String name) {
         return resourcesMap.get(name);
     }
 }
