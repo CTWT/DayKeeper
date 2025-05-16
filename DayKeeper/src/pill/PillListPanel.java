@@ -1,17 +1,47 @@
 package pill;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+import javax.swing.ImageIcon;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+
 import dbConnection.DBManager;
 import common.CommonStyle;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Date;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Arrays;
+
 
 /*
  * 수업명 : Project DayKeeper
@@ -37,6 +67,7 @@ public class PillListPanel extends JPanel {
 
         PillManager.getInst().releaseData();
         PillManager.getInst().loadDBData();
+        insertInitialYNData();
 
         setLayout(new BorderLayout());
         setBackground(CommonStyle.BACKGROUND_COLOR);
@@ -108,7 +139,7 @@ public class PillListPanel extends JPanel {
                     updateCountLabel(id);
                 }
                 JOptionPane.showMessageDialog(this, "전체 영양제를 1개씩 섭취 처리했습니다.");
-                insertYnToDB();
+                changeYnToDB("Y");
                 app.showPanel("list");
             }
         });
@@ -238,8 +269,9 @@ public class PillListPanel extends JPanel {
     /**
      * db에 YN데이터를 삽입합니다.
      *
+     * @param YN 삽입할 값
      */
-    private void insertYnToDB() {
+    private void insertYnToDB(String YN) {
         try (Connection con = DBManager.getConnection()) {
             String sql = "INSERT INTO PILLYN(date, id, pillYn) values (?,?,?)";
             PreparedStatement psmt = con.prepareStatement(sql);
@@ -247,7 +279,7 @@ public class PillListPanel extends JPanel {
             Timestamp timestamp = Timestamp.valueOf(time);
             psmt.setTimestamp(1, timestamp);
             psmt.setString(2, "12345"); //Login.UserSearch.curUserId;
-            psmt.setString(3, "Y");
+            psmt.setString(3, YN);
             psmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -256,8 +288,50 @@ public class PillListPanel extends JPanel {
     }
 
     /**
+     * 오늘날짜의 yn이 등록되어 있다면 update를 실행시킵니다.
+     *
+     * @param YN 영양제 섭취 YN
+     */
+    private void changeYnToDB(String YN) {
+        try (Connection con = DBManager.getConnection()) {
+            String sql = "SELECT date from PILLYN where id = ?";
+            PreparedStatement psmt = con.prepareStatement(sql);
+            psmt.setString(1, "12345"); //Login.UserSearch.curUserId;
+            ResultSet rs = psmt.executeQuery();
+            while(rs.next()){
+                Timestamp tstamp = rs.getTimestamp(1);
+                Date ts = new Date(tstamp.getTime());
+                LocalDate curTime = LocalDate.now();
+                if(ts.toString().equals(curTime.toString())){
+                    updateYnToDB(YN, tstamp);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 현재 등록되어 있는 YN 데이터를 변경합니다.
+     *
+     * @param YN 영양제 섭취 YN
+     */
+    private void updateYnToDB(String YN, Timestamp tstamp) {
+        try (Connection con = DBManager.getConnection()) {
+            String sql = "UPDATE PillYN SET pillYn = ? WHERE date = ?";
+            PreparedStatement psmt = con.prepareStatement(sql);
+            psmt.setString(1, YN); // Login.UserSearch.curUserId;
+            psmt.setTimestamp(2, tstamp);
+            psmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 오늘 영양제를 섭취했는지 확인합니다.
      *
+     * @return boolean
      */
     private boolean checkConsume(){
         try (Connection con = DBManager.getConnection()) {
@@ -279,5 +353,30 @@ public class PillListPanel extends JPanel {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * 오늘 날짜의 yn이 없다면 n을 삽입합니다.
+     *
+     */
+    private void insertInitialYNData(){
+         try (Connection con = DBManager.getConnection()) {
+            String sql = "SELECT date from PILLYN where id = ?";
+            PreparedStatement psmt = con.prepareStatement(sql);
+            psmt.setString(1, "12345"); //Login.UserSearch.curUserId;
+            ResultSet rs = psmt.executeQuery();
+            while(rs.next()){
+                Date ts = rs.getDate(1);
+                LocalDate curTime = LocalDate.now();
+                if(ts.toString().equals(curTime.toString())){
+                    return;
+                }                
+            }
+
+            insertYnToDB("N");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

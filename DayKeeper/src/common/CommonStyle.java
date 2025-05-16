@@ -53,6 +53,8 @@ public class CommonStyle {
         button.setOpaque(true);
     }
 
+    
+
     // 공통 텍스트필드 밑줄 스타일
     public static void underline(JTextField field) {
         field.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));

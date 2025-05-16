@@ -3,9 +3,16 @@ package pill;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.HashMap;
 
 import common.CommonStyle;
+import dbConnection.DBManager;
 
 /*
  * 수업명 : Project DayKeeper
@@ -48,8 +55,11 @@ public class TimeSettingPanel extends JPanel {
 
         setBtn.addActionListener(e -> {
             if (selectedHour >= 0) {
+                registerAlarm(selectedHour);
+
                 String msg = (selectedHour == 0 ? "12시" : selectedHour + "시") + "로 설정되었습니다.";
                 JOptionPane.showMessageDialog(this, msg);
+
             } else {
                 JOptionPane.showMessageDialog(this, "시간을 선택해주세요.");
             }
@@ -158,5 +168,33 @@ public class TimeSettingPanel extends JPanel {
             g2.setColor(Color.GRAY);
             g2.fillOval(cx - 4, cy - 4, 8, 8);
         }
+    }
+
+    private void registerAlarm(int selectedHour){
+        try (Connection con = DBManager.getConnection()) {
+            String sql = "SELECT alramTime from PILL_ALRAM where id = ?";
+            PreparedStatement psmt = con.prepareStatement(sql);
+            psmt.setString(1, "12345"); //Login.UserSearch.curUserId;
+            ResultSet rs = psmt.executeQuery();
+            while(rs.next()){
+                Time ts = rs.getTime(1);
+                LocalTime curTime = LocalTime.now();
+                if(ts.toString().equals(curTime.toString())){
+                    updateAlarm(selectedHour);
+                    return;
+                }                
+            }
+            insertAlarm(selectedHour);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateAlarm(int selectedHour){
+
+    }
+
+    private void insertAlarm(int selectedHour){
+
     }
 }

@@ -1,6 +1,9 @@
 package pill;
 
 import javax.swing.ImageIcon;
+
+import config.ImgConfig;
+
 import java.awt.Image;
 import java.util.HashMap;
 import java.util.Iterator;
