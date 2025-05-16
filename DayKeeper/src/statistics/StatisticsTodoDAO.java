@@ -1,4 +1,4 @@
-package todoList;
+package statistics;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,13 +14,13 @@ import dbConnection.DBManager; // DB 연결을 위한 커스텀 유틸 클래스
 /**
  * 생성자 : 문원주
  * 생성일 : 25.05.16
- * 파일명 : TodoDAO.java
+ * 파일명 : StatisticsTodoDAO.java
  * 수정자 :
  * 수정일 :
  * 설명 : TODO 테이블에서 주간 투두리스트 달성률을 계산하여 반환하는 DAO
  */
 
-public class TodoDAO {
+public class StatisticsTodoDAO {
 
     /**
      * 주어진 사용자 ID와 기준 날짜를 바탕으로
@@ -47,7 +47,7 @@ public class TodoDAO {
                 SELECT
                     DAYOFWEEK(date) AS dayOfWeek,
                     COUNT(*) AS total,
-                    SUM(CASE WHEN todoYn = 'Y' THEN 1 ELSE 0 END) AS done
+                    SUM(CASE WHEN UPPER(todoYn) = 'Y' THEN 1 ELSE 0 END) AS done
                 FROM TODO
                 WHERE id = ?
                   AND DATE(date) BETWEEN ? AND ?
@@ -97,12 +97,7 @@ public class TodoDAO {
         return dayOfWeek - 2;
     }
 
-    /**
-     * 숫자 요일(1~7)을 월요일 기준 한글 요일 문자열로 변환
-     * 
-     * @param dayOfWeek DAYOFWEEK 결과 (1:일 ~ 7:토)
-     * @return 한글 요일 문자열 (월~일)
-     */
+    // 숫자 요일(1~7)을 월요일 기준 한글 요일 문자열로 변환
     private String convertDayOfWeek(int dayOfWeek) {
         int adjustedIndex = getAdjustedDayIndex(dayOfWeek);
         return switch (adjustedIndex) {
