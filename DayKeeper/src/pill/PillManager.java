@@ -25,6 +25,7 @@ public class PillManager {
     private HashMap<String, String> pillInfo;  // 영양제 기본 정보
     private HashMap<Integer, PillDTO> pillsMap; // DTOMap
     private static PillManager instance;        // 싱글톤 인스턴스
+    public static int nextInt = 0;
 
     // private 생성자: 싱글톤 패턴을 위한 private 접근 제어자 사용
     private PillManager() {
@@ -85,7 +86,9 @@ public class PillManager {
                 // 로드된 데이터를 Map에 저장
                 pillsMap.put(pillDTO.getPill_id(), pillDTO);
                 System.out.println("Loaded: " + pillDTO);
+                nextInt = Math.max(nextInt,pillDTO.getPill_id());
             }
+            nextInt++;
             rs.close();
         } catch (SQLException e) {
             System.err.println("데이터 로드 오류: " + e.getMessage());
