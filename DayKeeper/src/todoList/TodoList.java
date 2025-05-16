@@ -77,20 +77,25 @@ public class TodoList extends JPanel {
         centerPanel.add(contentPanel, BorderLayout.CENTER);
         add(centerPanel, BorderLayout.CENTER);
 
-        // Bottom buttons
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        bottomPanel.setBackground(Color.WHITE);
+        // 하단 버튼 구성 요소 받기
+        CommonStyle.BottomPanelComponents bottom = CommonStyle.createBottomPanel();
 
-        String[] btnTexts = { "오늘할일상세보기", "영업제 정보", "통계" };
-        for (String txt : btnTexts) {
-            JButton btn = new JButton(txt);
-            btn.setBackground(new Color(102, 153, 255));
-            btn.setForeground(Color.WHITE);
-            btn.setPreferredSize(new Dimension(140, 30));
-            bottomPanel.add(btn);
-        }
+        // 버튼 이벤트 지정
+        bottom.todoDetail.addActionListener(e -> {
+            System.out.println("오늘할일상세보기 클릭됨");
+        });
+        bottom.pillDetail.addActionListener(e -> {
+            System.out.println("영양제 정보 클릭됨");
+        });
+        bottom.statistics.addActionListener(e -> {
+            System.out.println("통계 클릭됨");
+        });
 
-        add(bottomPanel, BorderLayout.SOUTH);
+        // '돌아가기' 버튼은 이 화면에서 숨김
+        bottom.returnPage.setVisible(false);
+
+        // 화면에 추가
+        add(bottom.panel, BorderLayout.SOUTH);
     }
 
     public static void main(String[] args) {

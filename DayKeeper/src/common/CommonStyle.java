@@ -1,15 +1,26 @@
 package common;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.FlowLayout;
 import java.awt.Font;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+/*
+ * 생성자 : 신인철
+ * 생성일 : 25.05.15
+ * 파일명 : CommenStyle.java
+ * 수정자 : 
+ * 수정일 :
+ * 설명 : swing 공통 스타일 형식 지정
+ */
 public class CommonStyle {
 
     // 공통 색상
@@ -22,6 +33,15 @@ public class CommonStyle {
     public static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 40);
     public static final Font BUTTON_FONT = new Font("SansSerif", Font.BOLD, 14);
     public static final Font TEXT_FONT = new Font("SansSerif", Font.PLAIN, 13);
+
+    // 하단 버튼 정보를 담기 위한 내부 클래스
+    public static class BottomPanelComponents {
+        public JPanel panel;
+        public JButton todoDetail;
+        public JButton pillDetail;
+        public JButton statistics;
+        public JButton returnPage;
+    }
 
     // 공통 버튼 스타일
     public static void stylePrimaryButton(JButton button) {
@@ -44,6 +64,8 @@ public class CommonStyle {
         JLabel label = new JLabel("DAY-KEEPER", SwingConstants.CENTER);
         label.setFont(TITLE_FONT);
         label.setForeground(PRIMARY_COLOR);
+        // label.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); // 상단 여백 추가 공통
+        // 스타일로 추가할지 논의필요
         return label;
     }
 
@@ -53,5 +75,23 @@ public class CommonStyle {
         label.setFont(TEXT_FONT);
         label.setForeground(Color.DARK_GRAY);
         return label;
+    }
+
+    public static BottomPanelComponents createBottomPanel() {
+        BottomPanelComponents comp = new BottomPanelComponents();
+
+        comp.todoDetail = new JButton("오늘할일상세보기");
+        comp.pillDetail = new JButton("영양제 정보");
+        comp.statistics = new JButton("통계");
+        comp.returnPage = new JButton("돌아가기");
+
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        bottomPanel.add(comp.todoDetail);
+        bottomPanel.add(comp.pillDetail);
+        bottomPanel.add(comp.statistics);
+        bottomPanel.add(comp.returnPage);
+
+        comp.panel = bottomPanel;
+        return comp;
     }
 }
