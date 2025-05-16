@@ -63,8 +63,7 @@ public class CommonStyle {
         JLabel label = new JLabel("DAY-KEEPER", SwingConstants.CENTER);
         label.setFont(TITLE_FONT);
         label.setForeground(PRIMARY_COLOR);
-        // label.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); // 상단 여백 추가 공통
-        // 스타일로 추가할지 논의필요
+        label.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); // 상단 여백 추가 공통
         return label;
     }
 
@@ -83,6 +82,11 @@ public class CommonStyle {
         comp.pillDetail = new JButton("영양제 정보");
         comp.statistics = new JButton("통계");
         comp.returnPage = new JButton("돌아가기");
+
+        stylePrimaryButton(comp.todoDetail);
+        stylePrimaryButton(comp.pillDetail);
+        stylePrimaryButton(comp.statistics);
+        stylePrimaryButton(comp.returnPage);
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         bottomPanel.add(comp.todoDetail);
