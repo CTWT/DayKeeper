@@ -147,7 +147,7 @@ public class AddPillPanel extends JPanel {
     }
 
     // 이미지 생성
-    public ImageIcon createImageIcon(String name, int width, int height) {
+    private ImageIcon createImageIcon(String name, int width, int height) {
         Image image = ResourcesManager.getInst().getImagebyName(name);
         if (image != null) {
             Image scaledImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
@@ -158,7 +158,7 @@ public class AddPillPanel extends JPanel {
     }
 
     // DB insert
-    public void insertDrugToDB(String pillName, int amount) {
+    private void insertDrugToDB(String pillName, int amount) {
         try (Connection con = DBManager.getConnection()) {
             if(PillManager.getInst().getDataByName(pillName) != null)
             {

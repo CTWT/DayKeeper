@@ -155,6 +155,7 @@ public class PillManager {
         }
     }
 
+    //영양제 개수가 0이하인 데이터 삭제
     public void releaseData(){
         String sql = "SELECT pill_id, pillAmount FROM pill WHERE id = ?";
         String curUserId = "12345"; // 현재 사용자 ID (예시)
@@ -225,6 +226,12 @@ public class PillManager {
         return pillInfo.get(name).description;
     }
 
+    /**
+     * 영양제 설명을 이름으로 조회합니다.
+     *
+     * @param name 영양제 이름
+     * @return 영양제 팁에 대한 문자열
+     */
     public String getTip(String name) {
         if (!pillInfo.containsKey(name)) {
             System.out.println("영양제 정보가 없습니다: " + name);
@@ -233,6 +240,12 @@ public class PillManager {
         return pillInfo.get(name).intakeTip;
     }
 
+    /**
+     * 영양제 설명을 이름으로 조회합니다.
+     *
+     * @param id pill_id값
+     * @return 해당 id의 영양제 삭제
+     */
     public void deleteDataById(int id){
         if(pillsMap.containsKey(id)){
             pillsMap.remove(Integer.valueOf(id));
@@ -253,6 +266,12 @@ public class PillManager {
 
     }
 
+    /**
+     * 영양제 설명을 이름으로 조회합니다.
+     *
+     * @param name 영양제 이름
+     * @return 해당 이름의 영양제 삭제
+     */
     public void deleteDataByName(String name) {
         Iterator<PillDTO> iter = pillsMap.values().iterator();
         

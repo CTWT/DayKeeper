@@ -8,6 +8,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.*;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /*
@@ -15,6 +18,8 @@ import java.util.*;
  * 이름 : 임해균
  * 작성자 : 임해균
  * 수정자 : 임해균
+ * 작성일 : 2025.05.16
+ * 수정자 : 김관호
  * 작성일 : 2025.05.16
  * 파일명 : PillListPanel.java
  * 설명 : 전체 영양제 목록을 카드 형식으로 보여주는 패널
@@ -93,18 +98,30 @@ public class PillListPanel extends JPanel {
         homeBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "처음으로 돌아갑니다."));
         timeBtn.addActionListener(e -> app.showPanel("time"));
 
+        // 영양제를 이미 섭취했으면 메세지 띄우고 아니라면 영양제 섭취
         consumeBtn.addActionListener(e -> {
-            for (Integer id : pillsMap.keySet()) {
-                consumePill(id, 1);
-                updateCountLabel(id);
+            if (checkConsume()) {
+                JOptionPane.showMessageDialog(this, "오늘은 이미 영양제를 섭취했습니다.");
+            } else {
+                for (Integer id : pillsMap.keySet()) {
+                    consumePill(id, 1);
+                    updateCountLabel(id);
+                }
+                JOptionPane.showMessageDialog(this, "전체 영양제를 1개씩 섭취 처리했습니다.");
+                insertYnToDB();
+                app.showPanel("list");
             }
-            JOptionPane.showMessageDialog(this, "전체 영양제를 1개씩 섭취 처리했습니다.");
-            app.showPanel("list");
         });
 
         add(bottom, BorderLayout.SOUTH);
     }
 
+    /**
+     * 해당 id의 영양제에 대한 패널 리턴
+     *
+     * @param pillId 영양제 id
+     * @return 영양제 정보 패널
+     */
     private JPanel createPillCard(Integer pillId) {
         JPanel wrapper = new JPanel();
         wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
@@ -169,12 +186,23 @@ public class PillListPanel extends JPanel {
         return wrapper;
     }
 
+    /**
+     * 해당 id의 영양제의 개수를 감소시킵니다.
+     *
+     * @param pillId 영양제 id
+     */
     private void updateCountLabel(Integer pillId) {
         int updated = getPillAmount(pillId);
         countLabelMap.get(pillId).setText("남은 수량: " + updated);
     }
 
-    public void consumePill(Integer pillId, Integer amount) {
+    /**
+     * 해당 id의 영양제의 개수를 amount만큼 감소된 것을 db에 적용합니다.
+     *
+     * @param pillId 영양제 id
+     * @param amount 섭취할 개수
+     */
+    private void consumePill(Integer pillId, Integer amount) {
         try (Connection con = DBManager.getConnection()) {
             String sql = "UPDATE pill SET pillAmount = pillAmount - ? WHERE pill_id = ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
@@ -186,7 +214,13 @@ public class PillListPanel extends JPanel {
         }
     }
 
-    public Integer getPillAmount(Integer pillId) {
+    /**
+     * 해당 id의 영양제의 개수를 리턴합니다.
+     *
+     * @param pillId 영양제 id
+     * @return 영양제 개수
+     */
+    private Integer getPillAmount(Integer pillId) {
         try (Connection con = DBManager.getConnection()) {
             String sql = "SELECT pillAmount FROM pill WHERE pill_id = ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
@@ -199,5 +233,51 @@ public class PillListPanel extends JPanel {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    /**
+     * db에 YN데이터를 삽입합니다.
+     *
+     */
+    private void insertYnToDB() {
+        try (Connection con = DBManager.getConnection()) {
+            String sql = "INSERT INTO PILLYN(date, id, pillYn) values (?,?,?)";
+            PreparedStatement psmt = con.prepareStatement(sql);
+            LocalDateTime time = LocalDateTime.now();
+            Timestamp timestamp = Timestamp.valueOf(time);
+            psmt.setTimestamp(1, timestamp);
+            psmt.setString(2, "12345"); //Login.UserSearch.curUserId;
+            psmt.setString(3, "Y");
+            psmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 오늘 영양제를 섭취했는지 확인합니다.
+     *
+     */
+    private boolean checkConsume(){
+        try (Connection con = DBManager.getConnection()) {
+            String sql = "SELECT date, pillYn from PILLYN where id = ?";
+            PreparedStatement psmt = con.prepareStatement(sql);
+            psmt.setString(1, "12345"); //Login.UserSearch.curUserId;
+            ResultSet rs = psmt.executeQuery();
+            while(rs.next()){
+                Date ts = rs.getDate(1);
+                LocalDate curTime = LocalDate.now();
+                String Yn = rs.getString(2);
+                if(ts.toString().equals(curTime.toString())){
+                    if(Yn.equals("Y")){
+                        return true;
+                    }
+                }                
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

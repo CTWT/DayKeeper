@@ -93,6 +93,9 @@ public class PillDetailPanel extends JPanel {
 
     /**
      * 설명/복용 팁 박스 생성
+     * 
+     * @param title 제목
+     * @param content 문자열
      */
     private JPanel makeInfoBox(String title, String content) {
         if (content == null) content = "정보 없음";
@@ -136,6 +139,11 @@ public class PillDetailPanel extends JPanel {
         return 0;
     }
 
+    /**
+     * 현재 디테일 패널에 대한 영양제를 삭제합니다.
+     * 
+     * @param parent 부모패널
+     */
     private void deleteData(PillApp parent){
         PillManager.getInst().deleteDataById(parent.getDetailId());
     }
