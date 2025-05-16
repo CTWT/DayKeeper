@@ -11,9 +11,10 @@ import common.CommonStyle;
  * 수업명 : Project DayKeeper
  * 이름 : 임해균
  * 작성자 : 임해균
- * 수정일 : 2025.05.16
+ * 수정자 : 임해균
+ * 작성일 : 2025.05.16
  * 파일명 : TimeSettingPanel.java
- * 설명 : 원형 시계형 UI + 시간 선택 기능
+ * 설명 : 원형 시계형 UI + 마우스 방향 따라 움직이는 시계침 구현 + 선택 시 고정
  */
 
 public class TimeSettingPanel extends JPanel {
@@ -25,16 +26,13 @@ public class TimeSettingPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(CommonStyle.BACKGROUND_COLOR);
 
-        // 상단 제목
         JLabel title = CommonStyle.createTitleLabel();
         title.setText("복용 시간 시각화");
         add(title, BorderLayout.NORTH);
 
-        // 시계판
         ClockPanel clockPanel = new ClockPanel();
         add(clockPanel, BorderLayout.CENTER);
 
-        // 하단 버튼
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
 
@@ -64,11 +62,10 @@ public class TimeSettingPanel extends JPanel {
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
-    /**
-     * 시계판 내부 패널
-     */
     class ClockPanel extends JPanel {
         private HashMap<Integer, Point> hourPoints = new HashMap<>();
+        private Point mousePos = null;
+        private double fixedAngle = Double.NaN;
 
         public ClockPanel() {
             setPreferredSize(new Dimension(400, 400));
@@ -82,9 +79,21 @@ public class TimeSettingPanel extends JPanel {
                         Point p = hourPoints.get(i);
                         if (p != null && p.distance(click) < 20) {
                             selectedHour = i;
+                            double angle = Math.toRadians(i * 30 - 90);
+                            fixedAngle = angle;
                             repaint();
                             break;
                         }
+                    }
+                }
+            });
+
+            addMouseMotionListener(new MouseMotionAdapter() {
+                @Override
+                public void mouseMoved(MouseEvent e) {
+                    if (selectedHour == -1) {
+                        mousePos = e.getPoint();
+                        repaint();
                     }
                 }
             });
@@ -94,18 +103,17 @@ public class TimeSettingPanel extends JPanel {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             int cx = getWidth() / 2;
             int cy = getHeight() / 2;
             int radius = 140;
 
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
             // 배경 원
             g2.setColor(new Color(230, 240, 255));
             g2.fillOval(cx - radius, cy - radius, radius * 2, radius * 2);
 
-            // 숫자
+            // 숫자 배치
             g2.setFont(CommonStyle.BUTTON_FONT);
             hourPoints.clear();
 
@@ -113,7 +121,6 @@ public class TimeSettingPanel extends JPanel {
                 double angle = Math.toRadians(i * 30 - 90);
                 int tx = (int) (cx + Math.cos(angle) * (radius - 30));
                 int ty = (int) (cy + Math.sin(angle) * (radius - 30));
-
                 hourPoints.put(i, new Point(tx, ty));
 
                 if (selectedHour == i) {
@@ -130,6 +137,26 @@ public class TimeSettingPanel extends JPanel {
                 int strHeight = fm.getHeight();
                 g2.drawString(label, tx - strWidth / 2, ty + strHeight / 4);
             }
+
+            // 시계침 (마우스 or 고정)
+            if (!Double.isNaN(fixedAngle)) {
+                int hx = (int) (cx + Math.cos(fixedAngle) * (radius - 60));
+                int hy = (int) (cy + Math.sin(fixedAngle) * (radius - 60));
+                g2.setColor(new Color(100, 100, 220));
+                g2.setStroke(new BasicStroke(2));
+                g2.drawLine(cx, cy, hx, hy);
+            } else if (mousePos != null) {
+                double angle = Math.atan2(mousePos.y - cy, mousePos.x - cx);
+                int hx = (int) (cx + Math.cos(angle) * (radius - 60));
+                int hy = (int) (cy + Math.sin(angle) * (radius - 60));
+                g2.setColor(new Color(100, 100, 220));
+                g2.setStroke(new BasicStroke(2));
+                g2.drawLine(cx, cy, hx, hy);
+            }
+
+            // 중심 원
+            g2.setColor(Color.GRAY);
+            g2.fillOval(cx - 4, cy - 4, 8, 8);
         }
     }
 }
