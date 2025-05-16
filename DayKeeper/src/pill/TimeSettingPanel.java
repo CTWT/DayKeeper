@@ -2,36 +2,38 @@ package pill;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.util.HashMap;
 
 /*
  * 수업명 : Project DayKeeper
  * 이름 : 임해균
- * 작성자 : ChatGPT
- * 작성일 : 2025.05.16
+ * 작성자 : 임해균
+ * 수정일 : 2025.05.16
  * 파일명 : TimeSettingPanel.java
- * 설명 : 원형 시계형 UI + 시간 설정, 뒤로가기 버튼 포함 패널
+ * 설명 : 원형 시계형 UI + 시간 선택 기능
  */
 
 public class TimeSettingPanel extends JPanel {
     private SupApp parent;
+    private int selectedHour = -1;
 
     public TimeSettingPanel(SupApp parent) {
         this.parent = parent;
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
-        // 상단 타이틀
+        // 상단 제목
         JLabel title = new JLabel("복용 시간 시각화", SwingConstants.CENTER);
         title.setFont(new Font("맑은 고딕", Font.BOLD, 20));
         title.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         add(title, BorderLayout.NORTH);
 
-        // 중앙 원형 시계판
+        // 시계판 패널
         ClockPanel clockPanel = new ClockPanel();
         add(clockPanel, BorderLayout.CENTER);
 
-        // 하단 버튼 패널
+        // 하단 버튼
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(Color.WHITE);
 
@@ -41,8 +43,15 @@ public class TimeSettingPanel extends JPanel {
         setBtn.setPreferredSize(new Dimension(100, 35));
         backBtn.setPreferredSize(new Dimension(100, 35));
 
-        // 버튼 클릭 이벤트
-        setBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "시간 설정 완료"));
+        setBtn.addActionListener(e -> {
+            if (selectedHour >= 0) {
+                String msg = (selectedHour == 0 ? "12시" : selectedHour + "시") + "로 설정되었습니다.";
+                JOptionPane.showMessageDialog(this, msg);
+            } else {
+                JOptionPane.showMessageDialog(this, "시간을 선택해주세요.");
+            }
+        });
+
         backBtn.addActionListener(e -> parent.showPanel("list"));
 
         bottomPanel.add(setBtn);
@@ -51,12 +60,29 @@ public class TimeSettingPanel extends JPanel {
     }
 
     /**
-     * 중앙 원형 시계 모양 타임테이블 컴포넌트
+     * 중앙 시계 원형 UI + 클릭 가능한 시간 숫자
      */
     class ClockPanel extends JPanel {
+        private HashMap<Integer, Point> hourPoints = new HashMap<>();
+
         public ClockPanel() {
             setPreferredSize(new Dimension(400, 400));
             setBackground(Color.WHITE);
+
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    Point click = e.getPoint();
+                    for (int i = 0; i < 12; i++) {
+                        Point p = hourPoints.get(i);
+                        if (p != null && p.distance(click) < 20) {
+                            selectedHour = i;
+                            repaint();
+                            break;
+                        }
+                    }
+                }
+            });
         }
 
         @Override
@@ -66,23 +92,39 @@ public class TimeSettingPanel extends JPanel {
 
             int cx = getWidth() / 2;
             int cy = getHeight() / 2;
-            int radius = 150;
+            int radius = 140;
 
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(new Color(220, 220, 255));
+
+            // 배경 원
+            g2.setColor(new Color(230, 240, 255));
             g2.fillOval(cx - radius, cy - radius, radius * 2, radius * 2);
 
-            g2.setColor(Color.DARK_GRAY);
-            g2.setFont(new Font("맑은 고딕", Font.BOLD, 12));
+            // 시간 숫자
+            g2.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+            hourPoints.clear();
 
-            // 12개 시간 표시 (1시 ~ 12시)
             for (int i = 0; i < 12; i++) {
-                double angle = Math.toRadians((i * 30) - 90); // 0도 기준 12시
+                double angle = Math.toRadians(i * 30 - 90);
                 int tx = (int) (cx + Math.cos(angle) * (radius - 30));
                 int ty = (int) (cy + Math.sin(angle) * (radius - 30));
+
+                hourPoints.put(i, new Point(tx, ty));
+
+                // 선택된 시간 하이라이트
+                if (selectedHour == i) {
+                    g2.setColor(new Color(100, 150, 255));
+                    g2.fillOval(tx - 18, ty - 18, 36, 36);
+                    g2.setColor(Color.WHITE);
+                } else {
+                    g2.setColor(Color.DARK_GRAY);
+                }
+
                 String label = (i == 0 ? "12시" : i + "시");
-                int strWidth = g2.getFontMetrics().stringWidth(label);
-                g2.drawString(label, tx - strWidth / 2, ty + 5);
+                FontMetrics fm = g2.getFontMetrics();
+                int strWidth = fm.stringWidth(label);
+                int strHeight = fm.getHeight();
+                g2.drawString(label, tx - strWidth / 2, ty + strHeight / 4);
             }
         }
     }
