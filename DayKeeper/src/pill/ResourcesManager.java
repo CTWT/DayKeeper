@@ -27,8 +27,7 @@ public class ResourcesManager {
     }
 
     private void loadResources() {
-        HashMap<String, String> pillsMap = PillManager.getInst().getPillInfo();
-        Iterator<String> iterator = pillsMap.keySet().iterator();
+        Iterator<String> iterator = PillManager.getInst().getPillInfo().keySet().iterator();
 
         while (iterator.hasNext()) {
             String name = iterator.next();
