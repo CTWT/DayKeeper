@@ -2,51 +2,54 @@ package pill;
 
 import javax.swing.*;
 import dbConnection.DBManager;
+import common.CommonStyle;
+
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
 /*
  * 수업명 : Project DayKeeper
  * 이름 : 임해균
  * 작성자 : 임해균
- * 수정자 : ChatGPT
- * 수정일 : 2025.05.16
- * 파일명 : SupplementListPanel.java
- * 설명 : 영양제 목록 패널. 카드 UI 및 하단 버튼 구성. 시간 설정 버튼 추가.
+ * 수정자 : 임해균
+ * 작성일 : 2025.05.16
+ * 파일명 : PillListPanel.java
+ * 설명 : 전체 영양제 목록을 카드 형식으로 보여주는 패널
+ *       - 클릭 선택 기능 제거
+ *       - 이미지 클릭 시 상세 보기 전환
+ *       - '영양제 섭취' 버튼 누르면 전체 약 수량 -1 처리
  */
 
-public class SupplementListPanel extends JPanel {
-    private SupApp app;
+public class PillListPanel extends JPanel {
+    private PillApp app;
+    private Map<Integer, JLabel> countLabelMap = new HashMap<>();
 
-    public SupplementListPanel(SupApp app) {
+    public PillListPanel(PillApp app) {
         this.app = app;
 
-        // DB에서 데이터 불러오기
         PillManager.getInst().loadDBData();
 
         setLayout(new BorderLayout());
-        setBackground(new Color(245, 245, 245));
+        setBackground(CommonStyle.BACKGROUND_COLOR);
 
-        // [상단 제목]
-        JLabel title = new JLabel("등록된 영양제", SwingConstants.CENTER);
-        title.setFont(new Font("맑은 고딕", Font.BOLD, 22));
-        title.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
+        // 상단 제목
+        JLabel title = CommonStyle.createTitleLabel();
+        title.setText("등록된 영양제");
         add(title, BorderLayout.NORTH);
 
-        // [카드 그리드 영역]
+        // 카드 그리드 패널
         JPanel gridPanel = new JPanel(new GridBagLayout());
-        gridPanel.setBackground(new Color(245, 245, 245));
+        gridPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.NORTHWEST;
 
         HashMap<Integer, PillDTO> pillsMap = PillManager.getInst().getPillsMap();
-        Iterator<Integer> iterator = pillsMap.keySet().iterator();
         int col = 0, row = 0;
-        while (iterator.hasNext()) {
-            Integer id = iterator.next();
+        for (Integer id : pillsMap.keySet()) {
             gbc.gridx = col;
             gbc.gridy = row;
             gridPanel.add(createPillCard(id), gbc);
@@ -57,9 +60,9 @@ public class SupplementListPanel extends JPanel {
             }
         }
 
-        // [스크롤 가능한 중앙 패널]
+        // 스크롤 가능 중앙 패널
         JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        centerPanel.setBackground(new Color(245, 245, 245));
+        centerPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
         centerPanel.add(gridPanel);
 
         JScrollPane scrollPane = new JScrollPane(centerPanel);
@@ -67,54 +70,69 @@ public class SupplementListPanel extends JPanel {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getHorizontalScrollBar().setPreferredSize(new Dimension(0, 0));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(40);
         add(scrollPane, BorderLayout.CENTER);
 
-        // [하단 버튼 영역]
-        JPanel bottom = new JPanel();
-        bottom.setBackground(new Color(245, 245, 245));
+        // 하단 버튼
+        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 15));
+        bottom.setBackground(CommonStyle.BACKGROUND_COLOR);
 
         JButton addBtn = new JButton("➕ 추가");
         JButton homeBtn = new JButton("🏠 처음으로");
-        JButton timeBtn = new JButton("⏱ 시간 설정"); // ✅ 추가된 버튼
+        JButton timeBtn = new JButton("⏱ 시간 설정");
+        JButton consumeBtn = new JButton("💊 영양제 섭취");
 
-        Font btnFont = new Font("맑은 고딕", Font.PLAIN, 13);
-        addBtn.setFont(btnFont);
-        homeBtn.setFont(btnFont);
-        timeBtn.setFont(btnFont);
+        for (JButton btn : Arrays.asList(addBtn, homeBtn, timeBtn, consumeBtn)) {
+            btn.setFont(CommonStyle.TEXT_FONT);
+            CommonStyle.stylePrimaryButton(btn);
+            bottom.add(btn);
+        }
 
         addBtn.addActionListener(e -> app.showPanel("add"));
         homeBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "처음으로 돌아갑니다."));
-        timeBtn.addActionListener(e -> app.showPanel("time")); // ⚠️ 다음 단계에서 구현할 패널
+        timeBtn.addActionListener(e -> app.showPanel("time"));
 
-        bottom.add(addBtn);
-        bottom.add(homeBtn);
-        bottom.add(timeBtn);
+        consumeBtn.addActionListener(e -> {
+            for (Integer id : pillsMap.keySet()) {
+                consumePill(id, 1);
+                updateCountLabel(id);
+            }
+            JOptionPane.showMessageDialog(this, "전체 영양제를 1개씩 섭취 처리했습니다.");
+        });
 
         add(bottom, BorderLayout.SOUTH);
     }
 
-    /**
-     * 영양제 카드 하나 생성
-     */
     private JPanel createPillCard(Integer pillId) {
         JPanel wrapper = new JPanel();
         wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
-        wrapper.setBackground(new Color(245, 245, 245));
+        wrapper.setBackground(CommonStyle.BACKGROUND_COLOR);
         wrapper.setPreferredSize(new Dimension(160, 200));
 
         String pillName = PillManager.getInst().getDataById(pillId).getPillName();
         int amount = getPillAmount(pillId);
-        int[] count = {amount};
 
-        JPanel labelPanel = new JPanel(new BorderLayout());
-        labelPanel.setBackground(new Color(245, 245, 245));
-        JLabel nameLabel = new JLabel(pillName);
-        nameLabel.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-        JLabel countLabel = new JLabel("남은 수량: " + count[0]);
-        countLabel.setFont(new Font("맑은 고딕", Font.BOLD, 13));
-        labelPanel.add(nameLabel, BorderLayout.WEST);
-        labelPanel.add(countLabel, BorderLayout.EAST);
+        // 약 이름 + 수량
+        JPanel labelPanel = new JPanel();
+        labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.Y_AXIS));
+        labelPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
+        labelPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
+        JLabel nameLabel = new JLabel(pillName, SwingConstants.CENTER);
+        nameLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel countLabel = new JLabel("남은 수량: " + amount, SwingConstants.CENTER);
+        countLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        countLabel.setForeground(CommonStyle.PRIMARY_COLOR);
+        countLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        countLabelMap.put(pillId, countLabel);
+
+        labelPanel.add(nameLabel);
+        labelPanel.add(Box.createVerticalStrut(3));
+        labelPanel.add(countLabel);
+
+        // 이미지 카드
         JPanel card = new JPanel(null);
         card.setPreferredSize(new Dimension(150, 150));
         card.setBackground(Color.WHITE);
@@ -126,37 +144,16 @@ public class SupplementListPanel extends JPanel {
             JLabel iconLabel = new JLabel(new ImageIcon(scaledImage));
             iconLabel.setBounds(2, 2, 145, 145);
 
-            iconLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            iconLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            iconLabel.addMouseListener(new MouseAdapter() {
                 @Override
-                public void mouseClicked(java.awt.event.MouseEvent e) {
+                public void mouseClicked(MouseEvent e) {
                     app.setDetailId(pillId);
                     app.showPanel("detail");
                 }
             });
 
-            JCheckBox checkBox = new JCheckBox();
-            checkBox.setBounds(120, 8, 22, 22);
-            checkBox.setOpaque(true);
-            checkBox.setBackground(Color.WHITE);
-            checkBox.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
-            checkBox.setToolTipText("복용 체크");
-
-            checkBox.addActionListener(e -> {
-                if (count[0] > 0) {
-                    count[0]--;
-                    countLabel.setText("남은 수량: " + count[0]);
-                } else {
-                    JOptionPane.showMessageDialog(card, "더 이상 수량이 없습니다.");
-                }
-                checkBox.setSelected(true);
-                checkBox.setEnabled(false);
-                consumePill(pillId, 1);
-            });
-
             card.add(iconLabel);
-            card.add(checkBox);
-            card.setComponentZOrder(checkBox, 0);
-
         } catch (Exception e) {
             JLabel errorLabel = new JLabel("이미지 없음", SwingConstants.CENTER);
             errorLabel.setBounds(10, 60, 130, 30);
@@ -170,9 +167,11 @@ public class SupplementListPanel extends JPanel {
         return wrapper;
     }
 
-    /**
-     * DB에 수량 차감 반영
-     */
+    private void updateCountLabel(Integer pillId) {
+        int updated = getPillAmount(pillId);
+        countLabelMap.get(pillId).setText("남은 수량: " + updated);
+    }
+
     public void consumePill(Integer pillId, Integer amount) {
         try (Connection con = DBManager.getConnection()) {
             String sql = "UPDATE pill SET pillAmount = pillAmount - ? WHERE pill_id = ?";
@@ -180,15 +179,11 @@ public class SupplementListPanel extends JPanel {
             pstmt.setInt(1, amount);
             pstmt.setInt(2, pillId);
             pstmt.executeUpdate();
-            pstmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * 현재 수량 조회
-     */
     public Integer getPillAmount(Integer pillId) {
         try (Connection con = DBManager.getConnection()) {
             String sql = "SELECT pillAmount FROM pill WHERE pill_id = ?";
@@ -198,10 +193,9 @@ public class SupplementListPanel extends JPanel {
             if (rs.next()) {
                 return rs.getInt("pillAmount");
             }
-            pstmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return 0;
     }
 }

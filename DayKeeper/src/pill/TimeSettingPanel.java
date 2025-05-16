@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
 
+import common.CommonStyle;
+
 /*
  * 수업명 : Project DayKeeper
  * 이름 : 임해균
@@ -15,33 +17,36 @@ import java.util.HashMap;
  */
 
 public class TimeSettingPanel extends JPanel {
-    private SupApp parent;
+    private PillApp parent;
     private int selectedHour = -1;
 
-    public TimeSettingPanel(SupApp parent) {
+    public TimeSettingPanel(PillApp parent) {
         this.parent = parent;
         setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
+        setBackground(CommonStyle.BACKGROUND_COLOR);
 
         // 상단 제목
-        JLabel title = new JLabel("복용 시간 시각화", SwingConstants.CENTER);
-        title.setFont(new Font("맑은 고딕", Font.BOLD, 20));
-        title.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
+        JLabel title = CommonStyle.createTitleLabel();
+        title.setText("복용 시간 시각화");
         add(title, BorderLayout.NORTH);
 
-        // 시계판 패널
+        // 시계판
         ClockPanel clockPanel = new ClockPanel();
         add(clockPanel, BorderLayout.CENTER);
 
         // 하단 버튼
         JPanel bottomPanel = new JPanel();
-        bottomPanel.setBackground(Color.WHITE);
+        bottomPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
 
         JButton setBtn = new JButton("시간 설정");
         JButton backBtn = new JButton("뒤로");
 
         setBtn.setPreferredSize(new Dimension(100, 35));
         backBtn.setPreferredSize(new Dimension(100, 35));
+
+        CommonStyle.stylePrimaryButton(setBtn);
+        backBtn.setFont(CommonStyle.TEXT_FONT);
+        backBtn.setBackground(Color.LIGHT_GRAY);
 
         setBtn.addActionListener(e -> {
             if (selectedHour >= 0) {
@@ -60,14 +65,14 @@ public class TimeSettingPanel extends JPanel {
     }
 
     /**
-     * 중앙 시계 원형 UI + 클릭 가능한 시간 숫자
+     * 시계판 내부 패널
      */
     class ClockPanel extends JPanel {
         private HashMap<Integer, Point> hourPoints = new HashMap<>();
 
         public ClockPanel() {
             setPreferredSize(new Dimension(400, 400));
-            setBackground(Color.WHITE);
+            setBackground(CommonStyle.BACKGROUND_COLOR);
 
             addMouseListener(new MouseAdapter() {
                 @Override
@@ -100,8 +105,8 @@ public class TimeSettingPanel extends JPanel {
             g2.setColor(new Color(230, 240, 255));
             g2.fillOval(cx - radius, cy - radius, radius * 2, radius * 2);
 
-            // 시간 숫자
-            g2.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+            // 숫자
+            g2.setFont(CommonStyle.BUTTON_FONT);
             hourPoints.clear();
 
             for (int i = 0; i < 12; i++) {
@@ -111,7 +116,6 @@ public class TimeSettingPanel extends JPanel {
 
                 hourPoints.put(i, new Point(tx, ty));
 
-                // 선택된 시간 하이라이트
                 if (selectedHour == i) {
                     g2.setColor(new Color(100, 150, 255));
                     g2.fillOval(tx - 18, ty - 18, 36, 36);

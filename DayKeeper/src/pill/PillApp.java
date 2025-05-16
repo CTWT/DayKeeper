@@ -15,21 +15,21 @@ import javax.swing.SwingUtilities;
  * 설명 : 전체 화면을 관리하는 메인 프레임 (CardLayout을 이용한 화면 전환 포함)
  */
 
-public class SupApp extends JFrame {
+public class PillApp extends JFrame {
 
     private CardLayout cardLayout;   // 화면 전환 레이아웃
     private JPanel mainPanel;        // 전체 화면을 담는 메인 패널
 
     // 각 화면 패널
-    private SupplementListPanel listPanel;
-    private SupplementDetailPanel detailPanel;
-    private AddSupplementPanel addPanel;
+    private PillListPanel listPanel;
+    private PillDetailPanel detailPanel;
+    private AddPillPanel addPanel;
     private TimeSettingPanel timePanel; // ✅ 추가된 시간 설정 패널
 
     /**
      * 생성자: 프레임 기본 설정 및 초기 화면 설정
      */
-    public SupApp() {
+    public PillApp() {
         setTitle("daykeeper");
         setSize(800, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -61,15 +61,15 @@ public class SupApp extends JFrame {
     private void updatePanel(String name) {
         switch (name) {
             case "list":
-                listPanel = new SupplementListPanel(this);
+                listPanel = new PillListPanel(this);
                 mainPanel.add(listPanel, "list");
                 break;
             case "detail":
-                detailPanel = new SupplementDetailPanel(this);
+                detailPanel = new PillDetailPanel(this);
                 mainPanel.add(detailPanel, "detail");
                 break;
             case "add":
-                addPanel = new AddSupplementPanel(this);
+                addPanel = new AddPillPanel(this);
                 mainPanel.add(addPanel, "add");
                 break;
             case "time":
@@ -85,7 +85,7 @@ public class SupApp extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            new SupApp().setVisible(true);
+            new PillApp().setVisible(true);
         });
     }
 

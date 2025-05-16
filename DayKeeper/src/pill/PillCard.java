@@ -5,21 +5,23 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import common.CommonStyle;
+
 /*
  * 수업명 : Project DayKeeper
  * 이름 : 임해균
  * 작성자 : 임해균
- * 작성일 : 25.05.14
- * 파일명 : SupplementCard.java
+ * 수정일 : 25.05.16
+ * 파일명 : PillCard.java
  * 설명 : 개별 영양제 카드 구성 (이미지 + 이름 + 클릭 이벤트)
  */
 
-public class SupplementCard extends JPanel {
+public class PillCard extends JPanel {
 
-    public SupplementCard(String name, ImageIcon image, Runnable onClick) {
+    public PillCard(String name, ImageIcon image, Runnable onClick) {
         setPreferredSize(new Dimension(200, 220));
         setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
+        setBackground(CommonStyle.BACKGROUND_COLOR);
         setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -32,7 +34,7 @@ public class SupplementCard extends JPanel {
 
         // 이름 라벨
         JLabel nameLabel = new JLabel(name);
-        nameLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        nameLabel.setFont(CommonStyle.BUTTON_FONT); // 강조용
         nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nameLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 

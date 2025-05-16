@@ -4,6 +4,8 @@ import java.awt.*;
 import java.sql.*;
 import javax.swing.*;
 import javax.swing.border.*;
+
+import common.CommonStyle;
 import dbConnection.DBManager;
 
 /*
@@ -11,40 +13,36 @@ import dbConnection.DBManager;
  * 이름 : 임해균
  * 작성자 : 임해균
  * 수정일 : 2025.05.16
- * 파일명 : SupplementDetailPanel.java
+ * 파일명 : PillDetailPanel.java
  * 설명 : 영양제 상세 보기 화면. 이미지, 설명, 복용팁 출력 및 뒤로/삭제 버튼 제공
  */
 
-public class SupplementDetailPanel extends JPanel {
-    private SupApp parent;
+public class PillDetailPanel extends JPanel {
+    private PillApp parent;
 
-    /**
-     * 생성자 - 상세 보기 화면 구성
-     * @param parent 메인 앱 프레임
-     */
-    public SupplementDetailPanel(SupApp parent) {
+    public PillDetailPanel(PillApp parent) {
         this.parent = parent;
         setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
+        setBackground(CommonStyle.BACKGROUND_COLOR);
 
         Integer pillId = parent.getDetailId();
         PillDTO dto = PillManager.getInst().getDataById(pillId);
         String pillName = dto.getPillName();
         int amount = getPillAmountFromDB(pillId);
 
-        // [1] 상단 제목
+        // 상단 제목
         JLabel titleLabel = new JLabel(pillName + " (" + amount + "개 남음)", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("맑은 고딕", Font.BOLD, 22));
-        titleLabel.setForeground(new Color(50, 70, 160));
+        titleLabel.setFont(CommonStyle.TITLE_FONT);
+        titleLabel.setForeground(CommonStyle.PRIMARY_COLOR);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         add(titleLabel, BorderLayout.NORTH);
 
-        // [2] 중앙 내용
+        // 중앙 내용
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        centerPanel.setBackground(Color.WHITE);
+        centerPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
 
-        // 이미지 출력
+        // 이미지
         JLabel imageLabel = new JLabel();
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         try {
@@ -60,50 +58,47 @@ public class SupplementDetailPanel extends JPanel {
         centerPanel.add(imageLabel);
         centerPanel.add(Box.createVerticalStrut(20));
 
-        // 설명 + 팁
+        // 설명 / 팁
         centerPanel.add(makeInfoBox("약 설명", PillManager.getInst().getDescription(pillName)));
         centerPanel.add(Box.createVerticalStrut(10));
         centerPanel.add(makeInfoBox("복용 팁", PillManager.getInst().getTip(pillName)));
 
         add(centerPanel, BorderLayout.CENTER);
 
-        // [3] 하단 버튼
+        // 하단 버튼
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
-        btnPanel.setBackground(Color.WHITE);
+        btnPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
 
         JButton backBtn = new JButton("뒤로");
         JButton deleteBtn = new JButton("삭제");
 
-        for (JButton btn : new JButton[]{backBtn, deleteBtn}) {
-            btn.setPreferredSize(new Dimension(90, 35));
-            btn.setFocusPainted(false);
-            btn.setFont(new Font("맑은 고딕", Font.PLAIN, 13));
-        }
-
-        backBtn.setBackground(new Color(230, 240, 255));
-        deleteBtn.setBackground(new Color(255, 230, 230));
+        CommonStyle.stylePrimaryButton(backBtn);
+        backBtn.setPreferredSize(new Dimension(90, 35));
         backBtn.addActionListener(e -> parent.showPanel("list"));
+
+        deleteBtn.setPreferredSize(new Dimension(90, 35));
+        deleteBtn.setFont(CommonStyle.TEXT_FONT);
+        deleteBtn.setBackground(new Color(255, 230, 230));
+        deleteBtn.setFocusPainted(false);
 
         btnPanel.add(backBtn);
         btnPanel.add(deleteBtn);
+
         add(btnPanel, BorderLayout.SOUTH);
     }
 
     /**
-     * 설명/복용 팁을 예쁘게 감싸는 박스 생성
-     * @param title 박스 제목
-     * @param content 박스 내용
-     * @return JPanel 박스
+     * 설명/복용 팁 박스 생성
      */
     private JPanel makeInfoBox(String title, String content) {
         if (content == null) content = "정보 없음";
 
         JPanel box = new JPanel(new BorderLayout());
-        box.setBackground(Color.WHITE);
+        box.setBackground(CommonStyle.BACKGROUND_COLOR);
         box.setMaximumSize(new Dimension(500, 90));
 
         JTextArea text = new JTextArea(content);
-        text.setFont(new Font("맑은 고딕", Font.PLAIN, 13));
+        text.setFont(CommonStyle.TEXT_FONT);
         text.setLineWrap(true);
         text.setWrapStyleWord(true);
         text.setEditable(false);
@@ -113,7 +108,7 @@ public class SupplementDetailPanel extends JPanel {
         TitledBorder border = BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(new Color(200, 200, 200)),
             title, TitledBorder.LEFT, TitledBorder.TOP,
-            new Font("맑은 고딕", Font.BOLD, 13), new Color(80, 80, 80)
+            CommonStyle.BUTTON_FONT, new Color(80, 80, 80)
         );
 
         box.setBorder(border);
@@ -122,9 +117,7 @@ public class SupplementDetailPanel extends JPanel {
     }
 
     /**
-     * DB에서 영양제 수량 가져오기
-     * @param pillId 영양제 ID
-     * @return 수량(int)
+     * DB에서 수량 조회
      */
     private int getPillAmountFromDB(Integer pillId) {
         try (Connection con = DBManager.getConnection()) {
@@ -133,7 +126,6 @@ public class SupplementDetailPanel extends JPanel {
             pstmt.setInt(1, pillId);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) return rs.getInt("pillAmount");
-            pstmt.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
