@@ -1,6 +1,7 @@
 package statistics;
 
 import common.CommonStyle;
+import config.BaseFrame;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -10,13 +11,11 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
 import java.awt.Font;
@@ -141,29 +140,31 @@ public class Statistics extends JPanel {
         medRate.setFont(CommonStyle.BUTTON_FONT); // 공용 버튼 폰트
         add(medRate); // 패널에 추가
 
-        // 오른쪽 아래 '홈으로' 버튼 생성 및 위치 지정 / 이후 공용 스타일로 하단레이아웃에 고정 예정
-        JButton exitButton = new JButton("홈으로");
-        exitButton.setBounds(650, 500, 80, 40);
-        CommonStyle.stylePrimaryButton(exitButton); // 공통 스타일 적용
-        exitButton.addActionListener(e -> {
-            // TODO: 홈 화면으로 돌아가는 기능 구현 예정
-            // 예: BaseFrame.showScreen(...) 호출 또는 현재 프레임 dispose() 호출
+        // 하단 버튼 구성 요소 받기
+        CommonStyle.BottomPanelComponents bottom = CommonStyle.createBottomPanel();
+
+        // 버튼 이벤트 지정
+        bottom.todoDetail.addActionListener(e -> {
+            System.out.println("오늘할일상세보기 클릭됨");
         });
-        add(exitButton); // 패널에 추가
+        bottom.pillDetail.addActionListener(e -> {
+            System.out.println("영양제 정보 클릭됨");
+        });
+        // 통계 버튼 비활성화
+        bottom.statistics.setVisible(false);
+        // '돌아가기' 버튼
+        bottom.returnPage.setVisible(true);
+
+        // 화면에 추가
+        bottom.panel.setBounds(0, 520, 800, 70); // 위치 조정
+        add(bottom.panel);
     }
 
-    // 테스트용 메인 메서드 - 단독 실행 시 이 클래스를 JFrame에 띄움
+    // 테스트용 메인 메서드
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("통계 테스트");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(800, 600);
-            frame.setLocationRelativeTo(null); // 화면 중앙 배치
-
-            Statistics panel = new Statistics();
-            frame.setContentPane(panel); // 프레임에 Statistics 패널 올리기
-
-            frame.setVisible(true); // 화면에 표시
-        });
+        BaseFrame b = new BaseFrame();
+        Statistics s = new Statistics();
+        b.setContentPane(s);
+        b.setVisible(true);
     }
 }
