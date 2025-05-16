@@ -5,9 +5,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
-import java.util.Map;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -15,61 +18,44 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-/*
- * 수업명 : Project DayKeeper
- * 이름 : 임해균
- * 작성자 : 임해균
- * 수정자 : 김관호
- * 수정일 : 2025.05.15
- * 파일명 : SupplementDetailPanel.java
- * 설명 : 영양제를 클릭했을 때 디테일정보들이 나오는 패널
- */
+import dbConnection.DBManager;
 
-/**
- * SupplementDetailPanel
- * 영양제 상세 정보를 표시하는 패널
- */
 public class SupplementDetailPanel extends JPanel {
-    private JLabel nameLabel;                // 영양제 이름 라벨
-    private JLabel imageLabel;               // 영양제 이미지 라벨
-    private JLabel descriptionLabel;         // 영양제 설명 라벨
-    private SupApp parent;                   // 상위 애플리케이션 참조
-    private Map<String, String> supplementDescriptions; // 영양제 설명 저장 맵
+    private JLabel nameLabel;
+    private JLabel imageLabel = new JLabel(); // null 방지용
+    private JLabel descriptionLabel;
+    private SupApp parent;
 
-    /**
-     * 생성자: 패널 초기화
-     * @param parent 상위 애플리케이션
-     */
     public SupplementDetailPanel(SupApp parent) {
         this.parent = parent;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.WHITE);
 
-        // 이름 라벨 초기화
+        // 영양제 정보 가져오기
         PillDTO dto = PillManager.getInst().getDataById(parent.getDetailId());
         String pillName = dto.getPillName();
+        int amount = getPillAmountFromDB(parent.getDetailId());
 
-        nameLabel = new JLabel(pillName, SwingConstants.CENTER);
+        // 이름 + 수량 표시
+        nameLabel = new JLabel(pillName + " (" + amount + "개 남음)", SwingConstants.CENTER);
         nameLabel.setFont(new Font("맑은 고딕", Font.BOLD, 20));
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         nameLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         add(nameLabel);
 
+        // 이미지 표시
         try {
-            // 이미지 불러오기
             Image image = ResourcesManager.getInst().getImagebyName(pillName);
-            // 크기 조정
             Image scaledImage = image.getScaledInstance(200, 150, Image.SCALE_SMOOTH);
-            // 다시 ImageIcon으로 감싸기
-            JLabel iconLabel = new JLabel(new ImageIcon(scaledImage));
-
-            add(iconLabel);
+            imageLabel.setIcon(new ImageIcon(scaledImage));
         } catch (Exception e) {
             System.out.println("이미지 로드 오류: " + e.getMessage());
             imageLabel.setText("이미지 없음");
         }
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(imageLabel);
 
-        // 설명 라벨 초기화
+        // 설명 표시
         String description = PillManager.getInst().getDescription(pillName);
         descriptionLabel = new JLabel("<html><div style='text-align:center;'>" + description + "</div></html>");
         descriptionLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
@@ -77,40 +63,44 @@ public class SupplementDetailPanel extends JPanel {
         descriptionLabel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         add(descriptionLabel);
 
-        // 뒤로가기 버튼 초기화
-        JButton backButton = new JButton("뒤로");
-        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        backButton.setPreferredSize(new Dimension(80, 30));
-        backButton.setMaximumSize(new Dimension(80, 30));
+        // 버튼 패널 (뒤로 + 삭제)
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.setMaximumSize(new Dimension(200, 40));
 
-        // 뒤로가기 버튼 클릭 시 패널 전환
+        JButton backButton = new JButton("뒤로");
+        backButton.setPreferredSize(new Dimension(80, 30));
         backButton.addActionListener(e -> parent.showPanel("list"));
-        add(backButton);
+        buttonPanel.add(backButton);
+
+        JButton deleteButton = new JButton("삭제");
+        deleteButton.setPreferredSize(new Dimension(80, 30));
+        // 삭제 기능은 아직 없음
+        buttonPanel.add(deleteButton);
+
+        add(Box.createVerticalStrut(10));
+        buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(buttonPanel);
     }
 
-    /**
-     * 영양제 정보 로드 메서드
-     * @param name 영양제 이름
-     */
-    public void loadSupplementInfo(String name) {
-        // 이름 라벨에 영양제 이름 설정
-        nameLabel.setText(name);
-
-        // 이미지 로드
-        ImageIcon icon = new ImageIcon("img/" + name + ".png");
-        if (icon.getIconWidth() > 0) {
-            // 이미지 크기 조정
-            Image scaled = icon.getImage().getScaledInstance(200, 150, Image.SCALE_SMOOTH);
-            imageLabel.setIcon(new ImageIcon(scaled));
-            imageLabel.setText(""); // 텍스트 제거
-        } else {
-            // 이미지가 없는 경우
-            imageLabel.setIcon(null);
-            imageLabel.setText("이미지 없음");
+    // DB에서 수량 가져오는 메서드
+    private int getPillAmountFromDB(Integer pillId) {
+        try (Connection con = DBManager.getConnection()) {
+            String sql = "SELECT pillAmount FROM pill WHERE pill_id = ?";
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, pillId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("pillAmount");
+            }
+            pstmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return 0;
+    }
 
-        // 설명 설정
-        String desc = supplementDescriptions.getOrDefault(name, "해당 약에 대한 설명이 없습니다.");
-        descriptionLabel.setText("<html><div style='text-align:center;'>" + desc + "</div></html>");
+    public void loadSupplementInfo(String name) {
+        // 여기서는 나중에 필요한 경우 동적으로 재로딩할 때 사용할 수 있음
     }
 }
