@@ -41,7 +41,7 @@ public class Statistics extends JPanel {
 
         // 상단 타이틀 라벨 생성 및 위치 지정
         JLabel titleLabel = CommonStyle.createTitleLabel();
-        titleLabel.setBounds(250, 10, 300, 35);
+        titleLabel.setBounds(250, -10, 300, 55);
         add(titleLabel); // 패널에 추가
 
         // 차트 데이터셋 생성 (테스트용 하드코딩된 값, 추후 DB 연동 시 교체 예정)
@@ -130,13 +130,13 @@ public class Statistics extends JPanel {
 
         // 총 투두리스트 달성도 라벨 생성 및 위치 지정 / 이후 DB연동과 달성도에 따라 칭호 및 이펙트 추가 예정
         JLabel todoRate = new JLabel("투두리스트 총 달성도: 80%", SwingConstants.LEFT);
-        todoRate.setBounds(50, 450, 300, 30);
+        todoRate.setBounds(40, 435, 300, 30);
         todoRate.setFont(CommonStyle.BUTTON_FONT); // 공용 버튼 폰트
         add(todoRate); // 패널에 추가
 
         // 총 복약률 달성도 라벨 생성 및 위치 지정 / 이후 DB연동과 달성도에 따라 칭호 및 이펙트 추가 예정
         JLabel medRate = new JLabel("복약률 총 달성도: 90%", SwingConstants.LEFT);
-        medRate.setBounds(50, 490, 300, 30);
+        medRate.setBounds(40, 460, 300, 30);
         medRate.setFont(CommonStyle.BUTTON_FONT); // 공용 버튼 폰트
         add(medRate); // 패널에 추가
 
@@ -156,7 +156,7 @@ public class Statistics extends JPanel {
         bottom.returnPage.setVisible(true);
 
         // 화면에 추가
-        bottom.panel.setBounds(0, 520, 800, 70); // 위치 조정
+        bottom.panel.setBounds(0, 500, 800, 70); // 위치 조정
         add(bottom.panel);
     }
 
