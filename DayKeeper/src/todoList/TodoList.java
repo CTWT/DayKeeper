@@ -1,23 +1,20 @@
 package todoList;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 
 import common.CommonStyle;
-
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Component;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import config.BaseFrame;
 
 /*
@@ -92,7 +89,7 @@ public class TodoList extends JPanel {
         });
 
         // '돌아가기' 버튼은 이 화면에서 숨김
-        bottom.returnPage.setVisible(false);
+        // bottom.returnPage.setVisible(false);
 
         // 화면에 추가
         add(bottom.panel, BorderLayout.SOUTH);
