@@ -34,7 +34,7 @@ import java.awt.event.MouseEvent;
  * 파일명 : TodoDetail.java
  * 수정자 : 
  * 수정일 :
- * 설명 : todo list 화면 구현
+ * 설명 : todo list 화면 구현 (절대 삭제하면 안됨-> 구현 되는 코드)
  */
 
 public class TodoDetail extends JFrame {
@@ -74,9 +74,9 @@ public class TodoDetail extends JFrame {
     private JTextArea detailContentArea;
 
     public TodoDetail() {
-        setTitle("daykeeper");
+        setTitle("DAY-KEEPER");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(500, 400);
+        setSize(800, 600);
         setLocationRelativeTo(null); // 창 가운데 설정
         setLayout(new CardLayout()); // 프레임의 레이아웃을 CardLayout으로 설정
 
@@ -97,18 +97,19 @@ public class TodoDetail extends JFrame {
         showPanel("MAIN");
     }
 
+    // main 화면
     private JPanel createMainPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(Color.white);
         panel.setBorder(new EmptyBorder(20, 20, 20, 20)); // 20씩 여백
 
-        JLabel titleLabel = new JLabel("Daykeeper"); // titlelabel 생성
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        JLabel titleLabel = new JLabel("DAY-KEEPER"); // titlelabel 생성
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(titleLabel, BorderLayout.NORTH); // 상단에 위치
 
         // 할 일 리스트 설정
-        todoJList.setFont(new Font("Arial", Font.PLAIN, 16));
+        todoJList.setFont(new Font("SansSerif", Font.PLAIN, 16));
         todoJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // 한번에 한개만 지정 가능
         JScrollPane scrollPane = new JScrollPane(todoJList); // 스크롤 영역 생성
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.BLACK)); // 검정 테두리
