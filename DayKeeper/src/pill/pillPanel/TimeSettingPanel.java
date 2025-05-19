@@ -1,18 +1,26 @@
-package pill;
+package pill.pillPanel;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.time.LocalTime;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.BasicStroke;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.util.HashMap;
 
 import common.CommonStyle;
-import dbConnection.DBManager;
+import pill.PillApp;
+import pill.pillDAO.PillAlramDAO;
 
 /*
  * 수업명 : Project DayKeeper
@@ -25,27 +33,38 @@ import dbConnection.DBManager;
  */
 
 public class TimeSettingPanel extends JPanel {
-    private PillApp parent;
-    private int selectedHour = -1;
-    private static int nextInt = 0;
+    private PillApp parentFrame;
+    private int selectedHour = -1;  // 선택된 시간 초기값
 
+    /**
+     * TimeSettingPanel 생성자
+     * - 부모 프레임을 인자로 받아 UI를 구성하고 이벤트를 설정
+     * 
+     * @param parent 부모 프레임
+     */
     public TimeSettingPanel(PillApp parent) {
-        this.parent = parent;
+        this.parentFrame = parent;
         setLayout(new BorderLayout());
         setBackground(CommonStyle.BACKGROUND_COLOR);
+        
+        // 알람 설정 DAO 객체 생성 및 초기화
         PillAlramDAO alramDAO = new PillAlramDAO();
         alramDAO.settingNextInt();
 
+        // 타이틀 라벨 추가
         JLabel title = CommonStyle.createTitleLabel();
         title.setText("복용 시간 시각화");
         add(title, BorderLayout.NORTH);
 
+        // 시계 패널 추가
         ClockPanel clockPanel = new ClockPanel();
         add(clockPanel, BorderLayout.CENTER);
 
+        // 버튼 패널 생성
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
 
+        // 버튼 생성 및 설정
         JButton setBtn = new JButton("시간 설정");
         JButton backBtn = new JButton("뒤로");
 
@@ -56,34 +75,45 @@ public class TimeSettingPanel extends JPanel {
         backBtn.setFont(CommonStyle.TEXT_FONT);
         backBtn.setBackground(Color.LIGHT_GRAY);
 
+        // 시간 설정 버튼 클릭 이벤트
         setBtn.addActionListener(e -> {
             if (selectedHour >= 0) {
                 alramDAO.registerAlarm(selectedHour);
 
                 String msg = (selectedHour == 0 ? "12시" : selectedHour + "시") + "로 설정되었습니다.";
                 JOptionPane.showMessageDialog(this, msg);
-
             } else {
                 JOptionPane.showMessageDialog(this, "시간을 선택해주세요.");
             }
         });
 
-        backBtn.addActionListener(e -> parent.showPanel("list"));
+        // 뒤로 버튼 클릭 이벤트
+        backBtn.addActionListener(e -> parentFrame.showPanel("list"));
 
+        // 버튼을 하단 패널에 추가
         bottomPanel.add(setBtn);
         bottomPanel.add(backBtn);
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
+    /**
+     * ClockPanel 클래스
+     * - 원형 시계 형태로 시간을 시각화하여 선택할 수 있는 패널
+     */
     class ClockPanel extends JPanel {
-        private HashMap<Integer, Point> hourPoints = new HashMap<>();
-        private Point mousePos = null;
-        private double fixedAngle = Double.NaN;
+        private HashMap<Integer, Point> hourPoints = new HashMap<>();  // 시각별 위치 저장
+        private Point mousePos = null;  // 마우스 위치
+        private double fixedAngle = Double.NaN;  // 고정된 시침 각도
 
+        /**
+         * ClockPanel 생성자
+         * - 시계 UI 설정 및 마우스 이벤트 처리기 등록
+         */
         public ClockPanel() {
             setPreferredSize(new Dimension(400, 400));
             setBackground(CommonStyle.BACKGROUND_COLOR);
 
+            // 마우스 클릭 이벤트 처리
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -101,6 +131,7 @@ public class TimeSettingPanel extends JPanel {
                 }
             });
 
+            // 마우스 이동 이벤트 처리
             addMouseMotionListener(new MouseMotionAdapter() {
                 @Override
                 public void mouseMoved(MouseEvent e) {
@@ -112,6 +143,11 @@ public class TimeSettingPanel extends JPanel {
             });
         }
 
+        /**
+         * 시계 UI를 그리는 메서드
+         * 
+         * @param g 그래픽 객체
+         */
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -122,11 +158,11 @@ public class TimeSettingPanel extends JPanel {
             int cy = getHeight() / 2;
             int radius = 140;
 
-            // 배경 원
+            // 시계 배경 원 그리기
             g2.setColor(new Color(230, 240, 255));
             g2.fillOval(cx - radius, cy - radius, radius * 2, radius * 2);
 
-            // 숫자 배치
+            // 시계 숫자 배치
             g2.setFont(CommonStyle.BUTTON_FONT);
             hourPoints.clear();
 
@@ -146,32 +182,31 @@ public class TimeSettingPanel extends JPanel {
 
                 String label = (i == 0 ? "12시" : i + "시");
                 FontMetrics fm = g2.getFontMetrics();
-                int strWidth = fm.stringWidth(label);
-                int strHeight = fm.getHeight();
-                g2.drawString(label, tx - strWidth / 2, ty + strHeight / 4);
+                g2.drawString(label, tx - fm.stringWidth(label) / 2, ty + fm.getHeight() / 4);
             }
 
-            // 시계침 (마우스 or 고정)
+            // 시침 그리기
             if (!Double.isNaN(fixedAngle)) {
-                int hx = (int) (cx + Math.cos(fixedAngle) * (radius - 60));
-                int hy = (int) (cy + Math.sin(fixedAngle) * (radius - 60));
-                g2.setColor(new Color(100, 100, 220));
-                g2.setStroke(new BasicStroke(2));
-                g2.drawLine(cx, cy, hx, hy);
+                drawHand(g2, cx, cy, fixedAngle, radius);
             } else if (mousePos != null) {
                 double angle = Math.atan2(mousePos.y - cy, mousePos.x - cx);
-                int hx = (int) (cx + Math.cos(angle) * (radius - 60));
-                int hy = (int) (cy + Math.sin(angle) * (radius - 60));
-                g2.setColor(new Color(100, 100, 220));
-                g2.setStroke(new BasicStroke(2));
-                g2.drawLine(cx, cy, hx, hy);
+                drawHand(g2, cx, cy, angle, radius);
             }
 
             // 중심 원
             g2.setColor(Color.GRAY);
             g2.fillOval(cx - 4, cy - 4, 8, 8);
         }
-    }
 
-    
+        /**
+         * 시계침 그리기
+         */
+        private void drawHand(Graphics2D g2, int cx, int cy, double angle, int radius) {
+            int hx = (int) (cx + Math.cos(angle) * (radius - 60));
+            int hy = (int) (cy + Math.sin(angle) * (radius - 60));
+            g2.setColor(new Color(100, 100, 220));
+            g2.setStroke(new BasicStroke(2));
+            g2.drawLine(cx, cy, hx, hy);
+        }
+    }
 }

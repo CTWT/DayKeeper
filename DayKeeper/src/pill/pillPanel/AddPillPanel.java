@@ -1,18 +1,33 @@
-package pill;
+package pill.pillPanel;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 
 import common.CommonStyle;
-import dbConnection.DBManager;
+import pill.PillApp;
+import pill.pillDAO.PillDAO;
+import pill.pillManager.PillManager;
+import pill.pillManager.ResourcesManager;
 
 /*
  * 수업명 : Project DayKeeper
@@ -29,7 +44,7 @@ import dbConnection.DBManager;
 
 
 public class AddPillPanel extends JPanel {
-    private PillApp parent;
+    private PillApp parentFrame;
     private JLabel nameLabel;
     private JLabel descLabel;
     private JLabel imageLabel;
@@ -37,7 +52,7 @@ public class AddPillPanel extends JPanel {
     private HashMap<String, JButton> buttonMap = new HashMap<>();
 
     public AddPillPanel(PillApp parent) {
-        this.parent = parent;
+        this.parentFrame = parent;
         setLayout(new BorderLayout(10, 10));
         setBackground(CommonStyle.BACKGROUND_COLOR);
 
@@ -110,10 +125,10 @@ public class AddPillPanel extends JPanel {
             }
             int qty = (int) quantitySpinner.getValue();
             for (String drug : selectedDrugs) {
-                insertDrugToDB(drug, qty);
+                new PillDAO().insertDrugToDB(drug, qty);
             }
             JOptionPane.showMessageDialog(this, "추가 완료!");
-            parent.showPanel("list");
+            parentFrame.showPanel("list");
         });
         bottomPanel.add(confirmBtn);
 
@@ -122,7 +137,7 @@ public class AddPillPanel extends JPanel {
         backBtn.setPreferredSize(new Dimension(80, 35));
         backBtn.setFont(CommonStyle.TEXT_FONT);
         backBtn.setBackground(Color.LIGHT_GRAY);
-        backBtn.addActionListener(e -> parent.showPanel("list"));
+        backBtn.addActionListener(e -> parentFrame.showPanel("list"));
         bottomPanel.add(backBtn);
 
         add(bottomPanel, BorderLayout.SOUTH);
@@ -154,34 +169,5 @@ public class AddPillPanel extends JPanel {
         }
         Image emptyImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         return new ImageIcon(emptyImage);
-    }
-
-    // DB insert
-    private void insertDrugToDB(String pillName, int amount) {
-        try (Connection con = DBManager.getConnection()) {
-            if(PillManager.getInst().getDataByName(pillName) != null)
-            {
-                String sql = "UPDATE pill SET pillAmount = ? WHERE pillName = ?";
-                PreparedStatement pstmt = con.prepareStatement(sql);
-
-                int resultAmount = PillManager.getInst().getDataByName(pillName).getPillAmount()+amount;
-
-                pstmt.setInt(1, resultAmount);
-                pstmt.setString(2, pillName);
-                pstmt.executeUpdate();
-            }
-            else {
-                String sql = "INSERT INTO pill(pill_id, id, pillName, pillAmount, date) VALUES (?, ?, ?, ?, now())";
-                PreparedStatement pstmt = con.prepareStatement(sql);
-                pstmt.setInt(1, PillManager.nextInt++);
-                pstmt.setString(2, "12345");
-                pstmt.setString(3, pillName);
-                pstmt.setInt(4, amount);
-                pstmt.executeUpdate();
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }

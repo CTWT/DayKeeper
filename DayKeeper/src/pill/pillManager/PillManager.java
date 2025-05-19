@@ -1,13 +1,9 @@
-package pill;
+package pill.pillManager;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import dbConnection.DBManager;
+import pill.pillDAO.PillDAO;
 
 /*
  * 생성자 : 김관호
@@ -38,7 +34,6 @@ public class PillManager {
     private HashMap<String, SupplementData> pillInfo;  // 영양제 기본 정보
     private HashMap<Integer, PillDTO> pillsMap; // DTOMap
     private static PillManager instance;        // 싱글톤 인스턴스
-    public static int nextInt = 0;
 
     // private 생성자: 싱글톤 패턴을 위한 private 접근 제어자 사용
     private PillManager() {
@@ -121,63 +116,7 @@ public class PillManager {
         ));
     }
 
-    /**
-     * 데이터베이스에서 영양제 정보를 로드합니다.
-     */
-    public void loadDBData() {
-        String sql = "SELECT pill_id, id, pillName, pillAmount, date FROM Pill WHERE id = ?";
-        String curUserId = "12345"; // 현재 사용자 ID (예시)
-
-        try (Connection con = DBManager.getConnection();
-             PreparedStatement pstmt = con.prepareStatement(sql)) {
-             
-            pstmt.setString(1, curUserId);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                PillDTO pillDTO = new PillDTO();
-                pillDTO.setPill_id(rs.getInt("pill_id"));
-                pillDTO.setId(rs.getString("id"));
-                pillDTO.setPillName(rs.getString("pillName"));
-                pillDTO.setPillAmount(rs.getInt("pillAmount"));
-                pillDTO.setDate(rs.getTimestamp("date").toLocalDateTime());
-
-                // 로드된 데이터를 Map에 저장
-                pillsMap.put(pillDTO.getPill_id(), pillDTO);
-                System.out.println("Loaded: " + pillDTO);
-                nextInt = Math.max(nextInt,pillDTO.getPill_id());
-            }
-            nextInt++;
-            rs.close();
-        } catch (SQLException e) {
-            System.err.println("데이터 로드 오류: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    //영양제 개수가 0이하인 데이터 삭제
-    public void releaseData(){
-        String sql = "SELECT pill_id, pillAmount FROM pill WHERE id = ?";
-        String curUserId = "12345"; // 현재 사용자 ID (예시)
-
-        try (Connection con = DBManager.getConnection();
-             PreparedStatement pstmt = con.prepareStatement(sql)) {
-
-            pstmt.setString(1, curUserId);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                int pill_id = rs.getInt(1);
-                int amount = rs.getInt(2);
-                if(amount <= 0){
-                    deleteDataById(pill_id);
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("데이터 릴리즈 오류: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
+    
 
     /**
      * 영양제 데이터 초기화 (맵 비우기)
@@ -240,32 +179,7 @@ public class PillManager {
         return pillInfo.get(name).intakeTip;
     }
 
-    /**
-     * 영양제 설명을 이름으로 조회합니다.
-     *
-     * @param id pill_id값
-     * @return 해당 id의 영양제 삭제
-     */
-    public void deleteDataById(int id){
-        if(pillsMap.containsKey(id)){
-            pillsMap.remove(Integer.valueOf(id));
-        }
-
-        String sql = "delete from pill where pill_id =?";
-
-        try (Connection con = DBManager.getConnection();
-             PreparedStatement pstmt = con.prepareStatement(sql)) {
-             
-            pstmt.setInt(1, id);
-            pstmt.executeUpdate();
-
-        } catch (SQLException e) {
-            System.err.println("데이터 로드 오류: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-    }
-
+    
     /**
      * 영양제 설명을 이름으로 조회합니다.
      *
@@ -278,7 +192,7 @@ public class PillManager {
         while(iter.hasNext()){
             PillDTO dto = iter.next();
             if(dto.getPillName() == name){
-                deleteDataById(dto.getPill_id());
+                new PillDAO().deleteDataById(dto.getPill_id());
                 return;
             }
         }

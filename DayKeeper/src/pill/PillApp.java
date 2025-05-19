@@ -5,6 +5,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import pill.pillPanel.AddPillPanel;
+import pill.pillPanel.PillDetailPanel;
+import pill.pillPanel.PillListPanel;
+import pill.pillPanel.TimeSettingPanel;
+
 /*
  * 수업명 : Project DayKeeper
  * 이름 : 임해균
@@ -16,6 +21,21 @@ import javax.swing.SwingUtilities;
  */
 
 public class PillApp extends JFrame {
+
+    // 현재 디테일패널에 나올 영양제의 id를 저장하는 클래스
+    private static class DetailInfo {
+        public static Integer pillId;
+    }
+
+    // 디테일패널에 나올 영양제 id
+    public Integer getDetailId() {
+        return DetailInfo.pillId;
+    }
+
+    // 디테일패널에 나올 영양제 id 세팅
+    public void setDetailId(Integer id) {
+        DetailInfo.pillId = id;
+    }
 
     private CardLayout cardLayout;   // 화면 전환 레이아웃
     private JPanel mainPanel;        // 전체 화면을 담는 메인 패널
@@ -87,17 +107,5 @@ public class PillApp extends JFrame {
         SwingUtilities.invokeLater(() -> {
             new PillApp().setVisible(true);
         });
-    }
-
-    public Integer getDetailId() {
-        return DetailInfo.pillId;
-    }
-
-    public void setDetailId(Integer id) {
-        DetailInfo.pillId = id;
-    }
-
-    private static class DetailInfo {
-        public static Integer pillId;
     }
 }

@@ -1,4 +1,4 @@
-package pill;
+package pill.pillPanel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -6,10 +6,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Image;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -24,7 +20,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import common.CommonStyle;
-import dbConnection.DBManager;
+import pill.PillApp;
+import pill.pillDAO.PillDAO;
+import pill.pillManager.PillDTO;
+import pill.pillManager.PillManager;
+import pill.pillManager.ResourcesManager;
 
 /*
  * 수업명 : Project DayKeeper
@@ -36,17 +36,17 @@ import dbConnection.DBManager;
  */
 
 public class PillDetailPanel extends JPanel {
-    private PillApp parent;
+    private PillApp parentFrame;
 
     public PillDetailPanel(PillApp parent) {
-        this.parent = parent;
+        this.parentFrame = parent;
         setLayout(new BorderLayout());
         setBackground(CommonStyle.BACKGROUND_COLOR);
 
-        Integer pillId = parent.getDetailId();
+        Integer pillId = parentFrame.getDetailId();
         PillDTO dto = PillManager.getInst().getDataById(pillId);
         String pillName = dto.getPillName();
-        int amount = getPillAmountFromDB(pillId);
+        int amount = new PillDAO().getPillAmount(pillId);
 
         // 상단 제목
         JLabel titleLabel = new JLabel(pillName + " (" + amount + "개 남음)", SwingConstants.CENTER);
@@ -92,15 +92,15 @@ public class PillDetailPanel extends JPanel {
 
         CommonStyle.stylePrimaryButton(backBtn);
         backBtn.setPreferredSize(new Dimension(90, 35));
-        backBtn.addActionListener(e -> parent.showPanel("list"));
+        backBtn.addActionListener(e -> parentFrame.showPanel("list"));
 
         deleteBtn.setPreferredSize(new Dimension(90, 35));
         deleteBtn.setFont(CommonStyle.TEXT_FONT);
         deleteBtn.setBackground(new Color(255, 230, 230));
         deleteBtn.setFocusPainted(false);
         deleteBtn.addActionListener(e->{
-            deleteData(parent);
-            parent.showPanel("list");
+            deleteData(parentFrame);
+            parentFrame.showPanel("list");
         });
 
         btnPanel.add(backBtn);
@@ -142,27 +142,11 @@ public class PillDetailPanel extends JPanel {
     }
 
     /**
-     * DB에서 수량 조회
-     */
-    private int getPillAmountFromDB(Integer pillId) {
-        try (Connection con = DBManager.getConnection()) {
-            String sql = "SELECT pillAmount FROM pill WHERE pill_id = ?";
-            PreparedStatement pstmt = con.prepareStatement(sql);
-            pstmt.setInt(1, pillId);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) return rs.getInt("pillAmount");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    /**
      * 현재 디테일 패널에 대한 영양제를 삭제합니다.
      * 
      * @param parent 부모패널
      */
     private void deleteData(PillApp parent){
-        PillManager.getInst().deleteDataById(parent.getDetailId());
+        new PillDAO().deleteDataById(parent.getDetailId());
     }
 }

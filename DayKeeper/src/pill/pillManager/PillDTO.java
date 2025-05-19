@@ -1,6 +1,4 @@
-package pill;
-import java.sql.Date;
-import java.time.LocalDate;
+package pill.pillManager;
 import java.time.LocalDateTime;
 
 /*
