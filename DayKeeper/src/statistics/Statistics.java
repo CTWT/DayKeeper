@@ -7,11 +7,15 @@ import java.time.LocalDate;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import common.Session;
 import config.BaseFrame;
+import config.ScreenType;
+import login.Login;
 import common.CommonStyle;
 
 /**
@@ -80,14 +84,19 @@ public class Statistics extends JPanel {
 
         // 오늘 할일 상세보기 버튼 클릭 시 이벤트 처리
         bottom.todoDetail.addActionListener(e -> {
-            System.out.println("오늘할일상세보기 클릭됨");
-            // TODO: 상세보기 화면 전환 등 기능 구현
+            BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this); // 투두리스트창으로 이동
+            frame.showScreen(ScreenType.TODOLIST);
         });
 
         // 영양제 정보 버튼 클릭 시 이벤트 처리
         bottom.pillDetail.addActionListener(e -> {
-            System.out.println("영양제 정보 클릭됨");
-            // TODO: 영양제 정보 화면 전환 등 기능 구현
+            BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this); // 영양제창으로 이동
+            frame.showScreen(ScreenType.PILL);
+        });
+
+        bottom.returnPage.addActionListener(e -> {
+            BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this); // 투두리스트창으로 이동
+            frame.showScreen(ScreenType.TODOLIST);
         });
 
         // 버튼 상태 설정
