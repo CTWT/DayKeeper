@@ -1,31 +1,28 @@
 package login;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JPasswordField;
-import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.BorderFactory;
-
-import common.CommonStyle;
-
-import config.BaseFrame;
-import config.ScreenType;
-import login.Login.UserSearch;
-
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Font;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
+import common.CommonStyle;
+import common.Session;
+import config.BaseFrame;
+import config.ScreenType;
 
 /*
  * 생성자 : 문원주
@@ -190,7 +187,8 @@ public class Login extends JPanel {
         user.setPw(pw);
         if (dao.login(user)) {
             messageLabel.setText(""); // 로그인 성공 시 메시지 초기화
-            UserSearch.curUserID = id;
+            // UserSearch.curUserID = id;
+            Session.setUserId(id);
             JOptionPane.showMessageDialog(this, "로그인 성공!");
             BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
             frame.showScreen(ScreenType.TODOLIST);
@@ -199,9 +197,9 @@ public class Login extends JPanel {
         }
     }
 
-    public class UserSearch {
-        public static String curUserID;
-    }
+    // public class UserSearch {
+    // public static String curUserID;
+    // }
 
     // 테스트용 메인 메서드
     public static void main(String[] args) {
