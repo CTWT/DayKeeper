@@ -57,7 +57,7 @@ public class Login extends JPanel {
         gbc.gridwidth = 1; // 열 너비 설정
         gbc.gridy++; // 위치 변경
         gbc.gridx = 0; // 첫 번째 열
-        add(CommonStyle.createLabel("USER NAME"), gbc); // 라벨 추가
+        add(CommonStyle.createLabel("ID"), gbc); // 라벨 추가
 
         // 사용자 이름 입력 필드
         gbc.gridx = 1; // 두 번째 열
