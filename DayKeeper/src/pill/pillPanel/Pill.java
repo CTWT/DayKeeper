@@ -53,11 +53,11 @@ import java.util.Arrays;
  *       - '영양제 섭취' 버튼 누르면 전체 약 수량 -1 처리
  */
 
-public class PillListPanel extends JPanel {
+public class Pill extends JPanel {
     private PillApp parentFrame;
     private Map<Integer, JLabel> countLabelMap = new HashMap<>();
 
-    public PillListPanel(PillApp parent) {
+    public Pill(PillApp parent) {
         this.parentFrame = parent;
 
         PillDAO pillDAO = new PillDAO();

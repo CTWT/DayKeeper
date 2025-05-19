@@ -7,7 +7,7 @@ import javax.swing.SwingUtilities;
 
 import pill.pillPanel.AddPillPanel;
 import pill.pillPanel.PillDetailPanel;
-import pill.pillPanel.PillListPanel;
+import pill.pillPanel.Pill;
 import pill.pillPanel.TimeSettingPanel;
 
 /*
@@ -41,7 +41,7 @@ public class PillApp extends JFrame {
     private JPanel mainPanel;        // 전체 화면을 담는 메인 패널
 
     // 각 화면 패널
-    private PillListPanel listPanel;
+    private Pill listPanel;
     private PillDetailPanel detailPanel;
     private AddPillPanel addPanel;
     private TimeSettingPanel timePanel; // ✅ 추가된 시간 설정 패널
@@ -81,7 +81,7 @@ public class PillApp extends JFrame {
     private void updatePanel(String name) {
         switch (name) {
             case "list":
-                listPanel = new PillListPanel(this);
+                listPanel = new Pill(this);
                 mainPanel.add(listPanel, "list");
                 break;
             case "detail":
