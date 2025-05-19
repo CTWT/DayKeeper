@@ -11,6 +11,15 @@ import java.awt.GridLayout;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 
+/**
+ * 생성자 : 이주하
+ * 생성일 : 25.05.19
+ * 파일명 : PillCheckPanel.java
+ * 수정자 :
+ * 수정일 :
+ * 설명 : 영양제 복용 여부에 따른 체크 그리드 생성
+ */
+
 public class PillCheckPanel extends JPanel {
 
     public PillCheckPanel(String userId) {
