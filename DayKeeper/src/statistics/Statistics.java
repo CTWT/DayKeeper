@@ -27,6 +27,17 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 생성자 : 문원주
+ * 생성일 : 25.05.19
+ * 파일명 : Statistics.java
+ * 수정자 :
+ * 수정일 :
+ * 설명 : 투두리스트와 영양제 복용률을 체크하여 표시하는 통계 페이지
+ */
 
 public class Statistics extends JPanel {
     public static final Font CHART_FONT = new Font("SansSerif", Font.PLAIN, 14); // 차트 폰트
@@ -44,19 +55,16 @@ public class Statistics extends JPanel {
 
         // CENTER: 중앙에 차트와 복약 패널 구성
 
-        // 주간 투두리스트 달성률 데이터셋 구성 - 이후 DB 연동으로 수정 계획
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        dataset.addValue(80, "달성률", "월");
-        dataset.addValue(60, "달성률", "화");
-        dataset.addValue(20, "달성률", "수");
-        dataset.addValue(70, "달성률", "목");
-        dataset.addValue(50, "달성률", "금");
-        dataset.addValue(40, "달성률", "토");
-        dataset.addValue(85, "달성률", "일");
+        // CENTER: 중앙에 차트와 복약 패널 구성
+
+        // DefaultCategoryDataset weeklyTodoDataset = createTodoDataset("user",
+        // LocalDate.now());
+        // 2025년 5월 12일을 기준 날짜로 설정 (이 주 월요일)
+        DefaultCategoryDataset weeklyTodoDataset = createTodoDataset("testuser", LocalDate.of(2025, 5, 12));
 
         // 선형 차트 생성
         JFreeChart lineChart = ChartFactory.createLineChart(
-                "주간 투두리스트 달성도", "", "달성률(%)", dataset,
+                "주간 투두리스트 달성도", "", "달성률(%)", weeklyTodoDataset,
                 PlotOrientation.VERTICAL, false, true, false);
         lineChart.getTitle().setFont(CHART_FONT); // 제목 폰트 설정
         lineChart.setBackgroundPaint(CommonStyle.BACKGROUND_COLOR); // 배경색
@@ -183,6 +191,19 @@ public class Statistics extends JPanel {
         bottom.returnPage.setVisible(true); // 돌아가기 버튼 활성화
         bottom.statistics.setVisible(false); // 현재 페이지 버튼은 비활성화
         add(bottom.panel, BorderLayout.SOUTH); // SOUTH에 추가
+    }
+
+    private DefaultCategoryDataset createTodoDataset(String userId, LocalDate referenceDate) {
+        StatisticsTodoDAO dao = new StatisticsTodoDAO();
+        Map<String, Double> weeklyRates = dao.getWeeklyRate(userId, referenceDate);
+
+        DefaultCategoryDataset weeklyTodoDataset = new DefaultCategoryDataset();
+        for (String day : List.of("월", "화", "수", "목", "금", "토", "일")) {
+            double rate = weeklyRates.getOrDefault(day, 0.0);
+            weeklyTodoDataset.addValue(rate, "달성률", day);
+        }
+
+        return weeklyTodoDataset;
     }
 
     public static void main(String[] args) {
