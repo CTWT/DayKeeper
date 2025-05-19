@@ -75,17 +75,18 @@ public class PillTimeSettingDialog extends JDialog {
         backBtn.setFont(CommonStyle.TEXT_FONT);
         backBtn.setBackground(Color.LIGHT_GRAY);
 
-        // 시간 설정 버튼 클릭 이벤트
-        setBtn.addActionListener(e -> {
-            if (selectedHour >= 0) {
-                alramDAO.registerAlarm(selectedHour);
+       // 시간 설정 버튼 클릭 이벤트
+setBtn.addActionListener(e -> {
+    if (selectedHour >= 0) {
+        alramDAO.registerAlarm(selectedHour);
 
-                //String msg = (selectedHour == 0 ? "12시" : selectedHour + "시") + "로 설정되었습니다.";
-                //JOptionPane.showMessageDialog(this, msg);
-            } else {
-                //JOptionPane.showMessageDialog(this, "시간을 선택해주세요.");
-            }
-        });
+        String msg = (selectedHour == 0 ? "12시" : selectedHour + "시") + "로 설정되었습니다.";
+        JOptionPane.showMessageDialog(PillTimeSettingDialog.this, msg, "알림", JOptionPane.INFORMATION_MESSAGE);
+    } else {
+        JOptionPane.showMessageDialog(PillTimeSettingDialog.this, "시간을 선택해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
+    }
+});
+
 
         // 뒤로 버튼 클릭 이벤트
         backBtn.addActionListener(e -> dispose());
