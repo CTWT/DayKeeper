@@ -65,6 +65,7 @@ public class Login extends JPanel {
         // 사용자 이름 입력 필드
         gbc.gridx = 1; // 두 번째 열
         usernameField = new JTextField(); // 입력 필드
+        usernameField.addActionListener(e -> attemptLogin()); // Enter 키 입력 시 로그인
         CommonStyle.underline(usernameField); // 밑줄 스타일
         add(usernameField, gbc);
 
@@ -76,6 +77,7 @@ public class Login extends JPanel {
         // 비밀번호 입력 필드
         gbc.gridx = 1; // 두 번째 열
         passwordField = new JPasswordField(); // 비밀번호 필드
+        passwordField.addActionListener(e -> attemptLogin()); // Enter 키 입력 시 로그인
         CommonStyle.underline(passwordField); // 밑줄 스타일
         add(passwordField, gbc);
 
