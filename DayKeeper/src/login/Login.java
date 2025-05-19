@@ -74,6 +74,7 @@ public class Login extends JPanel {
         // 비밀번호 입력 필드
         gbc.gridx = 1; // 두 번째 열
         passwordField = new JPasswordField(); // 비밀번호 필드
+        passwordField.addActionListener(e -> attemptLogin()); // Enter 키 입력 시 로그인
         CommonStyle.underline(passwordField); // 밑줄 스타일
         add(passwordField, gbc);
 
@@ -160,15 +161,15 @@ public class Login extends JPanel {
         }
     }
 
-  /*  public class UserSearch {
-        public static String curUserID;
-    }
-*/
+    /*
+     * public class UserSearch {
+     * public static String curUserID;
+     * }
+     */
 
     // 테스트용 메인 메서드
     public static void main(String[] args) {
         new BaseFrame();
-    } 
-
+    }
 
 }
