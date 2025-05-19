@@ -15,9 +15,9 @@ import dbConnection.DBManager; // DB 연결을 위한 커스텀 유틸 클래스
  * 생성자 : 문원주
  * 생성일 : 25.05.16
  * 파일명 : StatisticsTodoDAO.java
- * 수정자 :
- * 수정일 :
- * 설명 : TODO 테이블에서 주간 투두리스트 달성률을 계산하여 반환하는 DAO
+ * 수정자 : 문원주
+ * 수정일 : 25.05.19
+ * 설명 : total 메서드 생성
  */
 
 public class StatisticsTodoDAO {
