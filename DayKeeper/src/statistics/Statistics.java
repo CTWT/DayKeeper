@@ -2,6 +2,8 @@ package statistics;
 
 import common.CommonStyle;
 import config.BaseFrame;
+import login.Login;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -23,6 +25,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 
 public class Statistics extends JPanel {
     public static final Font CHART_FONT = new Font("SansSerif", Font.PLAIN, 14); // 차트 폰트
@@ -84,16 +88,49 @@ public class Statistics extends JPanel {
         medicationPanel.setPreferredSize(new Dimension(400, 48)); // 차트크기보다 줄여서 설정
         medicationPanel.setBackground(Color.WHITE); // 배경색 흰색
 
-        // 상단: 복약 여부 표시 박스 (색상으로 구분) - 이후 기능 수정과 다지인 수정 및 DB연동 예정
+        // 상단: 복약 여부 아이콘으로 표시
+        Boolean[] status = new statistics.PhillDAO().getWeeklyMedicationStatus(Login.UserSearch.curUserID);
+        LocalDate today = LocalDate.now();
+        LocalDate monday = today.with(DayOfWeek.MONDAY);
+
         for (int i = 0; i < 7; i++) {
-            JLabel medStatus = new JLabel();
-            medStatus.setOpaque(true);
-            medStatus.setBackground(i % 2 == 0 ? new Color(100, 255, 100) : new Color(255, 64, 64)); // 초록 또는 빨강
-            if (i == 5 || i == 6) {
-                medStatus.setBackground(Color.WHITE); // 주말은 흰색
+            JPanel phillbox = new JPanel();
+            phillbox.setPreferredSize(new Dimension(40, 40));
+            phillbox.setOpaque(false);
+            JLabel symbolLabel = new JLabel();
+            symbolLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            symbolLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+
+            phillbox.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2));
+            LocalDate targetDate = monday.plusDays(i);
+
+            if (status[i] == null) {
+                if (targetDate.isBefore(today)) {
+                    phillbox.setBackground(new Color(242, 242, 242)); // 미복약 색상
+                    phillbox.setOpaque(true);
+                    symbolLabel.setText("✗");
+                    symbolLabel.setForeground(Color.DARK_GRAY);
+                } else {
+                    phillbox.setBackground(Color.WHITE);
+                    phillbox.setOpaque(true);
+                    symbolLabel.setText("-");
+                    symbolLabel.setForeground(Color.GRAY);
+                }
+            } else if (status[i]) {
+                phillbox.setBackground(new Color(76, 154, 255)); // 복약함: 파란 원
+                phillbox.setOpaque(true);
+                symbolLabel.setText("✓");
+                symbolLabel.setForeground(Color.WHITE);
+            } else {
+                phillbox.setBackground(new Color(242, 242, 242)); // 미복약: 연회색 원
+                phillbox.setOpaque(true);
+                symbolLabel.setText("✗");
+                symbolLabel.setForeground(Color.DARK_GRAY);
             }
-            medStatus.setBorder(new LineBorder(Color.BLACK)); // 테두리 추가
-            medicationPanel.add(medStatus);
+
+            phillbox.setLayout(new java.awt.GridBagLayout()); // 가운데 정렬
+            phillbox.add(symbolLabel);
+            medicationPanel.add(phillbox);
         }
 
         // 하단: 요일 라벨
