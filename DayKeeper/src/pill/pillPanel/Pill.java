@@ -224,10 +224,10 @@ public class Pill extends JPanel {
         }
         
         if(dialog != null){
-            dialog.setVisible(true); 
             dialog.setModalityType(JDialog.ModalityType.APPLICATION_MODAL);
             dialog.setLocationRelativeTo(null); // 화면 중앙에 위치
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setVisible(true); 
         }
     }
 

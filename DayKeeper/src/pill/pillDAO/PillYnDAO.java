@@ -117,7 +117,7 @@ public class PillYnDAO {
          try (Connection con = DBManager.getConnection()) {
             String sql = "SELECT date from PILLYN where id = ?";
             PreparedStatement psmt = con.prepareStatement(sql);
-            psmt.setString(1, Session.getUserId()); //Login.UserSearch.curUserId;
+            psmt.setString(1, Session.getUserId());
             ResultSet rs = psmt.executeQuery();
             while(rs.next()){
                 Date ts = rs.getDate(1);
