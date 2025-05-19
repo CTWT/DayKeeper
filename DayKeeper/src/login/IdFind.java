@@ -36,6 +36,10 @@ public class IdFind extends JPanel {
     private CardLayout cardLayout; // 카드 레이아웃(입력/결과 전환)
     private JPanel cardPanel; // 카드 패널(입력/결과 패널이 들어감)
 
+    /**
+     * 아이디 찾기 패널 생성자
+     * - 입력 패널과 결과 패널을 CardLayout으로 전환
+     */
     public IdFind() {
         setLayout(new BorderLayout());
 
@@ -54,8 +58,12 @@ public class IdFind extends JPanel {
 
     }
 
-    // 수직 레이아웃 패널 생성
+    /**
+     * 이름 입력 UI 패널 생성
+     * @return 입력 패널
+     */
     private JPanel buildInputPanel() {
+        // 수직 레이아웃 패널 생성
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
         inputPanel.setBackground(Color.WHITE);
@@ -75,6 +83,10 @@ public class IdFind extends JPanel {
         return inputPanel;
     }
 
+    /**
+     * 결과를 보여주는 UI 패널 생성
+     * @return 결과 패널
+     */
     private JPanel buildResultPanel() {
         JPanel resultPanel = new JPanel(new BorderLayout());
         resultPanel.setBackground(Color.WHITE);
@@ -93,23 +105,34 @@ public class IdFind extends JPanel {
         return resultPanel;
     }
 
+    /**
+     * "찾기" 버튼 클릭 시 이벤트 처리
+     * - 이름으로 아이디를 검색하여 결과를 표시
+     */
     private void handleFind() {
         String name = nameField.getText().trim();
         if (!name.isEmpty()) {
             UserDAO dao = new UserDAO();
-            String foundId = dao.findIdByName(name);
+            String foundId = dao.findIdByName(name); // 이름으로 아이디 조회
             if (foundId != null) {
                 // 아이디를 찾은 경우 결과 표시 및 세션 저장
                 resultLabel.setText("아이디: " + foundId);
                 Session.setUserId(foundId);
             } else {
-                resultLabel.setText("해당 이름으로 등록된 아이디가 없습니다."); // 아이디를 찾지 못한 경우 안내 메시지 표시
+                // 아이디를 찾지 못한 경우: 안내 메시지 표시
+                resultLabel.setText("해당 이름으로 등록된 아이디가 없습니다.");
 
             }
+            // 결과 화면으로 전환
             cardLayout.show(cardPanel, "RESULT");
         }
     }
 
+    
+    /**
+     * "닫기" 버튼 클릭 시 이벤트 처리
+     * - 메뉴 패널로 돌아감
+     */
     private void handleClose() {
         Container parent = getParent();
         while (parent != null && !(parent instanceof JPanel)) {
@@ -117,13 +140,19 @@ public class IdFind extends JPanel {
         }
         if (parent != null) {
             CardLayout layout = (CardLayout) parent.getLayout();
-            
+
             // 메뉴 화면으로 전환
             layout.show(parent, "MENU");
         }
 
     }
 
+    /**
+     * 공통 라벨+입력필드 패널 생성
+     * @param labelText 라벨 텍스트
+     * @param field 입력 필드
+     * @return 패널
+     */
     private JPanel LabeledField(String labelText, JTextField field) {
         JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
         wrapper.setBackground(Color.WHITE);
@@ -134,6 +163,12 @@ public class IdFind extends JPanel {
         return wrapper;
     }
 
+    /**
+     * 공통 버튼 포함 패널 생성 및 이벤트 리스너 등록
+     * @param text 버튼 텍스트
+     * @param listener 버튼 클릭 이벤트
+     * @return 패널
+     */
     private JPanel ButtonPanel(String text, java.awt.event.ActionListener listener) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         panel.setBackground(Color.WHITE);
@@ -149,6 +184,9 @@ public class IdFind extends JPanel {
         return panel;
     }
 
+    /**
+     * 패널 상태 리셋 (입력화면으로 전환 및 필드 초기화)
+     */
     public void reset() {
         nameField.setText("");
         resultLabel.setText("");
