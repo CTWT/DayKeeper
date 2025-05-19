@@ -2,20 +2,22 @@ package todoList;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.List;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import common.CommonStyle;
+import common.Session;
 import config.BaseFrame;
+import config.ScreenType;
 
 /*
  * 생성자 : 신인철
@@ -50,28 +52,32 @@ public class TodoList extends JPanel {
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setBackground(Color.WHITE);
 
-        JLabel desc = new JLabel("<html>당일 첫 로그인 시 보여지는 화면<br>표시 - 당일 할일이 없습니다.</html>");
-        desc.setFont(new Font("Arial", Font.PLAIN, 12));
-        desc.setAlignmentX(Component.LEFT_ALIGNMENT);
-        contentPanel.add(desc);
-        contentPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        // contentPanel 생성 후
+        List<String[]> todoData = TodoDAO.todoList(Session.getUserId()); // ← 로그인 ID로 교체
 
-        String[] columns = { "할일제목", "상태" };
-        Object[][] data = {
-                { "할일제목", "완료" },
-                { "할일제목", "완료" },
-                { "할일제목", "완료" },
-                { "할일제목", "완료" },
-        };
-        JTable table = new JTable(data, columns);
-        table.setRowHeight(30);
-        table.setEnabled(false);
+        String[] columnNames = { "할 일", "상태" };
+        String[][] rowData;
+
+        if (todoData.isEmpty()) {
+            rowData = new String[][] { { "당일 할 일이 없습니다.", "" } };
+        } else {
+            rowData = todoData.toArray(new String[0][0]);
+        }
+
+        // JTable 생성 : rowData 는 내용 columnNames는 헤더
+        JTable table = new JTable(rowData, columnNames);
+        table.setFillsViewportHeight(true);
+        table.setRowHeight(25);
+        table.setShowGrid(true);
+        table.setGridColor(Color.LIGHT_GRAY);
+        table.setFont(new Font("Arial", Font.PLAIN, 13));
+        table.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 13));
+
+        // JTable을 JScroll에 담P기
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-        scrollPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
-        contentPanel.add(scrollPane);
+        scrollPane.setPreferredSize(new Dimension(600, 200));
 
-        centerPanel.add(contentPanel, BorderLayout.CENTER);
+        centerPanel.add(scrollPane);
         add(centerPanel, BorderLayout.CENTER);
 
         // 하단 버튼 구성 요소 받기
@@ -82,14 +88,16 @@ public class TodoList extends JPanel {
             System.out.println("오늘할일상세보기 클릭됨");
         });
         bottom.pillDetail.addActionListener(e -> {
-            System.out.println("영양제 정보 클릭됨");
+            BaseFrame pillFrame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+            pillFrame.showScreen(ScreenType.PILL);
         });
         bottom.statistics.addActionListener(e -> {
-            System.out.println("통계 클릭됨");
+            BaseFrame statFrame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+            statFrame.showScreen(ScreenType.STATISTICS);
         });
 
         // '돌아가기' 버튼은 이 화면에서 숨김
-        // bottom.returnPage.setVisible(false);
+        bottom.returnPage.setVisible(false);
 
         // 화면에 추가
         add(bottom.panel, BorderLayout.SOUTH);
