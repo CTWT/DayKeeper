@@ -1,12 +1,20 @@
 package statistics;
 
 import common.CommonStyle;
+import common.Session;
 import config.BaseFrame;
 import login.Login;
+
+import java.awt.BasicStroke;
+import java.awt.Stroke;
+import java.text.NumberFormat;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
@@ -57,7 +65,8 @@ public class Statistics extends JPanel {
 
         // CENTER: 중앙에 차트와 복약 패널 구성
 
-        // DefaultCategoryDataset weeklyTodoDataset = createTodoDataset("user",
+        // DefaultCategoryDataset weeklyTodoDataset =
+        // createTodoDataset(Session.getUserId(),
         // LocalDate.now());
         // 2025년 5월 12일을 기준 날짜로 설정 (이 주 월요일)
         DefaultCategoryDataset weeklyTodoDataset = createTodoDataset("testuser", LocalDate.of(2025, 5, 12));
@@ -78,10 +87,47 @@ public class Statistics extends JPanel {
         plot.setBackgroundPaint(CommonStyle.BACKGROUND_COLOR); // 차트 내부 배경
         plot.getRangeAxis().setRange(0, 100); // Y축 범위 설정
 
+        NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setRange(0, 100); // Y축 범위 0~100%
+        rangeAxis.setTickUnit(new NumberTickUnit(10)); // 10% 단위 눈금 설정
+
+        // 점선용 스트로크 정의 (선 길이 5, 공백 5) - CASE_1 선택
+        float[] dashPattern = { 5.0f, 5.0f };
+        BasicStroke dashedStroke = new BasicStroke(
+                1.0f, // 선 굵기
+                BasicStroke.CAP_BUTT,
+                BasicStroke.JOIN_MITER,
+                10.0f,
+                dashPattern,
+                0.0f);
+
+        // 격자선에 점선 스타일 적용
+        plot.setDomainGridlineStroke(dashedStroke); // x축 격자선 (수직선)
+        plot.setRangeGridlineStroke(dashedStroke); // y축 격자선 (수평선)
+
+        // 격자선 색깔도 설정 가능 (원하는 색상으로 변경)
+        plot.setDomainGridlinePaint(Color.GRAY);
+        plot.setRangeGridlinePaint(Color.GRAY);
+
+        // 격자선 보이게 설정 (기본적으로 보임이지만 혹시 꺼져있으면 켜기)
+        plot.setDomainGridlinesVisible(true);
+        plot.setRangeGridlinesVisible(true);
+
         // 차트 선 두껍게 설정 및 점 제거
         LineAndShapeRenderer renderer = new LineAndShapeRenderer();
         renderer.setSeriesStroke(0, new BasicStroke(3.5f)); // 1.0f로 설정된 선을 더 굵게 표현
-        renderer.setSeriesShapesVisible(0, false);
+        renderer.setSeriesShapesVisible(0, true);
+
+        // 값 표시 활성화 (점 위에 숫자 보임) - CASE_2 선택
+        renderer.setDefaultItemLabelsVisible(true);
+
+        // 값 표시 형식 지정 (예: 소수점 1자리, % 붙임)
+        renderer.setDefaultItemLabelGenerator(new StandardCategoryItemLabelGenerator(
+                "{2}%", NumberFormat.getNumberInstance()));
+
+        // 값 글꼴, 색상도 설정 가능
+        renderer.setDefaultItemLabelFont(CHART_FONT);
+        renderer.setDefaultItemLabelPaint(Color.BLACK);
         plot.setRenderer(renderer);
 
         // 차트를 담는 패널
@@ -97,7 +143,7 @@ public class Statistics extends JPanel {
         medicationPanel.setBackground(Color.WHITE); // 배경색 흰색
 
         // 상단: 복약 여부 아이콘으로 표시
-        Boolean[] status = new statistics.PhillDAO().getWeeklyMedicationStatus(Login.UserSearch.curUserID);
+        Boolean[] status = new statistics.PhillDAO().getWeeklyMedicationStatus(Session.getUserId());
         LocalDate today = LocalDate.now();
         LocalDate monday = today.with(DayOfWeek.MONDAY);
 
@@ -160,8 +206,16 @@ public class Statistics extends JPanel {
         centerPanel.add(chartPanel, BorderLayout.NORTH); // 상단: 차트
         centerPanel.add(medicationWrapper, BorderLayout.CENTER); // 중앙: 복약 패널
 
-        JLabel todoRate = new JLabel("투두리스트 총 달성도: 80%");
-        JLabel medRate = new JLabel("복약률 총 달성도: 90%");
+        // String userId = Session.getUserId();
+        String userId = "testuser";
+        StatisticsTodoDAO todoDAO = new StatisticsTodoDAO();
+        PhillDAO pillDAO = new PhillDAO();
+
+        double todoRateValue = todoDAO.getTotalTodo(userId);
+        double pillRateValue = pillDAO.getTotalPill(userId);
+
+        JLabel todoRate = new JLabel("투두리스트 총 달성도: " + (int) todoRateValue + "%");
+        JLabel medRate = new JLabel("복약률 총 달성도: " + (int) pillRateValue + "%");
         todoRate.setFont(CommonStyle.BUTTON_FONT);
         medRate.setFont(CommonStyle.BUTTON_FONT);
 
