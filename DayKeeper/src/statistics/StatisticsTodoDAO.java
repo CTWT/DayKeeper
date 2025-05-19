@@ -111,4 +111,33 @@ public class StatisticsTodoDAO {
             default -> "";
         };
     }
+
+    public double getTotalTodo(String userId) {
+        double rate = 0.0;
+
+        String sql = "SELECT COUNT(*) AS total, SUM(CASE WHEN todoYn = 'Y' THEN 1 ELSE 0 END) AS completed " +
+                "FROM TODO WHERE id = ?";
+
+        try (Connection conn = DBManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, userId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    int total = rs.getInt("total");
+                    int completed = rs.getInt("completed");
+
+                    if (total > 0) {
+                        rate = (completed * 100.0) / total;
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return rate;
+    }
 }
