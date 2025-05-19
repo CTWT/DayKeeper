@@ -5,9 +5,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import common.Session;
 import dbConnection.DBManager;
 import pill.pillManager.PillDTO;
 import pill.pillManager.PillManager;
+
+/*
+ * 작성자 : 김관호
+ * 작성일 : 2025.05.16
+ * 파일명 : PillDAO.java
+ * 설명 : Pill 에 대한 DAO
+ */
+
 
 public class PillDAO {
 
@@ -26,7 +35,7 @@ public class PillDAO {
      */
     public void loadDBData() {
         String sql = "SELECT pill_id, id, pillName, pillAmount, date FROM Pill WHERE id = ?";
-        String curUserId = "12345"; // 현재 사용자 ID (예시)
+        String curUserId = Session.getUserId(); // 현재 사용자 ID (예시)
 
         try (Connection con = DBManager.getConnection();
              PreparedStatement pstmt = con.prepareStatement(sql)) {
@@ -59,7 +68,7 @@ public class PillDAO {
      */
     public void releaseData() {
         String sql = "SELECT pill_id, pillAmount FROM pill WHERE id = ?";
-        String curUserId = "12345"; // 현재 사용자 ID (예시)
+        String curUserId = Session.getUserId(); // 현재 사용자 ID (예시)
 
         try (Connection con = DBManager.getConnection();
              PreparedStatement pstmt = con.prepareStatement(sql)) {
@@ -110,7 +119,7 @@ public class PillDAO {
      */
     private void settingNextInt() {
         String sql = "SELECT pill_id FROM Pill WHERE id = ?";
-        String curUserId = "12345"; // 현재 사용자 ID (예시)
+        String curUserId = Session.getUserId(); // 현재 사용자 ID (예시)
 
         try (Connection con = DBManager.getConnection();
              PreparedStatement pstmt = con.prepareStatement(sql)) {
@@ -190,7 +199,7 @@ public class PillDAO {
                 String sql = "INSERT INTO pill(pill_id, id, pillName, pillAmount, date) VALUES (?, ?, ?, ?, now())";
                 PreparedStatement pstmt = con.prepareStatement(sql);
                 pstmt.setInt(1, new PillDAO().getNextInt());
-                pstmt.setString(2, "12345");
+                pstmt.setString(2, Session.getUserId());
                 pstmt.setString(3, pillName);
                 pstmt.setInt(4, amount);
                 pstmt.executeUpdate();

@@ -9,7 +9,15 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import common.Session;
 import dbConnection.DBManager;
+
+/*
+ * 작성자 : 김관호
+ * 작성일 : 2025.05.16
+ * 파일명 : PillYnDAO.java
+ * 설명 : PillYn 에 대한 DAO
+ */
 
 public class PillYnDAO {
     /**
@@ -24,7 +32,7 @@ public class PillYnDAO {
             LocalDateTime time = LocalDateTime.now();
             Timestamp timestamp = Timestamp.valueOf(time);
             psmt.setTimestamp(1, timestamp);
-            psmt.setString(2, "12345"); //Login.UserSearch.curUserId;
+            psmt.setString(2, Session.getUserId()); //Login.UserSearch.curUserId;
             psmt.setString(3, YN);
             psmt.executeUpdate();
 
@@ -42,7 +50,7 @@ public class PillYnDAO {
         try (Connection con = DBManager.getConnection()) {
             String sql = "SELECT date from PILLYN where id = ?";
             PreparedStatement psmt = con.prepareStatement(sql);
-            psmt.setString(1, "12345"); //Login.UserSearch.curUserId;
+            psmt.setString(1, Session.getUserId()); //Login.UserSearch.curUserId;
             ResultSet rs = psmt.executeQuery();
             while(rs.next()){
                 Timestamp tstamp = rs.getTimestamp(1);
@@ -83,7 +91,7 @@ public class PillYnDAO {
         try (Connection con = DBManager.getConnection()) {
             String sql = "SELECT date, pillYn from PILLYN where id = ?";
             PreparedStatement psmt = con.prepareStatement(sql);
-            psmt.setString(1, "12345"); //Login.UserSearch.curUserId;
+            psmt.setString(1, Session.getUserId()); //Login.UserSearch.curUserId;
             ResultSet rs = psmt.executeQuery();
             while(rs.next()){
                 Date ts = rs.getDate(1);
@@ -109,7 +117,7 @@ public class PillYnDAO {
          try (Connection con = DBManager.getConnection()) {
             String sql = "SELECT date from PILLYN where id = ?";
             PreparedStatement psmt = con.prepareStatement(sql);
-            psmt.setString(1, "12345"); //Login.UserSearch.curUserId;
+            psmt.setString(1, Session.getUserId()); //Login.UserSearch.curUserId;
             ResultSet rs = psmt.executeQuery();
             while(rs.next()){
                 Date ts = rs.getDate(1);

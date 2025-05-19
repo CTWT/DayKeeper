@@ -26,8 +26,9 @@ import pill.pillDAO.PillAlramDAO;
  * 수업명 : Project DayKeeper
  * 이름 : 임해균
  * 작성자 : 임해균
- * 수정자 : 임해균
  * 작성일 : 2025.05.16
+ * 수정자 : 김관호
+ * 수정일 : 2025.05.19
  * 파일명 : TimeSettingPanel.java
  * 설명 : 원형 시계형 UI + 마우스 방향 따라 움직이는 시계침 구현 + 선택 시 고정
  */
@@ -79,10 +80,10 @@ public class PillTimeSettingDialog extends JDialog {
             if (selectedHour >= 0) {
                 alramDAO.registerAlarm(selectedHour);
 
-                String msg = (selectedHour == 0 ? "12시" : selectedHour + "시") + "로 설정되었습니다.";
-                JOptionPane.showMessageDialog(this, msg);
+                //String msg = (selectedHour == 0 ? "12시" : selectedHour + "시") + "로 설정되었습니다.";
+                //JOptionPane.showMessageDialog(this, msg);
             } else {
-                JOptionPane.showMessageDialog(this, "시간을 선택해주세요.");
+                //JOptionPane.showMessageDialog(this, "시간을 선택해주세요.");
             }
         });
 

@@ -7,7 +7,16 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.time.LocalTime;
 
+import common.Session;
 import dbConnection.DBManager;
+
+/*
+ * 작성자 : 김관호
+ * 작성일 : 2025.05.16
+ * 파일명 : PillAlramDAO.java
+ * 설명 : PillAlram 에 대한 DAO
+ */
+
 
 public class PillAlramDAO {
 
@@ -22,7 +31,7 @@ public class PillAlramDAO {
             // 알람 시간을 조회하는 SQL 쿼리
             String sql = "SELECT alramTime FROM PILL_ALRAM WHERE id = ?";
             PreparedStatement psmt = con.prepareStatement(sql);
-            psmt.setString(1, "12345"); // 로그인한 사용자의 ID (예시)
+            psmt.setString(1, Session.getUserId()); // 로그인한 사용자의 ID (예시)
             ResultSet rs = psmt.executeQuery();
             
             // 기존 알람이 존재하면 갱신, 그렇지 않으면 새로 등록
@@ -49,7 +58,7 @@ public class PillAlramDAO {
             // 선택한 시간을 LocalTime 형식으로 변환하여 설정
             LocalTime time = LocalTime.of(selectedHour, 0, 0);
             psmt.setTime(1, Time.valueOf(time));
-            psmt.setString(2, "12345"); // 로그인한 사용자의 ID (예시)
+            psmt.setString(2, Session.getUserId()); // 로그인한 사용자의 ID (예시)
             psmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -66,7 +75,7 @@ public class PillAlramDAO {
             String sql = "INSERT INTO PILL_ALRAM(alram_id, id, alramTime, date) VALUES(?, ?, ?, now())";
             PreparedStatement psmt = con.prepareStatement(sql);
             psmt.setInt(1, nextInt); // 알람 ID 설정
-            psmt.setString(2, "12345"); // 로그인한 사용자의 ID (예시)
+            psmt.setString(2, Session.getUserId()); // 로그인한 사용자의 ID (예시)
             
             // 선택한 시간을 LocalTime 형식으로 변환하여 설정
             LocalTime time = LocalTime.of(selectedHour, 0, 0);

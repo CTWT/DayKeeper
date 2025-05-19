@@ -12,6 +12,21 @@ import pill.pillManager.ResourcesManager;
 
 import java.awt.*;
 
+
+/*
+ * 수업명 : Project DayKeeper
+ * 이름 : 임해균
+ * 작성자 : 임해균
+ * 작성일 : 2025.05.16
+ * 수정자 : 김관호
+ * 수정일 : 2025.05.19
+ * 파일명 : PillDetailDialog.java
+ * 설명 : 여러 영양제를 동시에 선택하여 일괄 등록할 수 있는 패널
+ *       - 버튼 다중 선택 가능
+ *       - 수량은 스피너로 공통 입력
+ *       - DB에 한 번에 여러 약 insert 처리
+ */
+
 public class PillDetailDialog extends JDialog {
 
     public PillDetailDialog(Pill parent) {
@@ -75,7 +90,8 @@ public class PillDetailDialog extends JDialog {
         deleteBtn.setFocusPainted(false);
         deleteBtn.addActionListener(e->{
             deleteData(parent);
-            JOptionPane.showMessageDialog(this, "영양제가 삭제되었습니다.");
+            parent.update();
+            //JOptionPane.showMessageDialog(this, "영양제가 삭제되었습니다.");
             dispose();
         });
 

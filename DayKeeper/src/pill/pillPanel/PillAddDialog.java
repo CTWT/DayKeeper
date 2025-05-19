@@ -33,8 +33,9 @@ import pill.pillManager.ResourcesManager;
  * 수업명 : Project DayKeeper
  * 이름 : 임해균
  * 작성자 : 임해균
- * 수정자 : 임해균
  * 작성일 : 2025.05.16
+ * 수정자 : 김관호
+ * 수정일 : 2025.05.19
  * 파일명 : AddPillPanel.java
  * 설명 : 여러 영양제를 동시에 선택하여 일괄 등록할 수 있는 패널
  *       - 버튼 다중 선택 가능
@@ -126,7 +127,8 @@ public class PillAddDialog extends JDialog {
             for (String drug : selectedDrugs) {
                 new PillDAO().insertDrugToDB(drug, qty);
             }
-            JOptionPane.showMessageDialog(this, "추가 완료!");
+
+            parent.update();
             dispose();
         });
         bottomPanel.add(confirmBtn);

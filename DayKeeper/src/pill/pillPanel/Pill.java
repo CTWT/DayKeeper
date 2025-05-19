@@ -7,12 +7,15 @@ import javax.swing.JPanel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.ImageIcon;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 
 import common.CommonStyle;
+import config.BaseFrame;
+import config.ScreenType;
 import pill.pillDAO.PillDAO;
 import pill.pillDAO.PillYnDAO;
 import pill.pillManager.PillDTO;
@@ -39,10 +42,7 @@ import java.util.Arrays;
 
 
 /*
- * 수업명 : Project DayKeeper
- * 이름 : 임해균
  * 작성자 : 임해균
- * 수정자 : 임해균
  * 작성일 : 2025.05.16
  * 수정자 : 김관호
  * 작성일 : 2025.05.16
@@ -62,6 +62,7 @@ import java.util.Arrays;
 public class Pill extends JPanel {
     private Map<Integer, JLabel> countLabelMap = new HashMap<>();
     private Integer detail_id;
+    JPanel centerPanel;
 
     public Pill() {
         setLayout(new BorderLayout());
@@ -74,30 +75,10 @@ public class Pill extends JPanel {
         title.setText("등록된 영양제");
         add(title, BorderLayout.NORTH);
 
-        // 카드 그리드 패널
-        JPanel gridPanel = new JPanel(new GridBagLayout());
-        gridPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.anchor = GridBagConstraints.NORTHWEST;
-
-        HashMap<Integer, PillDTO> pillsMap = PillManager.getInst().getPillsMap();
-        int col = 0, row = 0;
-        for (Integer id : pillsMap.keySet()) {
-            gbc.gridx = col;
-            gbc.gridy = row;
-            gridPanel.add(createPillCard(id), gbc);
-            col++;
-            if (col == 4) {
-                col = 0;
-                row++;
-            }
-        }
-
         // 스크롤 가능 중앙 패널
-        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        centerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         centerPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
-        centerPanel.add(gridPanel);
+        centerPanel.add(createGrid());
 
         JScrollPane scrollPane = new JScrollPane(centerPanel);
         scrollPane.setBorder(null);
@@ -123,7 +104,10 @@ public class Pill extends JPanel {
         }
 
         addBtn.addActionListener(e -> OpenModal(ModalName.ADD));
-        homeBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "처음으로 돌아갑니다."));
+        homeBtn.addActionListener(e -> {
+            BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+            frame.showScreen(ScreenType.TODOLIST);
+        });
         timeBtn.addActionListener(e -> OpenModal(ModalName.TIMESETTING));
 
         // 영양제를 이미 섭취했으면 메세지 띄우고 아니라면 영양제 섭취
@@ -131,7 +115,7 @@ public class Pill extends JPanel {
             if (new PillYnDAO().checkConsume()) {
                 JOptionPane.showMessageDialog(this, "오늘은 이미 영양제를 섭취했습니다.");
             } else {
-                for (Integer id : pillsMap.keySet()) {
+                for (Integer id : PillManager.getInst().getPillsMap().keySet()) {
                     new PillDAO().consumePill(id, 1);
                     updateCountLabel(id);
                 }
@@ -256,6 +240,38 @@ public class Pill extends JPanel {
         pillDAO.releaseData();
         pillDAO.loadDBData();
         new PillYnDAO().insertInitialYNData();
+        
+        if(centerPanel != null && centerPanel.getComponentCount() != 0){
+            centerPanel.removeAll();
+            centerPanel.add(createGrid());
+            centerPanel.revalidate();
+            centerPanel.repaint();
+        }
+        
+    }
+
+    private JPanel createGrid(){
+        // 카드 그리드 패널
+        JPanel gridPanel = new JPanel(new GridBagLayout());
+        gridPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+
+        HashMap<Integer, PillDTO> pillsMap = PillManager.getInst().getPillsMap();
+        int col = 0, row = 0;
+        for (Integer id : pillsMap.keySet()) {
+            gbc.gridx = col;
+            gbc.gridy = row;
+            gridPanel.add(createPillCard(id), gbc);
+            col++;
+            if (col == 4) {
+                col = 0;
+                row++;
+            }
+        }
+
+        return gridPanel;
     }
 
 }
