@@ -35,6 +35,10 @@ public class FindInfo extends JDialog {
     private final PwFind pwFindInstance = new PwFind();
     private final IdFind idFindInstance = new IdFind();
 
+     /**
+     * 생성자: FindInfo 기본 레이아웃 및 패널
+     * @param parent 부모 프레임
+     */
     public FindInfo(Frame parent) {
         super(parent, "DayKeeper", true);
         setLayout(new BorderLayout());
@@ -51,6 +55,10 @@ public class FindInfo extends JDialog {
         add(cardPanel, BorderLayout.CENTER);
     }
 
+     /**
+     * 메인 메뉴 패널 생성 (타이틀, 전환 버튼, 닫기 버튼 포함)
+     * @return 메뉴 패널
+     */
     private JPanel buildMenuPanel() {
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
@@ -76,6 +84,11 @@ public class FindInfo extends JDialog {
         return menuPanel;
     }
 
+    /**
+     * 타이틀 패널 생성
+     * @param title 타이틀 텍스트
+     * @return 타이틀 패널
+     */
     private JPanel createTitlePanel(String title) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         panel.setBackground(Color.WHITE);
@@ -89,6 +102,10 @@ public class FindInfo extends JDialog {
         return panel;
     }
 
+    /**
+     * 아이디 찾기/비밀번호 찾기 전환 버튼 패널 생성
+     * @return 버튼 패널
+     */
     private JPanel createSwitchButtons() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 30));
         panel.setBackground(Color.WHITE);
@@ -111,7 +128,10 @@ public class FindInfo extends JDialog {
         return panel;
     }
 
-    // 공통 닫기 버튼
+    /**
+     * 닫기 버튼 패널 생성
+     * @return 닫기 버튼 패널
+     */
     private JPanel createCloseButton() {
         JPanel panel = new JPanel();
         panel.setBackground(Color.WHITE);
@@ -129,7 +149,12 @@ public class FindInfo extends JDialog {
         return panel;
     }
 
-    // 공통 버튼
+    /**
+     * 공통 스타일의 버튼 생성
+     * @param text 버튼 텍스트
+     * @param action 버튼 클릭 시 액션 리스너
+     * @return 스타일 적용된 버튼
+     */
     private JButton createStyledButton(String text, java.awt.event.ActionListener action) {
         JButton button = new JButton(text);
         button.setPreferredSize(new Dimension(120, 40));
@@ -144,6 +169,10 @@ public class FindInfo extends JDialog {
         return button;
     }
 
+    /**
+     * 카드 레이아웃에서 지정한 이름의 패널로 전환
+     * @param name 패널 이름
+     */
     private void showPanel(String name) {
         cardLayout.show(cardPanel, name);
     }
