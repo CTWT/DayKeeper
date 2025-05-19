@@ -1,6 +1,7 @@
 package pill.pillPanel;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -19,7 +20,6 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.HashMap;
 
 import common.CommonStyle;
-import pill.PillApp;
 import pill.pillDAO.PillAlramDAO;
 
 /*
@@ -32,8 +32,7 @@ import pill.pillDAO.PillAlramDAO;
  * 설명 : 원형 시계형 UI + 마우스 방향 따라 움직이는 시계침 구현 + 선택 시 고정
  */
 
-public class TimeSettingPanel extends JPanel {
-    private PillApp parentFrame;
+public class PillTimeSettingDialog extends JDialog {
     private int selectedHour = -1;  // 선택된 시간 초기값
 
     /**
@@ -42,10 +41,10 @@ public class TimeSettingPanel extends JPanel {
      * 
      * @param parent 부모 프레임
      */
-    public TimeSettingPanel(PillApp parent) {
-        this.parentFrame = parent;
+    public PillTimeSettingDialog(Pill parent) {
         setLayout(new BorderLayout());
         setBackground(CommonStyle.BACKGROUND_COLOR);
+        setSize(500, 500);
         
         // 알람 설정 DAO 객체 생성 및 초기화
         PillAlramDAO alramDAO = new PillAlramDAO();
@@ -88,7 +87,7 @@ public class TimeSettingPanel extends JPanel {
         });
 
         // 뒤로 버튼 클릭 이벤트
-        backBtn.addActionListener(e -> parentFrame.showPanel("list"));
+        backBtn.addActionListener(e -> dispose());
 
         // 버튼을 하단 패널에 추가
         bottomPanel.add(setBtn);

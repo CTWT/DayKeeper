@@ -1,52 +1,27 @@
 package pill.pillPanel;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Image;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.ImageIcon;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import common.CommonStyle;
-import pill.PillApp;
 import pill.pillDAO.PillDAO;
 import pill.pillManager.PillDTO;
 import pill.pillManager.PillManager;
 import pill.pillManager.ResourcesManager;
 
-/*
- * 수업명 : Project DayKeeper
- * 이름 : 임해균
- * 작성자 : 임해균
- * 수정일 : 2025.05.16
- * 파일명 : PillDetailPanel.java
- * 설명 : 영양제 상세 보기 화면. 이미지, 설명, 복용팁 출력 및 뒤로/삭제 버튼 제공
- */
+import java.awt.*;
 
-public class PillDetailPanel extends JPanel {
-    private PillApp parentFrame;
+public class PillDetailDialog extends JDialog {
 
-    public PillDetailPanel(PillApp parent) {
-        this.parentFrame = parent;
+    public PillDetailDialog(Pill parent) {
         setLayout(new BorderLayout());
         setBackground(CommonStyle.BACKGROUND_COLOR);
+        setSize(550, 600);
 
-        Integer pillId = parentFrame.getDetailId();
-        PillDTO dto = PillManager.getInst().getDataById(pillId);
+        PillDTO dto = PillManager.getInst().getDataById(parent.getDetailId());
         String pillName = dto.getPillName();
-        int amount = new PillDAO().getPillAmount(pillId);
+        int amount = new PillDAO().getPillAmount(parent.getDetailId());
 
         // 상단 제목
         JLabel titleLabel = new JLabel(pillName + " (" + amount + "개 남음)", SwingConstants.CENTER);
@@ -92,15 +67,16 @@ public class PillDetailPanel extends JPanel {
 
         CommonStyle.stylePrimaryButton(backBtn);
         backBtn.setPreferredSize(new Dimension(90, 35));
-        backBtn.addActionListener(e -> parentFrame.showPanel("list"));
+        backBtn.addActionListener(e -> dispose());
 
         deleteBtn.setPreferredSize(new Dimension(90, 35));
         deleteBtn.setFont(CommonStyle.TEXT_FONT);
         deleteBtn.setBackground(new Color(255, 230, 230));
         deleteBtn.setFocusPainted(false);
         deleteBtn.addActionListener(e->{
-            deleteData(parentFrame);
-            parentFrame.showPanel("list");
+            deleteData(parent);
+            JOptionPane.showMessageDialog(this, "영양제가 삭제되었습니다.");
+            dispose();
         });
 
         btnPanel.add(backBtn);
@@ -146,7 +122,7 @@ public class PillDetailPanel extends JPanel {
      * 
      * @param parent 부모패널
      */
-    private void deleteData(PillApp parent){
+    private void deleteData(Pill parent){
         new PillDAO().deleteDataById(parent.getDetailId());
     }
 }

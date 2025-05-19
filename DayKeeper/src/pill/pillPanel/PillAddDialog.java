@@ -16,6 +16,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -24,7 +25,6 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
 import common.CommonStyle;
-import pill.PillApp;
 import pill.pillDAO.PillDAO;
 import pill.pillManager.PillManager;
 import pill.pillManager.ResourcesManager;
@@ -43,18 +43,17 @@ import pill.pillManager.ResourcesManager;
  */
 
 
-public class AddPillPanel extends JPanel {
-    private PillApp parentFrame;
+public class PillAddDialog extends JDialog {
     private JLabel nameLabel;
     private JLabel descLabel;
     private JLabel imageLabel;
     private Set<String> selectedDrugs = new HashSet<>();
     private HashMap<String, JButton> buttonMap = new HashMap<>();
 
-    public AddPillPanel(PillApp parent) {
-        this.parentFrame = parent;
+    public PillAddDialog(Pill parent) {
         setLayout(new BorderLayout(10, 10));
         setBackground(CommonStyle.BACKGROUND_COLOR);
+        setSize(550, 700);
 
         // 상단 제목
         nameLabel = CommonStyle.createTitleLabel();
@@ -128,7 +127,7 @@ public class AddPillPanel extends JPanel {
                 new PillDAO().insertDrugToDB(drug, qty);
             }
             JOptionPane.showMessageDialog(this, "추가 완료!");
-            parentFrame.showPanel("list");
+            dispose();
         });
         bottomPanel.add(confirmBtn);
 
@@ -137,7 +136,7 @@ public class AddPillPanel extends JPanel {
         backBtn.setPreferredSize(new Dimension(80, 35));
         backBtn.setFont(CommonStyle.TEXT_FONT);
         backBtn.setBackground(Color.LIGHT_GRAY);
-        backBtn.addActionListener(e -> parentFrame.showPanel("list"));
+        backBtn.addActionListener(e -> dispose());
         bottomPanel.add(backBtn);
 
         add(bottomPanel, BorderLayout.SOUTH);

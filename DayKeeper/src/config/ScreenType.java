@@ -15,7 +15,8 @@ public enum ScreenType {
     // 화면만 가지고 가는 enum 여기에 생성화면 추가시 자동적용
     LOGIN("login", login.Login.class),
     TODOLIST("todoList", todoList.TodoList.class),
-    STATISTICS("statistic", statistics.Statistics.class);
+    STATISTICS("statistic", statistics.Statistics.class),
+    PILL("Pill", pill.pillPanel.Pill.class);
     // 필요시 추가
 
     private final String screenName;

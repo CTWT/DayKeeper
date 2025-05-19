@@ -1,6 +1,7 @@
 package pill.pillPanel;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
@@ -12,7 +13,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 
 import common.CommonStyle;
-import pill.PillApp;
 import pill.pillDAO.PillDAO;
 import pill.pillDAO.PillYnDAO;
 import pill.pillManager.PillDTO;
@@ -53,20 +53,21 @@ import java.util.Arrays;
  *       - '영양제 섭취' 버튼 누르면 전체 약 수량 -1 처리
  */
 
+ enum ModalName{
+    DETAIL,
+    ADD,
+    TIMESETTING,
+ }
+
 public class Pill extends JPanel {
-    private PillApp parentFrame;
     private Map<Integer, JLabel> countLabelMap = new HashMap<>();
+    private Integer detail_id;
 
-    public Pill(PillApp parent) {
-        this.parentFrame = parent;
-
-        PillDAO pillDAO = new PillDAO();
-        pillDAO.releaseData();
-        pillDAO.loadDBData();
-        new PillYnDAO().insertInitialYNData();
-
+    public Pill() {
         setLayout(new BorderLayout());
         setBackground(CommonStyle.BACKGROUND_COLOR);
+
+        update();
 
         // 상단 제목
         JLabel title = CommonStyle.createTitleLabel();
@@ -121,9 +122,9 @@ public class Pill extends JPanel {
             bottom.add(btn);
         }
 
-        addBtn.addActionListener(e -> parentFrame.showPanel("add"));
+        addBtn.addActionListener(e -> OpenModal(ModalName.ADD));
         homeBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "처음으로 돌아갑니다."));
-        timeBtn.addActionListener(e -> parentFrame.showPanel("time"));
+        timeBtn.addActionListener(e -> OpenModal(ModalName.TIMESETTING));
 
         // 영양제를 이미 섭취했으면 메세지 띄우고 아니라면 영양제 섭취
         consumeBtn.addActionListener(e -> {
@@ -136,7 +137,7 @@ public class Pill extends JPanel {
                 }
                 JOptionPane.showMessageDialog(this, "전체 영양제를 1개씩 섭취 처리했습니다.");
                 new PillYnDAO().changeYnToDB("Y");
-                parentFrame.showPanel("list");
+                update();
             }
         });
 
@@ -194,8 +195,8 @@ public class Pill extends JPanel {
             iconLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    parentFrame.setDetailId(pillId);
-                    parentFrame.showPanel("detail");
+                    detail_id = pillId;
+                    OpenModal(ModalName.DETAIL);
                 }
             });
 
@@ -221,6 +222,40 @@ public class Pill extends JPanel {
     private void updateCountLabel(Integer pillId) {
         int updated = new PillDAO().getPillAmount(pillId);
         countLabelMap.get(pillId).setText("남은 수량: " + updated);
+    }
+
+    private void OpenModal(ModalName modalName) {
+        JDialog dialog = null;
+        
+        if(modalName == ModalName.DETAIL){
+            dialog = new PillDetailDialog(this);
+        }
+        
+        else if(modalName == ModalName.ADD) {
+            dialog = new PillAddDialog(this);
+        }
+        
+        else if(modalName == ModalName.TIMESETTING){
+            dialog = new PillTimeSettingDialog(this);
+        }
+        
+        if(dialog != null){
+            dialog.setVisible(true); 
+            dialog.setModalityType(JDialog.ModalityType.APPLICATION_MODAL);
+            dialog.setLocationRelativeTo(null); // 화면 중앙에 위치
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        }
+    }
+
+    public Integer getDetailId(){
+        return detail_id;
+    }
+
+    public void update(){
+        PillDAO pillDAO = new PillDAO();
+        pillDAO.releaseData();
+        pillDAO.loadDBData();
+        new PillYnDAO().insertInitialYNData();
     }
 
 }
