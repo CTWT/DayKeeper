@@ -27,11 +27,14 @@ import dbConnection.DBManager;
 public class TimeSettingPanel extends JPanel {
     private PillApp parent;
     private int selectedHour = -1;
+    private static int nextInt = 0;
 
     public TimeSettingPanel(PillApp parent) {
         this.parent = parent;
         setLayout(new BorderLayout());
         setBackground(CommonStyle.BACKGROUND_COLOR);
+        PillAlramDAO alramDAO = new PillAlramDAO();
+        alramDAO.settingNextInt();
 
         JLabel title = CommonStyle.createTitleLabel();
         title.setText("복용 시간 시각화");
@@ -55,7 +58,7 @@ public class TimeSettingPanel extends JPanel {
 
         setBtn.addActionListener(e -> {
             if (selectedHour >= 0) {
-                registerAlarm(selectedHour);
+                alramDAO.registerAlarm(selectedHour);
 
                 String msg = (selectedHour == 0 ? "12시" : selectedHour + "시") + "로 설정되었습니다.";
                 JOptionPane.showMessageDialog(this, msg);
@@ -170,31 +173,5 @@ public class TimeSettingPanel extends JPanel {
         }
     }
 
-    private void registerAlarm(int selectedHour){
-        try (Connection con = DBManager.getConnection()) {
-            String sql = "SELECT alramTime from PILL_ALRAM where id = ?";
-            PreparedStatement psmt = con.prepareStatement(sql);
-            psmt.setString(1, "12345"); //Login.UserSearch.curUserId;
-            ResultSet rs = psmt.executeQuery();
-            while(rs.next()){
-                Time ts = rs.getTime(1);
-                LocalTime curTime = LocalTime.now();
-                if(ts.toString().equals(curTime.toString())){
-                    updateAlarm(selectedHour);
-                    return;
-                }                
-            }
-            insertAlarm(selectedHour);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void updateAlarm(int selectedHour){
-
-    }
-
-    private void insertAlarm(int selectedHour){
-
-    }
+    
 }
