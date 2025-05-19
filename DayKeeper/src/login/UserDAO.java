@@ -58,13 +58,13 @@ public class UserDAO {
     }
 
     // 아이디 중복확인
-    public boolean isDuplicateId(UserDTO user) {
+    public boolean isDuplicateId(String id) {
         String sql = "SELECT id FROM user WHERE id = ?"; // 아이디 중복확인 쿼리
 
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, user.getId()); // 아이디 설정
+            pstmt.setString(1, id); // 아이디 설정
             ResultSet rs = pstmt.executeQuery();
             return rs.next(); // 중복된 아이디가 있으면 true 반환
 
@@ -75,13 +75,13 @@ public class UserDAO {
     }
 
     // 이름으로 아이디 찾기
-    public String findIdByName(UserDTO user) {
+    public String findIdByName(String name) {
         String sql = "SELECT id FROM user WHERE name = ?"; // 아이디 찾기 쿼리
 
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, user.getName()); // 이름 설정
+            pstmt.setString(1, name); // 이름 설정
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {

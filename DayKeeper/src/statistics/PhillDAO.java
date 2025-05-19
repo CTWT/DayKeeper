@@ -10,6 +10,15 @@ import java.time.format.DateTimeFormatter;
 
 import dbConnection.DBManager;
 
+/*
+ * 생성자 : 이주하
+ * 생성일 : 25.05.16
+ * 파일명 : PhillDAO.java
+ * 수정자 : 
+ * 수정일 : 
+ * 설명 : 복약 여부 DAO
+ */
+
 public class PhillDAO {
 
     public Boolean[] getWeeklyMedicationStatus(String userId) {

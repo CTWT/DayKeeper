@@ -54,7 +54,7 @@ public class Signup extends JPanel {
         gbc.gridwidth = 1; // 열 너비 설정
         gbc.gridy++; // 위치 변경
         gbc.gridx = 0; // 첫 번째 열
-        add(common.CommonStyle.createLabel("USER NAME"), gbc); // 라벨 추가
+        add(common.CommonStyle.createLabel("ID"), gbc); // 라벨 추가
 
         // User Id 입력 필드
         gbc.gridx = 1; // 두 번째 열
@@ -78,7 +78,7 @@ public class Signup extends JPanel {
             UserDAO dao = new UserDAO();
             UserDTO user = new UserDTO();
             user.setId(id);
-            if (dao.isDuplicateId(user)) {
+            if ((dao.isDuplicateId(id))) {
                 JOptionPane.showMessageDialog(this, "이미 사용 중인 아이디입니다.");
             } else {
                 JOptionPane.showMessageDialog(this, "사용 가능한 아이디입니다!");
