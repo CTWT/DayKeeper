@@ -30,6 +30,23 @@ public class TotalStatisticsPanel extends JPanel {
         initComponents(userId); // UI 컴포넌트 초기화 메서드 호출
     }
 
+    private String getTitleFromRate(double rate) {
+        if (rate >= 100)
+            return "퍼펙트 케어러";
+        else if (rate >= 90)
+            return "완벽을 향해!";
+        else if (rate >= 70)
+            return "꾸준한 관리인";
+        else if (rate >= 50)
+            return "타노스도 인정한 균형";
+        else if (rate >= 30)
+            return "관리가 소홀한 자";
+        else if (rate >= 10)
+            return "리스트 방치 중";
+        else
+            return "의욕 실종";
+    }
+
     private void initComponents(String userId) {
 
         // DAO를 통해 투두리스트 전체 달성률을 퍼센트로 반환받음
@@ -39,10 +56,12 @@ public class TotalStatisticsPanel extends JPanel {
         double pillRateValue = pillDAO.getTotalPill(userId);
 
         // 투두리스트 총 달성도를 표시하는 JLabel 생성, 정수형으로 변환해 텍스트에 포함
-        JLabel todoRate = new JLabel("투두리스트 총 달성도: " + (int) todoRateValue + "%");
+        JLabel todoRate = new JLabel(String.format("투두리스트 총 달성도: %.2f%% (%s) ",
+                todoRateValue, getTitleFromRate(todoRateValue)));
 
         // 영양제 복약률 총 달성도를 표시하는 JLabel 생성, 정수형으로 변환해 텍스트에 포함
-        JLabel medRate = new JLabel("복약률 총 달성도: " + (int) pillRateValue + "%");
+        JLabel medRate = new JLabel(String.format("복약률 총 달성도: %.2f%% (%s) ",
+                pillRateValue, getTitleFromRate(pillRateValue)));
 
         // 라벨들에 공통 버튼 폰트 스타일 적용
         todoRate.setFont(CommonStyle.BUTTON_FONT);
