@@ -1,20 +1,11 @@
 package pill.pillPanel;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.ImageIcon;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
 
 import common.CommonStyle;
-import common.CommonStyle.BottomPanelComponents;
 import config.BaseFrame;
 import config.ScreenType;
 import pill.pillDAO.PillDAO;
@@ -23,41 +14,20 @@ import pill.pillManager.PillDTO;
 import pill.pillManager.PillManager;
 import pill.pillManager.ResourcesManager;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Image;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
-import java.util.HashMap;
-import java.util.Map;
-
-
 /*
  * 작성자 : 임해균
  * 작성일 : 2025.05.16
  * 수정자 : 김관호
- * 작성일 : 2025.05.16
- * 파일명 : PillListPanel.java
+ * 수정일 : 2025.05.20
+ * 파일명 : Pill.java
  * 설명 : 전체 영양제 목록을 카드 형식으로 보여주는 패널
- *       - 클릭 선택 기능 제거
- *       - 이미지 클릭 시 상세 보기 전환
- *       - '영양제 섭취' 버튼 누르면 전체 약 수량 -1 처리
  */
 
- enum ModalName{
+enum ModalName {
     DETAIL,
     ADD,
     TIMESETTING,
- }
+}
 
 public class Pill extends JPanel {
     private Map<Integer, JLabel> countLabelMap = new HashMap<>();
@@ -70,12 +40,31 @@ public class Pill extends JPanel {
 
         update();
 
-        // 상단 제목
-        JLabel title = CommonStyle.createTitleLabel();
-        title.setText("등록된 영양제");
-        add(title, BorderLayout.NORTH);
+        // 🟦 타이틀 패널 (DAY-KEEPER + 좌측 정렬된 '등록된 영양제')
+        JPanel titlePanel = new JPanel();
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
+        titlePanel.setBackground(CommonStyle.BACKGROUND_COLOR);
 
-        // 스크롤 가능 중앙 패널
+        JLabel titleLabel = new JLabel("DAY-KEEPER", SwingConstants.CENTER);
+        titleLabel.setFont(CommonStyle.TITLE_FONT);
+        titleLabel.setForeground(CommonStyle.PRIMARY_COLOR);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JPanel subTitleWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
+        subTitleWrapper.setBackground(CommonStyle.BACKGROUND_COLOR);
+
+        JLabel subTitleLabel = new JLabel("등록된 영양제");
+        subTitleLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+        subTitleWrapper.add(subTitleLabel);
+
+        titlePanel.add(Box.createVerticalStrut(10));
+        titlePanel.add(titleLabel);
+        titlePanel.add(Box.createVerticalStrut(10));
+        titlePanel.add(subTitleWrapper);
+
+        add(titlePanel, BorderLayout.NORTH);
+
+        // 🟦 스크롤 영역
         centerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         centerPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
         centerPanel.add(createGrid());
@@ -88,18 +77,45 @@ public class Pill extends JPanel {
         scrollPane.getVerticalScrollBar().setUnitIncrement(40);
         add(scrollPane, BorderLayout.CENTER);
 
-        // 하단 버튼
-        BottomPanelComponents bottom = createBottomPanel();
+        // 🟦 하단 버튼 패널
+        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 15));
+        bottom.setBackground(CommonStyle.BACKGROUND_COLOR);
 
-        add(bottom.panel, BorderLayout.SOUTH);
+        JButton addBtn = new JButton("➕ 추가");
+        JButton homeBtn = new JButton("🏠 처음으로");
+        JButton timeBtn = new JButton("⏱ 시간 설정");
+        JButton consumeBtn = new JButton("💊 영양제 섭취");
+
+        for (JButton btn : Arrays.asList(addBtn, homeBtn, timeBtn, consumeBtn)) {
+            btn.setFont(CommonStyle.TEXT_FONT);
+            CommonStyle.stylePrimaryButton(btn);
+            bottom.add(btn);
+        }
+
+        addBtn.addActionListener(e -> OpenModal(ModalName.ADD));
+        homeBtn.addActionListener(e -> {
+            BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+            frame.showScreen(ScreenType.TODOLIST);
+        });
+        timeBtn.addActionListener(e -> OpenModal(ModalName.TIMESETTING));
+
+        consumeBtn.addActionListener(e -> {
+            if (new PillYnDAO().checkConsume()) {
+                JOptionPane.showMessageDialog(this, "오늘은 이미 영양제를 섭취했습니다.");
+            } else {
+                for (Integer id : PillManager.getInst().getPillsMap().keySet()) {
+                    new PillDAO().consumePill(id, 1);
+                    updateCountLabel(id);
+                }
+                JOptionPane.showMessageDialog(this, "전체 영양제를 1개씩 섭취 처리했습니다.");
+                new PillYnDAO().changeYnToDB("Y");
+                update();
+            }
+        });
+
+        add(bottom, BorderLayout.SOUTH);
     }
 
-    /**
-     * 해당 id의 영양제에 대한 패널 리턴
-     *
-     * @param pillId 영양제 id
-     * @return 영양제 정보 패널
-     */
     private JPanel createPillCard(Integer pillId) {
         JPanel wrapper = new JPanel();
         wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
@@ -109,7 +125,6 @@ public class Pill extends JPanel {
         String pillName = PillManager.getInst().getDataById(pillId).getPillName();
         int amount = new PillDAO().getPillAmount(pillId);
 
-        // 약 이름 + 수량
         JPanel labelPanel = new JPanel();
         labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.Y_AXIS));
         labelPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
@@ -129,7 +144,6 @@ public class Pill extends JPanel {
         labelPanel.add(Box.createVerticalStrut(3));
         labelPanel.add(countLabel);
 
-        // 이미지 카드
         JPanel card = new JPanel(null);
         card.setPreferredSize(new Dimension(150, 150));
         card.setBackground(Color.WHITE);
@@ -164,11 +178,6 @@ public class Pill extends JPanel {
         return wrapper;
     }
 
-    /**
-     * 해당 id의 영양제의 개수를 감소시킵니다.
-     *
-     * @param pillId 영양제 id
-     */
     private void updateCountLabel(Integer pillId) {
         int updated = new PillDAO().getPillAmount(pillId);
         countLabelMap.get(pillId).setText("남은 수량: " + updated);
@@ -176,48 +185,42 @@ public class Pill extends JPanel {
 
     private void OpenModal(ModalName modalName) {
         JDialog dialog = null;
-        
-        if(modalName == ModalName.DETAIL){
+
+        if (modalName == ModalName.DETAIL) {
             dialog = new PillDetailDialog(this);
-        }
-        
-        else if(modalName == ModalName.ADD) {
+        } else if (modalName == ModalName.ADD) {
             dialog = new PillAddDialog(this);
-        }
-        
-        else if(modalName == ModalName.TIMESETTING){
+        } else if (modalName == ModalName.TIMESETTING) {
             dialog = new PillTimeSettingDialog(this);
         }
-        
-        if(dialog != null){
+
+        if (dialog != null) {
             dialog.setModalityType(JDialog.ModalityType.APPLICATION_MODAL);
-            dialog.setLocationRelativeTo(null); // 화면 중앙에 위치
+            dialog.setLocationRelativeTo(null);
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            dialog.setVisible(true); 
+            dialog.setVisible(true);
         }
     }
 
-    public Integer getDetailId(){
+    public Integer getDetailId() {
         return detail_id;
     }
 
-    public void update(){
+    public void update() {
         PillDAO pillDAO = new PillDAO();
         pillDAO.releaseData();
         pillDAO.loadDBData();
         new PillYnDAO().insertInitialYNData();
-        
-        if(centerPanel != null && centerPanel.getComponentCount() != 0){
+
+        if (centerPanel != null && centerPanel.getComponentCount() != 0) {
             centerPanel.removeAll();
             centerPanel.add(createGrid());
             centerPanel.revalidate();
             centerPanel.repaint();
         }
-        
     }
 
-    private JPanel createGrid(){
-        // 카드 그리드 패널
+    private JPanel createGrid() {
         JPanel gridPanel = new JPanel(new GridBagLayout());
         gridPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
         GridBagConstraints gbc = new GridBagConstraints();
@@ -239,57 +242,4 @@ public class Pill extends JPanel {
 
         return gridPanel;
     }
-
-    private BottomPanelComponents createBottomPanel()
-    {
-        BottomPanelComponents comp = new BottomPanelComponents();
-
-        comp.pillAdd = new JButton("➕ 추가");
-        comp.pillReturnHome = new JButton("🏠 처음으로");
-        comp.pillTimeSetting = new JButton("⏱ 시간 설정");
-        comp.pillConsume = new JButton("💊 영양제 섭취");
-
-        CommonStyle.stylePrimaryButton(comp.pillAdd);
-        CommonStyle.stylePrimaryButton(comp.pillReturnHome);
-        CommonStyle.stylePrimaryButton(comp.pillTimeSetting);
-        CommonStyle.stylePrimaryButton(comp.pillConsume);
-
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        bottomPanel.add(comp.pillAdd);
-        bottomPanel.add(comp.pillReturnHome);
-        bottomPanel.add(comp.pillTimeSetting);
-        bottomPanel.add(comp.pillConsume);
-
-        comp.panel = bottomPanel;
-
-        comp.pillAdd.addActionListener(e -> OpenModal(ModalName.ADD));
-        comp.pillReturnHome.addActionListener(e -> {
-            BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
-            frame.showScreen(ScreenType.TODOLIST);
-        });
-        comp.pillTimeSetting.addActionListener(e -> OpenModal(ModalName.TIMESETTING));
-
-        // 영양제를 이미 섭취했으면 메세지 띄우고 아니라면 영양제 섭취
-        comp.pillConsume.addActionListener(e -> {
-            if (PillManager.getInst().getPillsMap().size() <= 0) {
-                JOptionPane.showMessageDialog(this, "먼저 영양제를 추가해주세요.");
-                return;
-            }
-
-            if (new PillYnDAO().checkConsume()) {
-                JOptionPane.showMessageDialog(this, "오늘은 이미 영양제를 섭취했습니다.");
-            } else {
-                for (Integer id : PillManager.getInst().getPillsMap().keySet()) {
-                    new PillDAO().consumePill(id, 1);
-                    updateCountLabel(id);
-                }
-                JOptionPane.showMessageDialog(this, "전체 영양제를 1개씩 섭취 처리했습니다.");
-                new PillYnDAO().changeYnToDB("Y");
-                update();
-            }
-        });
-
-        return comp;
-    }
-
 }
