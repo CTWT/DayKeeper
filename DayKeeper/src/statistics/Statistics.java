@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.JFrame;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -15,7 +15,6 @@ import javax.swing.SwingUtilities;
 import common.Session;
 import config.BaseFrame;
 import config.ScreenType;
-import login.Login;
 import common.CommonStyle;
 
 /**
@@ -29,8 +28,6 @@ import common.CommonStyle;
 
 // 전체 통계 화면을 구성하는 메인 클래스
 public class Statistics extends JPanel {
-
-    private JPanel centerPanel; // 통계 패널들을 묶는 중앙 컨테이너
 
     public Statistics() {
 
@@ -51,19 +48,34 @@ public class Statistics extends JPanel {
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
 
+        // ===== 콤보박스 영역 =====
+        String[] weekOptions = { "이번 주", "지난 주", "2주 전" };
+        JComboBox<String> weekSelector = new JComboBox<>(weekOptions);
+        weekSelector.setPreferredSize(new Dimension(120, 25));
+        JPanel comboPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        comboPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
+        comboPanel.add(weekSelector);
+
         // 1. 투두리스트 차트 → 중앙 정렬
         TodoChartPanel todoChart = new TodoChartPanel(Session.getUserId(), LocalDate.now());
         todoChart.setPreferredSize(new Dimension(700, 300));
-        todoChart.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         JPanel chartWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
         chartWrapper.setBackground(CommonStyle.BACKGROUND_COLOR);
         chartWrapper.add(todoChart);
-        centerPanel.add(chartWrapper);
+
+        JPanel chartTopPanel = new JPanel();
+        chartTopPanel.setLayout(new BorderLayout());
+        chartTopPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
+        chartTopPanel.add(comboPanel, BorderLayout.NORTH);
+        chartTopPanel.add(chartWrapper, BorderLayout.CENTER);
+
+        centerPanel.add(chartTopPanel);
 
         // 2. 복약 체크 → 중앙 정렬
         PillCheckPanel pillCheck = new PillCheckPanel(Session.getUserId());
         pillCheck.setPreferredSize(new Dimension(400, 48));
         JPanel pillWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        pillWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, -10, 0));
         pillWrapper.setBackground(CommonStyle.BACKGROUND_COLOR);
         pillWrapper.add(pillCheck);
 
@@ -72,6 +84,7 @@ public class Statistics extends JPanel {
         // 3. 총 달성도 → 왼쪽 정렬
         TotalStatisticsPanel totalPanel = new TotalStatisticsPanel(Session.getUserId());
         JPanel totalWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT)); // 왼쪽 정렬
+        totalWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, -10, 0));
         totalWrapper.setBackground(CommonStyle.BACKGROUND_COLOR);
         totalWrapper.add(totalPanel);
         centerPanel.add(totalWrapper);
@@ -106,12 +119,4 @@ public class Statistics extends JPanel {
         // 하단 버튼 패널을 SOUTH에 추가
         this.add(bottom.panel, BorderLayout.SOUTH);
     }
-
-    public static void main(String[] args) {
-        BaseFrame frame = new BaseFrame(); // 기본 프레임 생성
-        Statistics statisticsPanel = new Statistics(); // 통계 패널 생성
-        frame.setContentPane(statisticsPanel); // 패널을 프레임에 설정
-        frame.setVisible(true); // 화면 표시
-    }
-
 }
