@@ -37,6 +37,10 @@ public class CommonStyle {
     public static class BottomPanelComponents {
         public JPanel panel;
         public JButton todoDetail;
+        public JButton pillAdd;
+        public JButton pillTimeSetting;
+        public JButton pillConsume;
+        public JButton pillReturnHome;
         public JButton pillDetail;
         public JButton statistics;
         public JButton returnPage;

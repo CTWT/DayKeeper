@@ -14,6 +14,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 
 import common.CommonStyle;
+import common.CommonStyle.BottomPanelComponents;
 import config.BaseFrame;
 import config.ScreenType;
 import pill.pillDAO.PillDAO;
@@ -38,7 +39,6 @@ import java.awt.event.MouseEvent;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Arrays;
 
 
 /*
@@ -89,43 +89,9 @@ public class Pill extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
 
         // 하단 버튼
-        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 15));
-        bottom.setBackground(CommonStyle.BACKGROUND_COLOR);
+        BottomPanelComponents bottom = createBottomPanel();
 
-        JButton addBtn = new JButton("➕ 추가");
-        JButton homeBtn = new JButton("🏠 처음으로");
-        JButton timeBtn = new JButton("⏱ 시간 설정");
-        JButton consumeBtn = new JButton("💊 영양제 섭취");
-
-        for (JButton btn : Arrays.asList(addBtn, homeBtn, timeBtn, consumeBtn)) {
-            btn.setFont(CommonStyle.TEXT_FONT);
-            CommonStyle.stylePrimaryButton(btn);
-            bottom.add(btn);
-        }
-
-        addBtn.addActionListener(e -> OpenModal(ModalName.ADD));
-        homeBtn.addActionListener(e -> {
-            BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
-            frame.showScreen(ScreenType.TODOLIST);
-        });
-        timeBtn.addActionListener(e -> OpenModal(ModalName.TIMESETTING));
-
-        // 영양제를 이미 섭취했으면 메세지 띄우고 아니라면 영양제 섭취
-        consumeBtn.addActionListener(e -> {
-            if (new PillYnDAO().checkConsume()) {
-                JOptionPane.showMessageDialog(this, "오늘은 이미 영양제를 섭취했습니다.");
-            } else {
-                for (Integer id : PillManager.getInst().getPillsMap().keySet()) {
-                    new PillDAO().consumePill(id, 1);
-                    updateCountLabel(id);
-                }
-                JOptionPane.showMessageDialog(this, "전체 영양제를 1개씩 섭취 처리했습니다.");
-                new PillYnDAO().changeYnToDB("Y");
-                update();
-            }
-        });
-
-        add(bottom, BorderLayout.SOUTH);
+        add(bottom.panel, BorderLayout.SOUTH);
     }
 
     /**
@@ -272,6 +238,58 @@ public class Pill extends JPanel {
         }
 
         return gridPanel;
+    }
+
+    private BottomPanelComponents createBottomPanel()
+    {
+        BottomPanelComponents comp = new BottomPanelComponents();
+
+        comp.pillAdd = new JButton("➕ 추가");
+        comp.pillReturnHome = new JButton("🏠 처음으로");
+        comp.pillTimeSetting = new JButton("⏱ 시간 설정");
+        comp.pillConsume = new JButton("💊 영양제 섭취");
+
+        CommonStyle.stylePrimaryButton(comp.pillAdd);
+        CommonStyle.stylePrimaryButton(comp.pillReturnHome);
+        CommonStyle.stylePrimaryButton(comp.pillTimeSetting);
+        CommonStyle.stylePrimaryButton(comp.pillConsume);
+
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        bottomPanel.add(comp.pillAdd);
+        bottomPanel.add(comp.pillReturnHome);
+        bottomPanel.add(comp.pillTimeSetting);
+        bottomPanel.add(comp.pillConsume);
+
+        comp.panel = bottomPanel;
+
+        comp.pillAdd.addActionListener(e -> OpenModal(ModalName.ADD));
+        comp.pillReturnHome.addActionListener(e -> {
+            BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+            frame.showScreen(ScreenType.TODOLIST);
+        });
+        comp.pillTimeSetting.addActionListener(e -> OpenModal(ModalName.TIMESETTING));
+
+        // 영양제를 이미 섭취했으면 메세지 띄우고 아니라면 영양제 섭취
+        comp.pillConsume.addActionListener(e -> {
+            if (PillManager.getInst().getPillsMap().size() <= 0) {
+                JOptionPane.showMessageDialog(this, "먼저 영양제를 추가해주세요.");
+                return;
+            }
+
+            if (new PillYnDAO().checkConsume()) {
+                JOptionPane.showMessageDialog(this, "오늘은 이미 영양제를 섭취했습니다.");
+            } else {
+                for (Integer id : PillManager.getInst().getPillsMap().keySet()) {
+                    new PillDAO().consumePill(id, 1);
+                    updateCountLabel(id);
+                }
+                JOptionPane.showMessageDialog(this, "전체 영양제를 1개씩 섭취 처리했습니다.");
+                new PillYnDAO().changeYnToDB("Y");
+                update();
+            }
+        });
+
+        return comp;
     }
 
 }
