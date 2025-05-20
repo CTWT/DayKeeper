@@ -16,17 +16,20 @@ import pill.pillDAO.PillAlramDAO;
  * 수정자 : 김관호
  * 수정일 : 2025.05.20
  * 파일명 : PillTimeSettingDialog.java
- * 설명 : 복용 시간 시각화 다이얼로그 (시계형 UI + 설정시간 라벨)
+ * 설명 : 복용 시간 시각화 다이얼로그 (설정 시간 + 시계 스타일 강조 버전)
  */
 
 public class PillTimeSettingDialog extends JDialog {
     private int selectedHour = -1;
+    private boolean isPM = false;
+    private boolean timeFixed = false;
     private JLabel selectedTimeLabel;
+    private JButton setBtn;
 
     public PillTimeSettingDialog(Pill parent) {
         setLayout(new BorderLayout());
-        setBackground(CommonStyle.BACKGROUND_COLOR);
-        setSize(500, 500);
+        getContentPane().setBackground(CommonStyle.BACKGROUND_COLOR);
+        setSize(500, 580);
         setLocationRelativeTo(null);
 
         PillAlramDAO alramDAO = new PillAlramDAO();
@@ -36,18 +39,17 @@ public class PillTimeSettingDialog extends JDialog {
         title.setText("복용 시간 시각화");
         add(title, BorderLayout.NORTH);
 
-
         ClockPanel clockPanel = new ClockPanel();
         add(clockPanel, BorderLayout.CENTER);
 
-        JPanel bottomPanel = new JPanel();
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         bottomPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
 
-        JButton setBtn = new JButton("시간 설정");
+        setBtn = new JButton("시간 설정");
         JButton backBtn = new JButton("뒤로");
 
-        setBtn.setPreferredSize(new Dimension(100, 35));
-        backBtn.setPreferredSize(new Dimension(100, 35));
+        setBtn.setPreferredSize(new Dimension(120, 40));
+        backBtn.setPreferredSize(new Dimension(120, 40));
 
         CommonStyle.stylePrimaryButton(setBtn);
         backBtn.setFont(CommonStyle.TEXT_FONT);
@@ -55,8 +57,10 @@ public class PillTimeSettingDialog extends JDialog {
 
         setBtn.addActionListener(e -> {
             if (selectedHour >= 0) {
-                alramDAO.registerAlarm(selectedHour);
-                String msg = (selectedHour == 0 ? "12시" : selectedHour + "시") + "로 설정되었습니다.";
+                int actualHour = isPM ? (selectedHour == 0 ? 12 : selectedHour + 12) : (selectedHour == 0 ? 0 : selectedHour);
+                alramDAO.registerAlarm(actualHour);
+                timeFixed = true;
+                String msg = String.format("%s %02d시로 설정되었습니다.", isPM ? "오후" : "오전", selectedHour == 0 ? 12 : selectedHour);
                 JOptionPane.showMessageDialog(PillTimeSettingDialog.this, msg, "알림", JOptionPane.INFORMATION_MESSAGE);
                 selectedTimeLabel.setText(getNoticeString());
             } else {
@@ -66,6 +70,20 @@ public class PillTimeSettingDialog extends JDialog {
 
         backBtn.addActionListener(e -> dispose());
 
+        JToggleButton ampmToggle = new JToggleButton("오전");
+        ampmToggle.setFont(CommonStyle.TEXT_FONT.deriveFont(Font.BOLD, 14f));
+        ampmToggle.setForeground(CommonStyle.PRIMARY_COLOR);
+        ampmToggle.setBackground(new Color(240, 240, 255));
+        ampmToggle.setBorder(BorderFactory.createLineBorder(CommonStyle.PRIMARY_COLOR));
+        ampmToggle.setPreferredSize(new Dimension(80, 40));
+
+        ampmToggle.addActionListener(e -> {
+            isPM = !isPM;
+            selectedTimeLabel.setText(getNoticeString());
+            ampmToggle.setText(isPM ? "오후" : "오전");
+        });
+
+        bottomPanel.add(ampmToggle);
         bottomPanel.add(setBtn);
         bottomPanel.add(backBtn);
         add(bottomPanel, BorderLayout.SOUTH);
@@ -75,35 +93,61 @@ public class PillTimeSettingDialog extends JDialog {
         private HashMap<Integer, Point> hourPoints = new HashMap<>();
         private Point mousePos = null;
         private double fixedAngle = Double.NaN;
-        
 
         public ClockPanel() {
-            setPreferredSize(new Dimension(400, 400));
+            setPreferredSize(new Dimension(400, 430));
             setLayout(null);
             setBackground(CommonStyle.BACKGROUND_COLOR);
 
-            // 설정 시간 라벨 - 흰 배경 + 파란 글씨 + 테두리
-            selectedTimeLabel = new JLabel(getNoticeString(), JLabel.CENTER);
-            selectedTimeLabel.setBounds(140, 10, 220, 35);
-            selectedTimeLabel.setFont(CommonStyle.BUTTON_FONT.deriveFont(Font.BOLD, 15f));
-            selectedTimeLabel.setOpaque(true);
-            selectedTimeLabel.setBackground(Color.WHITE);
-            selectedTimeLabel.setForeground(CommonStyle.PRIMARY_COLOR);
+            selectedTimeLabel = new JLabel(getNoticeString(), JLabel.CENTER) {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    GradientPaint gradient = new GradientPaint(0, 0, new Color(255, 255, 255), getWidth(), getHeight(), new Color(220, 230, 255));
+                    g2.setPaint(gradient);
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+
+                    // 텍스트 그림자
+                    String text = getText();
+                    Font font = getFont();
+                    g2.setFont(font);
+                    FontMetrics fm = g2.getFontMetrics();
+                    int x = (getWidth() - fm.stringWidth(text)) / 2;
+                    int y = (getHeight() + fm.getAscent()) / 2 - 4;
+                    g2.setColor(new Color(0, 0, 0, 50));
+                    g2.drawString(text, x + 2, y + 2);
+                    g2.setColor(getForeground());
+                    g2.drawString(text, x, y);
+                    g2.dispose();
+                }
+            };
+
+            selectedTimeLabel.setBounds(125, 10, 250, 50);
+            selectedTimeLabel.setFont(CommonStyle.TITLE_FONT.deriveFont(Font.BOLD, 18f));
+            selectedTimeLabel.setForeground(new Color(0, 51, 102));
             selectedTimeLabel.setBorder(BorderFactory.createLineBorder(CommonStyle.PRIMARY_COLOR, 2));
+            selectedTimeLabel.setOpaque(false);
             selectedTimeLabel.setEnabled(false);
             add(selectedTimeLabel);
+
+            JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+            separator.setBounds(50, 70, 380, 1);
+            separator.setForeground(new Color(180, 180, 200));
+            add(separator);
 
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
+                    if (timeFixed) return;
                     Point click = e.getPoint();
                     for (int i = 0; i < 12; i++) {
                         Point p = hourPoints.get(i);
                         if (p != null && p.distance(click) < 20) {
                             selectedHour = i;
-                            double angle = Math.toRadians(i * 30 - 90);
-                            fixedAngle = angle;
+                            fixedAngle = Math.toRadians(i * 30 - 90);
                             repaint();
+                            selectedTimeLabel.setText(getNoticeString());
                             break;
                         }
                     }
@@ -113,7 +157,7 @@ public class PillTimeSettingDialog extends JDialog {
             addMouseMotionListener(new MouseMotionAdapter() {
                 @Override
                 public void mouseMoved(MouseEvent e) {
-                    if (selectedHour == -1) {
+                    if (selectedHour == -1 && !timeFixed) {
                         mousePos = e.getPoint();
                         repaint();
                     }
@@ -128,14 +172,15 @@ public class PillTimeSettingDialog extends JDialog {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             int cx = getWidth() / 2;
-            int cy = getHeight() / 2 + 20; // 시계 약간 아래로 내려서 라벨과 겹치지 않게
+            int cy = getHeight() / 2 + 40;
             int radius = 140;
 
-            g2.setColor(new Color(230, 240, 255));
+            GradientPaint clockGradient = new GradientPaint(cx - radius, cy - radius, new Color(245, 250, 255), cx + radius, cy + radius, new Color(220, 230, 255));
+            g2.setPaint(clockGradient);
             g2.fillOval(cx - radius, cy - radius, radius * 2, radius * 2);
 
-            g2.setFont(CommonStyle.BUTTON_FONT);
             hourPoints.clear();
+            g2.setFont(CommonStyle.BUTTON_FONT.deriveFont(Font.BOLD, 15f));
 
             for (int i = 0; i < 12; i++) {
                 double angle = Math.toRadians(i * 30 - 90);
@@ -144,16 +189,14 @@ public class PillTimeSettingDialog extends JDialog {
                 hourPoints.put(i, new Point(tx, ty));
 
                 if (selectedHour == i) {
-                    g2.setColor(new Color(100, 150, 255));
+                    g2.setColor(CommonStyle.PRIMARY_COLOR);
                     g2.fillOval(tx - 18, ty - 18, 36, 36);
                     g2.setColor(Color.WHITE);
                 } else {
-                    g2.setColor(Color.DARK_GRAY);
+                    g2.setColor(new Color(90, 90, 90));
                 }
 
-                String label = (i == 0 ? "12시" : i + "시");
-                FontMetrics fm = g2.getFontMetrics();
-                g2.drawString(label, tx - fm.stringWidth(label) / 2, ty + fm.getHeight() / 4);
+                g2.drawString((i == 0 ? "12시" : i + "시"), tx - 12, ty + 6);
             }
 
             if (!Double.isNaN(fixedAngle)) {
@@ -176,7 +219,10 @@ public class PillTimeSettingDialog extends JDialog {
         }
     }
 
-    private String getNoticeString(){
-        return "설정 시간 : " + new PillAlramDAO().getRegisteredTime() + "시";
+    private String getNoticeString() {
+        if (selectedHour == -1) return "⏰ 설정 시간 : 00시";
+        String ampm = isPM ? "오전" : "오후";
+        int displayHour = selectedHour == 0 ? 12 : selectedHour;
+        return String.format("⏰ 설정 시간 : %s %02d시", ampm, displayHour);
     }
 }
