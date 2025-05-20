@@ -35,7 +35,7 @@ public class PillCheckPanel extends JPanel {
         LocalDate monday = date.with(DayOfWeek.MONDAY);
 
         // 기준 주간 복약 상태 배열 받아오기 (DAO 메서드는 userId, 기준주 월요일 인자를 받도록 수정 필요)
-        Boolean[] status = new PhillDAO().getWeeklyMedicationStatus(userId, monday);
+        Boolean[] status = new PillDAO().getWeeklyMedicationStatus(userId, monday);
 
         LocalDate today = LocalDate.now();
 
