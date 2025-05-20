@@ -5,8 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-
 import common.Session;
 import dbConnection.DBManager;
 
@@ -106,6 +107,34 @@ public class PillAlramDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    /*
+     * 등록된 알람시간을 가져오는 메서드
+     */
+    public String getRegisteredTime()
+    {
+        String resultTime = "--"; 
+        try (Connection con = DBManager.getConnection()) {
+            String sql = "SELECT alramTime FROM PILL_ALRAM WHERE id = ?";
+            PreparedStatement psmt = con.prepareStatement(sql);
+            psmt.setString(1, Session.getUserId());
+            ResultSet rs = psmt.executeQuery();
+            if(rs.next()){
+                Timestamp ts = rs.getTimestamp(1);
+                LocalDateTime dateTime = ts.toLocalDateTime();
+                String date = dateTime.toString();
+                int index = date.indexOf("T");
+                String Time = date.substring(index+1);
+                String hour = Time.substring(0,2);
+                
+                resultTime = hour;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return resultTime;
     }
 
     /**

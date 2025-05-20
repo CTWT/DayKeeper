@@ -21,6 +21,7 @@ import pill.pillDAO.PillAlramDAO;
 
 public class PillTimeSettingDialog extends JDialog {
     private int selectedHour = -1;
+    private JLabel selectedTimeLabel;
 
     public PillTimeSettingDialog(Pill parent) {
         setLayout(new BorderLayout());
@@ -34,6 +35,7 @@ public class PillTimeSettingDialog extends JDialog {
         JLabel title = CommonStyle.createTitleLabel();
         title.setText("복용 시간 시각화");
         add(title, BorderLayout.NORTH);
+
 
         ClockPanel clockPanel = new ClockPanel();
         add(clockPanel, BorderLayout.CENTER);
@@ -56,6 +58,7 @@ public class PillTimeSettingDialog extends JDialog {
                 alramDAO.registerAlarm(selectedHour);
                 String msg = (selectedHour == 0 ? "12시" : selectedHour + "시") + "로 설정되었습니다.";
                 JOptionPane.showMessageDialog(PillTimeSettingDialog.this, msg, "알림", JOptionPane.INFORMATION_MESSAGE);
+                selectedTimeLabel.setText(getNoticeString());
             } else {
                 JOptionPane.showMessageDialog(PillTimeSettingDialog.this, "시간을 선택해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
             }
@@ -72,7 +75,7 @@ public class PillTimeSettingDialog extends JDialog {
         private HashMap<Integer, Point> hourPoints = new HashMap<>();
         private Point mousePos = null;
         private double fixedAngle = Double.NaN;
-        private JLabel selectedTimeLabel;
+        
 
         public ClockPanel() {
             setPreferredSize(new Dimension(400, 400));
@@ -80,7 +83,7 @@ public class PillTimeSettingDialog extends JDialog {
             setBackground(CommonStyle.BACKGROUND_COLOR);
 
             // 설정 시간 라벨 - 흰 배경 + 파란 글씨 + 테두리
-            selectedTimeLabel = new JLabel("설정 시간 : --시", JLabel.CENTER);
+            selectedTimeLabel = new JLabel(getNoticeString(), JLabel.CENTER);
             selectedTimeLabel.setBounds(140, 10, 220, 35);
             selectedTimeLabel.setFont(CommonStyle.BUTTON_FONT.deriveFont(Font.BOLD, 15f));
             selectedTimeLabel.setOpaque(true);
@@ -100,7 +103,6 @@ public class PillTimeSettingDialog extends JDialog {
                             selectedHour = i;
                             double angle = Math.toRadians(i * 30 - 90);
                             fixedAngle = angle;
-                            selectedTimeLabel.setText("설정 시간 : " + (i == 0 ? "12시" : i + "시"));
                             repaint();
                             break;
                         }
@@ -172,5 +174,9 @@ public class PillTimeSettingDialog extends JDialog {
             g2.setStroke(new BasicStroke(2));
             g2.drawLine(cx, cy, hx, hy);
         }
+    }
+
+    private String getNoticeString(){
+        return "설정 시간 : " + new PillAlramDAO().getRegisteredTime() + "시";
     }
 }
