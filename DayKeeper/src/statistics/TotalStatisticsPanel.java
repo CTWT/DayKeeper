@@ -21,11 +21,11 @@ import common.CommonStyle;
 
 public class TotalStatisticsPanel extends JPanel {
     private StatisticsTodoDAO todoDAO; // 투두리스트 데이터 접근 객체 선언
-    private PhillDAO pillDAO; // 영양제 데이터 접근 객체 선언
+    private PillDAO pillDAO; // 영양제 데이터 접근 객체 선언
 
     public TotalStatisticsPanel(String userId, LocalDate date) {
         todoDAO = new StatisticsTodoDAO(); // 투두리스트 DAO 객체 생성
-        pillDAO = new PhillDAO(); // 영양제 DAO 객체 생성
+        pillDAO = new PillDAO(); // 영양제 DAO 객체 생성
 
         initComponents(userId, date); // UI 컴포넌트 초기화 메서드 호출
     }
