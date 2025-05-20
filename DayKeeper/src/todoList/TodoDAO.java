@@ -19,6 +19,11 @@ import dbConnection.DBManager;
 
 public class TodoDAO {
 
+    /**
+     * 
+     * @param id 유저 id
+     * @return
+     */
     public static List<TodoDTO> todoList(String id) {
         List<TodoDTO> list = new ArrayList<>();
         try (Connection conn = DBManager.getConnection();
@@ -41,6 +46,11 @@ public class TodoDAO {
         return list;
     }
 
+    /**
+     * 
+     * @param todo_id 할일 id
+     * @param id      유저 id
+     */
     public static void updateTodoYn(String todo_id, String id) {
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(

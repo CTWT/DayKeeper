@@ -2,12 +2,13 @@ package todoList;
 
 public class TodoDTO {
 
+    // 할일 ID
     private int todo_id;
 
-    private String id;
-
+    // 할일 타이틀
     private String todoTitle;
 
+    // 할일 달성여부
     private String todoYn;
 
     public int getTodo_id() {
@@ -24,14 +25,6 @@ public class TodoDTO {
 
     public void setTodo_id(int todo_id) {
         this.todo_id = todo_id;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getTodoYn() {

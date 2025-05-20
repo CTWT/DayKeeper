@@ -63,9 +63,10 @@ public class TodoList extends JPanel {
         subTitle.setFont(new Font("Arial", Font.BOLD, 16));
         centerPanel.add(subTitle, BorderLayout.NORTH);
 
-        //
+        // DB에서 목록 불러오기
         refreshTodoList();
 
+        // 테이블 모델 생성
         model = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -94,6 +95,8 @@ public class TodoList extends JPanel {
         refreshTodoListModel();
 
         table = new JTable(model);
+        table.getTableHeader().setDefaultRenderer(new HeaderWithBorderRenderer());
+        table.setGridColor(Color.LIGHT_GRAY); // 또는 원하는 색상
         table.setIntercellSpacing(new Dimension(8, 4));
         table.setRowHeight(28);
 
@@ -107,6 +110,7 @@ public class TodoList extends JPanel {
 
         add(centerPanel, BorderLayout.CENTER);
 
+        // 하단 공통 버튼 설정
         CommonStyle.BottomPanelComponents bottom = CommonStyle.createBottomPanel();
 
         bottom.todoDetail.addActionListener(e -> System.out.println("오늘할일상세보기 클릭됨"));
@@ -123,6 +127,7 @@ public class TodoList extends JPanel {
         add(bottom.panel, BorderLayout.SOUTH);
     }
 
+    // 현재 사용자의 해당하는 할 일 리스트 조회
     private void refreshTodoList() {
         try {
             todoList = TodoDAO.todoList(Session.getUserId());
@@ -135,17 +140,37 @@ public class TodoList extends JPanel {
         }
     }
 
+    // 리스트 내용을 테이블 모델 반영
     private void refreshTodoListModel() {
         if (model == null)
             return;
 
-        model.setRowCount(0);
+        model.setRowCount(0); // 기존 데이터 제거
+
         for (TodoDTO item : todoList) {
             model.addRow(new Object[] { item.getTodoTitle(), item.getTodoYn() });
         }
-        model.fireTableDataChanged();
+        model.fireTableDataChanged(); // UI갱신
     }
 
+    class HeaderWithBorderRenderer extends JLabel implements TableCellRenderer {
+        public HeaderWithBorderRenderer() {
+            setFont(new Font("맑은 고딕", Font.BOLD, 13));
+            setOpaque(true);
+            setBackground(new Color(240, 240, 240));
+            setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1)); // 테두리 지정
+            setHorizontalAlignment(CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            setText(value.toString());
+            return this;
+        }
+    }
+
+    // 버튼 랜더링 N이면 버튼 Y면 텍스트 라벨
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
@@ -165,6 +190,7 @@ public class TodoList extends JPanel {
         }
     }
 
+    // 상태 컬럼 편집
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor {
 
         private JButton button;
@@ -173,6 +199,7 @@ public class TodoList extends JPanel {
         private JTable table;
         private int editingRow, editingColumn;
 
+        // 생성자
         public ButtonEditor(JTable table, DefaultTableModel model) {
             this.table = table;
             this.model = model;
@@ -182,7 +209,7 @@ public class TodoList extends JPanel {
                 if ("N".equals(currentValue)) {
                     int result = JOptionPane.showConfirmDialog(
                             null,
-                            "해당 할일을 완료 처리 하시겠습니까? \n 완료하면 더 이상 수정할 수 없습니다.",
+                            "해당 할일을 완료 처리 하시겠습니까? \n완료하면 더 이상 수정할 수 없습니다.",
                             "할일 완료하기",
                             JOptionPane.YES_NO_OPTION);
 
@@ -194,7 +221,6 @@ public class TodoList extends JPanel {
 
                         TodoDAO.updateTodoYn(String.valueOf(item.getTodo_id()), Session.getUserId());
 
-                        // 🔥 화면 재갱신을 EDT에서 확실히 실행
                         SwingUtilities.invokeLater(() -> {
                             refreshTodoList();
                             refreshTodoListModel();
