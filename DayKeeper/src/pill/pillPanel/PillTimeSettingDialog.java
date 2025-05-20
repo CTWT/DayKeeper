@@ -225,4 +225,10 @@ public class PillTimeSettingDialog extends JDialog {
         int displayHour = selectedHour == 0 ? 12 : selectedHour;
         return String.format("⏰ 설정 시간 : %s %02d시", ampm, displayHour);
     }
+public String getCurrentTimeText() {
+        return selectedTimeLabel.getText();
+    }
 }
+
+
+

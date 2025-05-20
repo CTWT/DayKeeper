@@ -10,6 +10,7 @@ import config.BaseFrame;
 import config.ScreenType;
 import pill.pillDAO.PillDAO;
 import pill.pillDAO.PillYnDAO;
+import pill.pillDAO.PillAlramDAO;
 import pill.pillManager.PillDTO;
 import pill.pillManager.PillManager;
 import pill.pillManager.ResourcesManager;
@@ -40,7 +41,7 @@ public class Pill extends JPanel {
 
         update();
 
-        // 🟦 타이틀 패널 (DAY-KEEPER + 좌측 정렬된 '등록된 영양제')
+        // 타이틀 패널
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
         titlePanel.setBackground(CommonStyle.BACKGROUND_COLOR);
@@ -50,12 +51,22 @@ public class Pill extends JPanel {
         titleLabel.setForeground(CommonStyle.PRIMARY_COLOR);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JPanel subTitleWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
+        JPanel subTitleWrapper = new JPanel(new BorderLayout());
         subTitleWrapper.setBackground(CommonStyle.BACKGROUND_COLOR);
+        subTitleWrapper.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
 
         JLabel subTitleLabel = new JLabel("등록된 영양제");
         subTitleLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
-        subTitleWrapper.add(subTitleLabel);
+
+        // ✅ 알람 시간 가져오기 및 포맷
+        String alarmTimeText = getFormattedAlarmTime();
+        JLabel timeInfoLabel = new JLabel("⏰ 알람 시간 : " + alarmTimeText);
+        timeInfoLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+        timeInfoLabel.setForeground(CommonStyle.PRIMARY_COLOR);
+        timeInfoLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        subTitleWrapper.add(subTitleLabel, BorderLayout.WEST);
+        subTitleWrapper.add(timeInfoLabel, BorderLayout.EAST);
 
         titlePanel.add(Box.createVerticalStrut(10));
         titlePanel.add(titleLabel);
@@ -64,7 +75,7 @@ public class Pill extends JPanel {
 
         add(titlePanel, BorderLayout.NORTH);
 
-        // 🟦 스크롤 영역
+        // 스크롤 영역
         centerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         centerPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
         centerPanel.add(createGrid());
@@ -77,7 +88,7 @@ public class Pill extends JPanel {
         scrollPane.getVerticalScrollBar().setUnitIncrement(40);
         add(scrollPane, BorderLayout.CENTER);
 
-        // 🟦 하단 버튼 패널
+        // 하단 버튼 패널
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 15));
         bottom.setBackground(CommonStyle.BACKGROUND_COLOR);
 
@@ -114,6 +125,18 @@ public class Pill extends JPanel {
         });
 
         add(bottom, BorderLayout.SOUTH);
+    }
+
+    private String getFormattedAlarmTime() {
+        String raw = new PillAlramDAO().getRegisteredTime();
+        try {
+            int time = Integer.parseInt(raw);
+            String ampm = (time < 12) ? "오전" : "오후";
+            int hour = (time == 0) ? 12 : time % 12;
+            return String.format("%s %02d시", ampm, hour);
+        } catch (Exception e) {
+            return "00시";
+        }
     }
 
     private JPanel createPillCard(Integer pillId) {
