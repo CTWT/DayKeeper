@@ -13,7 +13,7 @@ import pill.pillDAO.PillAlramDAO;
  * 이름 : 임해균
  * 작성자 : 임해균
  * 작성일 : 2025.05.16
- * 수정자 : 김관호
+ * 수정자 : 임해균
  * 수정일 : 2025.05.20
  * 파일명 : PillTimeSettingDialog.java
  * 설명 : 복용 시간 시각화 다이얼로그 (설정 시간 + 시계 스타일 강조 버전)
@@ -22,7 +22,6 @@ import pill.pillDAO.PillAlramDAO;
 public class PillTimeSettingDialog extends JDialog {
     private int selectedHour = -1;
     private boolean isPM = false;
-    private boolean timeFixed = false;
     private JLabel selectedTimeLabel;
     private JButton setBtn;
 
@@ -59,7 +58,10 @@ public class PillTimeSettingDialog extends JDialog {
             if (selectedHour >= 0) {
                 int actualHour = isPM ? (selectedHour == 0 ? 12 : selectedHour + 12) : (selectedHour == 0 ? 0 : selectedHour);
                 alramDAO.registerAlarm(actualHour);
-                timeFixed = true;
+
+                // 시간 고정 제거 (재설정 가능하도록)
+                // timeFixed = true;
+
                 String msg = String.format("%s %02d시로 설정되었습니다.", isPM ? "오후" : "오전", selectedHour == 0 ? 12 : selectedHour);
                 JOptionPane.showMessageDialog(PillTimeSettingDialog.this, msg, "알림", JOptionPane.INFORMATION_MESSAGE);
                 selectedTimeLabel.setText(getNoticeString());
@@ -68,7 +70,7 @@ public class PillTimeSettingDialog extends JDialog {
             }
         });
 
-        backBtn.addActionListener(e->{
+        backBtn.addActionListener(e -> {
             timeInfoLabel.setText(getCurrentTimeText());
             timeInfoLabel.repaint();
             dispose();
@@ -111,7 +113,6 @@ public class PillTimeSettingDialog extends JDialog {
                     g2.setPaint(gradient);
                     g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
 
-                    // 텍스트 그림자
                     String text = getText();
                     Font font = getFont();
                     g2.setFont(font);
@@ -142,7 +143,7 @@ public class PillTimeSettingDialog extends JDialog {
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if (timeFixed) return;
+                    // 시간 고정 기능 제거
                     Point click = e.getPoint();
                     for (int i = 0; i < 12; i++) {
                         Point p = hourPoints.get(i);
@@ -159,7 +160,7 @@ public class PillTimeSettingDialog extends JDialog {
             addMouseMotionListener(new MouseMotionAdapter() {
                 @Override
                 public void mouseMoved(MouseEvent e) {
-                    if (selectedHour == -1 && !timeFixed) {
+                    if (selectedHour == -1) {
                         mousePos = e.getPoint();
                         repaint();
                     }
@@ -223,14 +224,14 @@ public class PillTimeSettingDialog extends JDialog {
 
     private String getNoticeString() {
         String hour = new PillAlramDAO().getRegisteredTime();
-        if(hour.equals("--")) {
+        if (hour.equals("--")) {
             return "알람시간이 설정되지 않았습니다.";
         }
 
         String ampm = "";
         int ihour = Integer.parseInt(hour);
-        
-        if(ihour > 12) {
+
+        if (ihour > 12) {
             ihour -= 12;
             ampm = "오후";
         } else {
@@ -244,6 +245,3 @@ public class PillTimeSettingDialog extends JDialog {
         return getNoticeString();
     }
 }
-
-
-
