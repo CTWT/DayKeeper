@@ -22,7 +22,7 @@ import java.time.LocalDate;
 
 public class PillCheckPanel extends JPanel {
 
-    public PillCheckPanel(String userId) {
+    public PillCheckPanel(String userId, LocalDate date) {
         // 패널 레이아웃 2행 7열 그리드 (상단: 복약 상태, 하단: 요일 표시)
         setLayout(new GridLayout(2, 7));
         setPreferredSize(new Dimension(400, 48)); // 크기 지정

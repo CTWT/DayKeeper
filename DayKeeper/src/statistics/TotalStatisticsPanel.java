@@ -6,9 +6,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.Dimension;
+import java.time.LocalDate;
 
 import common.CommonStyle;
-import common.Session;
 
 /**
  * 생성자 : 문원주
@@ -23,7 +23,7 @@ public class TotalStatisticsPanel extends JPanel {
     private StatisticsTodoDAO todoDAO; // 투두리스트 데이터 접근 객체 선언
     private PhillDAO pillDAO; // 영양제 데이터 접근 객체 선언
 
-    public TotalStatisticsPanel(String userId) {
+    public TotalStatisticsPanel(String userId, LocalDate date) {
         todoDAO = new StatisticsTodoDAO(); // 투두리스트 DAO 객체 생성
         pillDAO = new PhillDAO(); // 영양제 DAO 객체 생성
 
