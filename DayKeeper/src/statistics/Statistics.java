@@ -53,7 +53,7 @@ public class Statistics extends JPanel {
         JPanel panelTop = new JPanel(); // 상단 전체 패널
         panelTop.setLayout(new BoxLayout(panelTop, BoxLayout.Y_AXIS)); // 수직 정렬
         panelTop.setBackground(CommonStyle.BACKGROUND_COLOR); // 배경색 설정
-        panelTop.setBorder(BorderFactory.createEmptyBorder(-30, 0, 0, 0)); // 상단 간격 조정
+        panelTop.setBorder(BorderFactory.createEmptyBorder(-20, 0, 0, 0)); // 상단 간격 조정
         panelTop.add(titlePanel); // 타이틀 패널 추가
         panelTop.add(comboPanel); // 콤보박스 패널 추가
 
