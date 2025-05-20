@@ -5,7 +5,10 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.time.LocalDate;
 
 import common.CommonStyle;
@@ -30,24 +33,25 @@ public class TotalStatisticsPanel extends JPanel {
         initComponents(userId, date); // UI 컴포넌트 초기화 메서드 호출
     }
 
-    private String getTitleFromRate(double rate) {
+    // 달성률(rate)에 따른 타이틀 텍스트(HTML) 반환 메서드
+    private String getTitleTextFromRate(double rate) {
         if (rate >= 100)
-            return "퍼펙트 케어러";
+            return "<span style='color:#FFD700; font-weight:bold; font-size:16pt;'>퍼펙트 케어러</span>";
         else if (rate >= 90)
-            return "완벽을 향해!";
+            return "<span style='color:#00008B; font-weight:bold; font-size:15pt;'>완벽을 향해</span>";
         else if (rate >= 70)
-            return "꾸준한 관리인";
+            return "<span style='color:#8B0000; font-weight:bold; font-size:14pt;'>꾸준한 관리인</span>";
         else if (rate >= 50)
-            return "타노스도 인정한 균형";
+            return "<span style='color:#4B0082; font-weight:bold; font-size:14pt;'>타노스도 인정한 균형</span>";
         else if (rate >= 30)
-            return "관리가 소홀한 자";
+            return "<span style='color:#808080; font-style:italic; font-size:13pt;'>관리가 소홀한 자</span>";
         else if (rate >= 10)
-            return "리스트 방치 중";
+            return "<span style='color:#000000; font-style:italic; font-size:11pt;'>리스트 방치중</span>";
         else
-            return "의욕 실종";
+            return "<span style='color:#666666; font-style:italic; font-size:11pt; text-decoration: line-through;'>의욕 실종</span>";
     }
 
-    private void initComponents(String userId, LocalDate date) {
+    private void initComponents(String userId, LocalDate date) { // UI 컴포넌트 초기화 메서드
 
         // DAO를 통해 투두리스트 전체 달성률을 퍼센트로 반환받음
         double todoRateValue = todoDAO.getTotalTodo(userId, date);
@@ -55,17 +59,47 @@ public class TotalStatisticsPanel extends JPanel {
         // DAO를 통해 영양제 복약률 전체 달성률을 퍼센트로 반환받음
         double pillRateValue = pillDAO.getTotalPill(userId, date);
 
-        // 투두리스트 총 달성도를 표시하는 JLabel 생성, 정수형으로 변환해 텍스트에 포함
-        JLabel todoRate = new JLabel(String.format("투두리스트 총 달성도: %.2f%% (%s) ",
-                todoRateValue, getTitleFromRate(todoRateValue)));
+        // 투두리스트 달성도 타이틀 JLabel 생성, HTML 텍스트 적용
+        JLabel todoTitleLabel = new JLabel(
+                String.format("<html>%s</html>", getTitleTextFromRate(todoRateValue)));
+        todoTitleLabel.setFont(CommonStyle.BUTTON_FONT);
 
-        // 영양제 복약률 총 달성도를 표시하는 JLabel 생성, 정수형으로 변환해 텍스트에 포함
-        JLabel medRate = new JLabel(String.format("복약률 총 달성도: %.2f%% (%s) ",
-                pillRateValue, getTitleFromRate(pillRateValue)));
+        // 투두리스트 달성도 앞부분 텍스트 라벨 ("투두리스트 총 달성도: xx.xx% (")
+        JLabel todoPrefixLabel = new JLabel(String.format("투두리스트 총 달성도: %.2f%% (", todoRateValue));
+        todoPrefixLabel.setFont(CommonStyle.BUTTON_FONT);
 
-        // 라벨들에 공통 버튼 폰트 스타일 적용
-        todoRate.setFont(CommonStyle.BUTTON_FONT);
-        medRate.setFont(CommonStyle.BUTTON_FONT);
+        // 투두리스트 달성도 닫는 괄호 라벨 ")"
+        JLabel todoSuffixLabel = new JLabel(")");
+        todoSuffixLabel.setFont(CommonStyle.BUTTON_FONT);
+
+        // 투두리스트 관련 라벨들을 한 줄에 붙이기 위한 패널 (FlowLayout, 좌측 정렬, 간격 0)
+        JPanel todoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        todoPanel.add(todoPrefixLabel); // 앞부분 텍스트 추가
+        todoPanel.add(todoTitleLabel); // 타이틀 텍스트 추가
+        todoPanel.add(todoSuffixLabel); // 닫는 괄호 추가
+        todoPanel.setOpaque(true); // 투명도 해제 (배경색 표시 가능하게)
+        todoPanel.setBackground(Color.WHITE); // 배경색 하얀색으로 설정
+
+        // 영양제 복약률 타이틀 JLabel 생성, HTML 텍스트 적용
+        JLabel medTitleLabel = new JLabel(
+                String.format("<html>%s</html>", getTitleTextFromRate(pillRateValue)));
+        medTitleLabel.setFont(CommonStyle.BUTTON_FONT);
+
+        // 영양제 복약률 앞부분 텍스트 라벨 ("복약률 총 달성도: xx.xx% (")
+        JLabel medPrefixLabel = new JLabel(String.format("복약률 총 달성도: %.2f%% (", pillRateValue));
+        medPrefixLabel.setFont(CommonStyle.BUTTON_FONT);
+
+        // 영양제 복약률 닫는 괄호 라벨 ")"
+        JLabel medSuffixLabel = new JLabel(")");
+        medSuffixLabel.setFont(CommonStyle.BUTTON_FONT);
+
+        // 영양제 관련 라벨들을 한 줄에 붙이기 위한 패널 (FlowLayout, 좌측 정렬, 간격 0)
+        JPanel medPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        medPanel.add(medPrefixLabel); // 앞부분 텍스트 추가
+        medPanel.add(medTitleLabel); // 타이틀 텍스트 추가
+        medPanel.add(medSuffixLabel); // 닫는 괄호 추가
+        medPanel.setOpaque(true); // 투명도 해제
+        medPanel.setBackground(Color.WHITE); // 배경색 하얀색으로 설정
 
         // 패널 레이아웃을 수직 방향 박스 레이아웃으로 설정
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -77,12 +111,12 @@ public class TotalStatisticsPanel extends JPanel {
         this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // 투두리스트 달성도 라벨을 패널에 추가
-        this.add(todoRate);
+        this.add(todoPanel);
 
         // 라벨 사이에 5픽셀 높이의 빈 컴포넌트 추가하여 간격 조절
         this.add(Box.createRigidArea(new Dimension(0, 5)));
 
         // 복약률 달성도 라벨을 패널에 추가
-        this.add(medRate);
+        this.add(medPanel);
     }
 }
