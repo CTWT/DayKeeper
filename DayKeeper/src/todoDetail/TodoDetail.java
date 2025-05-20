@@ -1,194 +1,158 @@
 package todoDetail;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
-import org.w3c.dom.events.MouseEvent;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 
 import common.CommonStyle;
-import common.CommonStyle.BottomPanelComponents;;
+import common.CommonStyle.BottomPanelComponents;
+import config.BaseFrame;
+import config.ScreenType;
 
 /*
  * 생성자 : 유연우
- * 생성일 : 25.05.18
- * 파일명 : TodoDetail.java
+ * 생성일 : 25.05.20
+ * 파일명 : TodoDetailPanel.java
  * 수정자 : 
- * 수정일 :
- * 설명 : Detail 관련 3개의 창 기본 설정 및 컨트롤을 담당하는 메인 프레임 클래스
+ * 수정일 : 
+ * 설명 : Detail 화면을 하나의 JPanel로 구성 - 
  */
 
-public class TodoDetail extends JFrame {
-    // 관리할 각 패널
-    private DetailMain mainPanel;
+public class TodoDetail extends JPanel {
 
+    private DefaultListModel<String> todoListModel;
+    private Map<String, String> todoContentMap;
+    private String selectedTitle;
 
-    /**
-     * DetailMainFrame 기본 생성자.
-     * 프레임 크기 및 종료 동작 설정, 패널 초기화 및 CardLayout 설정을 수행한다.
-     */
     public TodoDetail() {
-        CommonStyle.createTitleLabel();
-        setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-
-        mainPanel = new DetailMain();
-
-        add(mainPanel);
-        setVisible(true);
-    }
-
-    // main
-    public class DetailMain extends JPanel {
-
-    public DetailMain() {
-
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
-        
-        new TodoDetailDAO().loadTodoByUser("12345");
+
+        // 초기화
+        todoListModel = new DefaultListModel<>();
+        todoContentMap = new HashMap<>();
+
+        // 예시 데이터 로딩 (실제로는 DAO에서 조회)
+        loadTodoByUser("12345");
 
         // 상단 타이틀
-        add(CommonStyle.createTitleLabel(), BorderLayout.NORTH);
+        JLabel title = CommonStyle.createTitleLabel();
+        title.setBorder(new EmptyBorder(20, 0, 0, 0));
+        add(title, BorderLayout.NORTH);
 
-        // 리스트 및 스크롤
-        JList<String> todoList = new JList<>(TodoDetailManager.getInst().getTodoListModel());
+        // 리스트 구성
+        JList<String> todoList = new JList<>(todoListModel);
         JScrollPane scrollPane = new JScrollPane(todoList);
-        todoList.setPreferredSize(new Dimension(300, 250));
+        scrollPane.setPreferredSize(new Dimension(800, 600));
+        scrollPane.setBorder(new EmptyBorder(10, 100, 10, 100));
         add(scrollPane, BorderLayout.CENTER);
-        //new EmptyBorder(10, 100, 10, 100)
-        // JPanel centerPanel = new JPanel(new BorderLayout());
-        // centerPanel.setBackground(Color.WHITE);
-        // centerPanel.setBorder(new EmptyBorder(10, 100, 10, 100));
 
-        // '오늘할일입력' 버튼
+        // 입력 버튼
         JButton inputButton = new JButton("오늘할일입력");
         CommonStyle.stylePrimaryButton(inputButton);
 
-        // 하단 공통 버튼 패널
-        BottomPanelComponents bottomComp = CommonStyle.createBottomPanel();
-
-        // 하단 버튼 래퍼
-        JPanel bottomWrapperPanel = new JPanel(new BorderLayout());
-        
-        // inputButton 넣는 패널
-        JPanel inputBtnPanel = new JPanel();
-        inputBtnPanel.add(inputButton);
-        bottomWrapperPanel.add(inputBtnPanel, BorderLayout.NORTH);
-
-        // 공통 하단 버튼들
-        bottomWrapperPanel.add(bottomComp.panel, BorderLayout.SOUTH);
-
-        add(bottomWrapperPanel, BorderLayout.SOUTH);
-
-        
-
-        // 버튼 클릭 이벤트
-        inputButton.addActionListener(e -> { // 할일입력버튼
-            //frame.showPanel(DetailMainFrame.INPUT);
-            JDialog dialog = new Input();
+        inputButton.addActionListener(e -> {
+            JDialog dialog = new InputDialog();
+            dialog.setVisible(true);
         });
 
-        // 리스트 더블클릭 이벤트
+        // 리스트 더블 클릭 시 삭제 다이얼로그
         todoList.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    String selectedTitle = todoList.getSelectedValue();
-                    Remove dialog = new Remove();
-                    dialog.updateData(selectedTitle);
-                    // if (selectedTitle != null) {
-                    //     DetailTodoManager.getInst().setSelectedTitle(selectedTitle);
-                    //     //frame.showPanel(DetailMainFrame.REMOVE);
-        
-                    // }
+                    String selected = todoList.getSelectedValue();
+                    if (selected != null) {
+                        selectedTitle = selected;
+                        JDialog dialog = new RemoveDialog(selected);
+                        dialog.setVisible(true);
+                    }
                 }
             }
         });
-    }
-}
 
-// manager
-public class TodoDetailManager {
-    private static TodoDetailManager instance;
-
-    // 공유 데이터: 할일 제목 리스트 모델과 할일 내용 맵
-    private DefaultListModel<String> todoListModel = new DefaultListModel<>();
-    private java.util.Map<String, String> todoContentMap = new java.util.HashMap<>();
-    private String selectedTitle = "";
-
-    private TodoDetailManager(){
-
-    }
-
-    public static TodoDetailManager getInst(){
-        if(instance == null) {
-            instance = new TodoDetailManager();
-        }
-
-        return instance;
-    }
-
-    /**
-     * 할일 제목 리스트 모델을 반환한다.
-     * 
-     * @return 할일 제목들이 저장된 DefaultListModel<String>
-     */
-    public DefaultListModel<String> getTodoListModel() {
-        return todoListModel;
-    }
-
-    /**
-     * 할일 제목과 내용이 매핑된 맵을 반환한다.
-     * 
-     * @return 할일 제목과 내용이 저장된 Map<String, String>
-     */
-    public java.util.Map<String, String> getTodoContentMap() {
-        return todoContentMap;
-    }
-
-    /**
-     * 현재 선택된 할일 제목을 설정한다.
-     * 
-     * @param title 선택할 할일 제목
-     */
-    public void setSelectedTitle(String title) {
-        this.selectedTitle = title;
-    }
-
-    /**
-     * 현재 선택된 할일 제목을 반환한다.
-     * 
-     * @return 선택된 할일 제목
-     */
-    public String getSelectedTitle() {
-        return selectedTitle;
-    }
-
-
-}
-
-
-
-    /**
-     * 애플리케이션 진입점 메인 메서드.
-     * DetailMainFrame 인스턴스를 생성하여 프로그램을 시작한다.
-     * 
-     * @param args 커맨드라인 인수 (사용하지 않음)
-     */
-    public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(() -> {
-            new TodoDetail();
+        // 하단 버튼 구성
+        BottomPanelComponents bottom = CommonStyle.createBottomPanel();
+        bottom.todoDetail.setVisible(false); // 현재 화면
+        bottom.pillDetail.addActionListener(e -> {
+            BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+            frame.showScreen(ScreenType.PILL);
         });
+        bottom.statistics.addActionListener(e -> {
+            BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+            frame.showScreen(ScreenType.STATISTICS);
+        });
+        bottom.returnPage.setVisible(false);
+
+        // 하단 전체 패널
+        JPanel bottomWrapper = new JPanel(new BorderLayout());
+        JPanel inputWrapper = new JPanel();
+        inputWrapper.add(inputButton);
+        bottomWrapper.add(inputWrapper, BorderLayout.NORTH);
+        bottomWrapper.add(bottom.panel, BorderLayout.SOUTH);
+        add(bottomWrapper, BorderLayout.SOUTH);
     }
 
+    // 샘플 데이터 로드
+    private void loadTodoByUser(String userId) {
+        todoListModel.addElement("운동하기");
+        todoContentMap.put("운동하기", "30분 이상 걷기");
+
+        todoListModel.addElement("약 복용");
+        todoContentMap.put("약 복용", "혈압약, 당뇨약 복용");
+    }
+
+    // 입력 다이얼로그 클래스
+    class InputDialog extends JDialog {
+        public InputDialog() {
+            setTitle("할일 입력");
+            setSize(300, 200);
+            setLocationRelativeTo(null);
+            // 실제로는 입력 필드 구성 필요
+            JLabel label = new JLabel("입력 다이얼로그입니다.");
+            add(label);
+        }
+    }
+
+    // 삭제 다이얼로그 클래스
+    class RemoveDialog extends JDialog {
+        public RemoveDialog(String title) {
+            setTitle("할일 삭제");
+            setSize(300, 200);
+            setLocationRelativeTo(null);
+
+            int result = JOptionPane.showConfirmDialog(
+                this,
+                "할일 '" + title + "' 을(를) 삭제하시겠습니까?",
+                "삭제 확인",
+                JOptionPane.YES_NO_OPTION
+            );
+
+            if (result == JOptionPane.YES_OPTION) {
+                todoListModel.removeElement(title);
+                todoContentMap.remove(title);
+            }
+        }
+    }
+
+    // main 테스트용
+    public static void main(String[] args) {
+        BaseFrame f = new BaseFrame();
+        f.setContentPane(new TodoDetail());
+        f.setVisible(true); 
+    }
 }
-
-// Detailtodolist -> todoDetail 패키지
-// TodoDetailMain 만들기 -> todoDetail.java
-// UI 더더더 이쁘게 제작하기! - 리스트에 줄 긋기
-
