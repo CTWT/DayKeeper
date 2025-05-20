@@ -1,15 +1,12 @@
 package login;
 
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -19,14 +16,15 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import config.BaseFrame;
+import config.ScreenType;
 
 /*
  * 생성자 : 이주하
  * 생성일 : 25.05.15
  * 파일명 : Signup.java
- * 수정자 : 이주하
- * 수정일 : 25.05.15
- * 설명 : 회원가입 기본 프레임 설정
+ * 수정자 : 문원주
+ * 수정일 : 25.05.20
+ * 설명 : 회원가입 완료시와 돌아가기 버튼시 액션 fix
  */
 
 public class Signup extends JPanel {
@@ -34,7 +32,6 @@ public class Signup extends JPanel {
     private JTextField newIdField; // 사용자 이름 입력 필드
     private JPasswordField newPwField; // 비밀번호 입력 필드
     private JTextField usernameField; // 사용자 이름 입력 필드
-        private BaseFrame baseFrame;
 
     public Signup() {
         setLayout(new GridBagLayout()); // 레이아웃 설정
@@ -120,9 +117,8 @@ public class Signup extends JPanel {
         JButton backButton = new JButton("뒤로가기"); // 뒤로가기 버튼 생성
         common.CommonStyle.stylePrimaryButton(backButton);
         backButton.addActionListener(e -> {
-            baseFrame.setContentPane(new Login(baseFrame));
-            baseFrame.revalidate();
-            baseFrame.repaint();
+            BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+            frame.showScreen(ScreenType.LOGIN);
         }); // 로그인 화면으로 돌아가기
         add(backButton, gbc);
 
@@ -141,9 +137,8 @@ public class Signup extends JPanel {
                 if (dao.insertUser(user)) {
                     JOptionPane.showMessageDialog(this, "회원가입이 완료되었습니다!");
                     // 로그인 화면으로 이동
-                    baseFrame.setContentPane(new Login(baseFrame));
-                    baseFrame.revalidate();
-                    baseFrame.repaint();
+                    BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+                    frame.showScreen(ScreenType.LOGIN);
                 } else {
                     JOptionPane.showMessageDialog(this, "회원가입에 실패했습니다.");
                 }
@@ -154,13 +149,5 @@ public class Signup extends JPanel {
         }); // 클릭 이벤트
 
         add(singupButton, gbc);
-
     }
-
-    public Signup(BaseFrame baseFrame) {
-        this();
-        this.baseFrame = baseFrame;
-    }
-
-
 }

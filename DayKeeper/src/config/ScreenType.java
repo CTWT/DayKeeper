@@ -6,9 +6,9 @@ import javax.swing.JPanel;
  * 생성자 : 신인철
  * 생성일 : 25.05.15
  * 파일명 : ScreenType.java
- * 수정자 : 
- * 수정일 :
- * 설명 : swing 화면 관리
+ * 수정자 : 문원주
+ * 수정일 : 25.05.20
+ * 설명 : SIGNUP ENUM문 추가
  */
 public enum ScreenType {
 
@@ -16,7 +16,8 @@ public enum ScreenType {
     LOGIN("login", login.Login.class),
     TODOLIST("todoList", todoList.TodoList.class),
     STATISTICS("statistic", statistics.Statistics.class),
-    PILL("Pill", pill.pillPanel.Pill.class);
+    PILL("Pill", pill.pillPanel.Pill.class),
+    SIGNUP("Signup", login.Signup.class);
     // 필요시 추가
 
     private final String screenName;
