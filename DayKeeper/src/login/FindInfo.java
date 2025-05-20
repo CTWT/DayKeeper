@@ -1,5 +1,8 @@
 package login;
 
+import login.PwFind;
+import login.IdFind;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -65,7 +68,7 @@ public class FindInfo extends JDialog {
         menuPanel.setBackground(Color.WHITE);
 
         // 타이틀, 버튼, 닫기 버튼 패널 생성
-        JPanel titlePanel = createTitlePanel("아이디 / 비밀번호 찾기");
+        JPanel titlePanel = createTitlePanel("아이디 & 비밀번호 찾기");
         JPanel buttonPanel = createSwitchButtons();
         JPanel closePanel = createCloseButton();
 
