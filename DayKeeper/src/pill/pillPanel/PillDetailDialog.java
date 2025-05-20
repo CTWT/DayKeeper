@@ -5,10 +5,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import common.CommonStyle;
+import config.ImgConfig;
 import pill.pillDAO.PillDAO;
 import pill.pillManager.PillDTO;
 import pill.pillManager.PillManager;
-import pill.pillManager.ResourcesManager;
 
 import java.awt.*;
 
@@ -54,7 +54,7 @@ public class PillDetailDialog extends JDialog {
         JLabel imageLabel = new JLabel();
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         try {
-            Image img = ResourcesManager.getInst().getImagebyName(pillName);
+            Image img = ImgConfig.imgComponent("pill/" + pillName);
             imageLabel.setIcon(new ImageIcon(img.getScaledInstance(200, 150, Image.SCALE_SMOOTH)));
         } catch (Exception e) {
             imageLabel.setText("이미지 없음");

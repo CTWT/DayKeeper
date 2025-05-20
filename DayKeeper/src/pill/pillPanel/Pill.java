@@ -7,13 +7,13 @@ import java.util.*;
 
 import common.CommonStyle;
 import config.BaseFrame;
+import config.ImgConfig;
 import config.ScreenType;
 import pill.pillDAO.PillDAO;
 import pill.pillDAO.PillYnDAO;
 import pill.pillDAO.PillAlramDAO;
 import pill.pillManager.PillDTO;
 import pill.pillManager.PillManager;
-import pill.pillManager.ResourcesManager;
 
 /*
  * 작성자 : 임해균
@@ -174,9 +174,8 @@ public class Pill extends JPanel {
         card.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180)));
 
         try {
-            Image image = ResourcesManager.getInst().getImagebyName(pillName);
-            Image scaledImage = image.getScaledInstance(145, 145, Image.SCALE_SMOOTH);
-            JLabel iconLabel = new JLabel(new ImageIcon(scaledImage));
+            String url = "pill/" + pillName; 
+            JLabel iconLabel = ImgConfig.imgLabelComponent(url, 145, 145);
             iconLabel.setBounds(2, 2, 145, 145);
 
             iconLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

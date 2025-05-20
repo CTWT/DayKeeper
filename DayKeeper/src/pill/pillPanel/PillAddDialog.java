@@ -25,9 +25,9 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
 import common.CommonStyle;
+import config.ImgConfig;
 import pill.pillDAO.PillDAO;
 import pill.pillManager.PillManager;
-import pill.pillManager.ResourcesManager;
 
 /*
  * 수업명 : Project DayKeeper
@@ -149,21 +149,21 @@ public class PillAddDialog extends JDialog {
         if (selectedDrugs.contains(drug)) {
             selectedDrugs.remove(drug);
             buttonMap.get(drug).setBackground(CommonStyle.PRIMARY_COLOR);
-            nameLabel.setText("영양제를 선택하세요");
-            imageLabel.setIcon(createImageIcon("", 200, 150));
-            descLabel.setText("약 설명이 여기에 표시됩니다.");
+            nameLabel.setText(drug + " 해제됨");
         } else {
             selectedDrugs.add(drug);
             buttonMap.get(drug).setBackground(Color.GRAY);
             nameLabel.setText(drug + " 선택됨");
-            imageLabel.setIcon(createImageIcon(drug, 200, 150));
-            descLabel.setText(PillManager.getInst().getDescription(drug));
         }
+
+        imageLabel.setIcon(createImageIcon(drug, 200, 150));
+        descLabel.setText(PillManager.getInst().getDescription(drug));
     }
 
     // 이미지 생성
     private ImageIcon createImageIcon(String name, int width, int height) {
-        Image image = ResourcesManager.getInst().getImagebyName(name);
+        String url = "pill/" + name;
+        Image image = ImgConfig.imgComponent(url);
         if (image != null) {
             Image scaledImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
             return new ImageIcon(scaledImage);
