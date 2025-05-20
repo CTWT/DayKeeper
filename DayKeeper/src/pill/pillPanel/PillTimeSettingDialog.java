@@ -225,7 +225,7 @@ public class PillTimeSettingDialog extends JDialog {
     private String getNoticeString() {
         String hour = new PillAlramDAO().getRegisteredTime();
         if (hour.equals("--")) {
-            return "알람시간이 설정되지 않았습니다.";
+            return "-- : -- : --";
         }
 
         String ampm = "";

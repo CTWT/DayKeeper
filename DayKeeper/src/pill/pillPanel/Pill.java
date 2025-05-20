@@ -235,25 +235,14 @@ public class Pill extends JPanel {
     }
 
     private BottomPanelComponents createBottomPanel() {
-        BottomPanelComponents comp = new BottomPanelComponents();
+        BottomPanelComponents comp = CommonStyle.createBottomPanel();
 
-        comp.pillAdd = new JButton("➕ 추가");
-        comp.pillReturnHome = new JButton("🏠 처음으로");
-        comp.pillTimeSetting = new JButton("⏱ 시간 설정");
-        comp.pillConsume = new JButton("💊 영양제 섭취");
-
-        CommonStyle.stylePrimaryButton(comp.pillAdd);
-        CommonStyle.stylePrimaryButton(comp.pillReturnHome);
-        CommonStyle.stylePrimaryButton(comp.pillTimeSetting);
-        CommonStyle.stylePrimaryButton(comp.pillConsume);
-
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        bottomPanel.add(comp.pillAdd);
-        bottomPanel.add(comp.pillReturnHome);
-        bottomPanel.add(comp.pillTimeSetting);
-        bottomPanel.add(comp.pillConsume);
-
-        comp.panel = bottomPanel;
+        comp.todoDetailInput.setVisible(false);
+        comp.todoDetail.setVisible(false);
+        comp.todoList.setVisible(false);
+        comp.pillDetail.setVisible(false);
+        comp.statistics.setVisible(false);
+        comp.returnPage.setVisible(false);
 
         comp.pillAdd.addActionListener(e -> OpenModal(ModalName.ADD));
         comp.pillReturnHome.addActionListener(e -> {

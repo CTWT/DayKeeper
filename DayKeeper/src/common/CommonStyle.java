@@ -91,10 +91,10 @@ public class CommonStyle {
         comp.todoList = new JButton("메인화면");
         comp.pillDetail = new JButton("영양제 정보");
         comp.statistics = new JButton("통계");
-        comp.pillAdd = new JButton("추가");
-        comp.pillConsume = new JButton("모름수정하셈");
-        comp.pillReturnHome = new JButton("처음으로");
-        comp.pillTimeSetting = new JButton("시간설정");
+        comp.pillAdd = new JButton("➕ 추가");
+        comp.pillReturnHome = new JButton("🏠 처음으로");
+        comp.pillTimeSetting = new JButton("⏱ 시간 설정");
+        comp.pillConsume = new JButton("💊 영양제 섭취");
         comp.returnPage = new JButton("돌아가기");
 
         stylePrimaryButton(comp.todoDetailInput);
