@@ -36,12 +36,16 @@ public class CommonStyle {
     // 하단 버튼 정보를 담기 위한 내부 클래스
     public static class BottomPanelComponents {
         public JPanel panel;
+        public JButton todoDetailInput;
         public JButton todoDetail;
+        public JButton todoList;
+        // pill영역 요구 버튼
         public JButton pillAdd;
         public JButton pillTimeSetting;
         public JButton pillConsume;
         public JButton pillReturnHome;
         public JButton pillDetail;
+        //
         public JButton statistics;
         public JButton returnPage;
     }
@@ -56,8 +60,6 @@ public class CommonStyle {
         button.setBorder(BorderFactory.createLineBorder(PRIMARY_COLOR, 10, true)); // 둥근 테두리
         button.setOpaque(true);
     }
-
-    
 
     // 공통 텍스트필드 밑줄 스타일
     public static void underline(JTextField field) {
@@ -84,20 +86,38 @@ public class CommonStyle {
     public static BottomPanelComponents createBottomPanel() {
         BottomPanelComponents comp = new BottomPanelComponents();
 
+        comp.todoDetailInput = new JButton("오늘 할일 입력");
         comp.todoDetail = new JButton("오늘할일상세보기");
+        comp.todoList = new JButton("메인화면");
         comp.pillDetail = new JButton("영양제 정보");
         comp.statistics = new JButton("통계");
+        comp.pillAdd = new JButton("추가");
+        comp.pillConsume = new JButton("모름수정하셈");
+        comp.pillReturnHome = new JButton("처음으로");
+        comp.pillTimeSetting = new JButton("시간설정");
         comp.returnPage = new JButton("돌아가기");
 
+        stylePrimaryButton(comp.todoDetailInput);
         stylePrimaryButton(comp.todoDetail);
-        stylePrimaryButton(comp.pillDetail);
+        stylePrimaryButton(comp.todoList);
         stylePrimaryButton(comp.statistics);
+        stylePrimaryButton(comp.pillAdd);
+        stylePrimaryButton(comp.pillConsume);
+        stylePrimaryButton(comp.pillDetail);
+        stylePrimaryButton(comp.pillReturnHome);
+        stylePrimaryButton(comp.pillTimeSetting);
         stylePrimaryButton(comp.returnPage);
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        bottomPanel.add(comp.todoDetailInput);
         bottomPanel.add(comp.todoDetail);
+        bottomPanel.add(comp.todoList);
         bottomPanel.add(comp.pillDetail);
         bottomPanel.add(comp.statistics);
+        bottomPanel.add(comp.pillAdd);
+        bottomPanel.add(comp.pillConsume);
+        bottomPanel.add(comp.pillReturnHome);
+        bottomPanel.add(comp.pillTimeSetting);
         bottomPanel.add(comp.returnPage);
 
         comp.panel = bottomPanel;

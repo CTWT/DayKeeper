@@ -15,6 +15,7 @@ public enum ScreenType {
     // 화면만 가지고 가는 enum 여기에 생성화면 추가시 자동적용
     LOGIN("login", login.Login.class),
     TODOLIST("todoList", todoList.TodoList.class),
+    TODODETAIL("todoDetail", todoDetail.TodoDetail.class),
     STATISTICS("statistic", statistics.Statistics.class),
     PILL("Pill", pill.pillPanel.Pill.class),
     SIGNUP("Signup", login.Signup.class);
