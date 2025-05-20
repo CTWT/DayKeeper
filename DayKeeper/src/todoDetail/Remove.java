@@ -1,8 +1,11 @@
-package DetailTodoList;
+package todoDetail;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -16,18 +19,18 @@ import common.CommonStyle.BottomPanelComponents;
 /*
  * 생성자 : 유연우
  * 생성일 : 25.05.18
- * 파일명 : DetailMainPanel.java
+ * 파일명 : RemovePanel.java
  * 수정자 : 
  * 수정일 :
  * 설명 : todolist 할일 확인 및 삭제 가능 창
  */
 
-public class RemovePanel extends JDialog {
+public class Remove extends JDialog {
 
     private JLabel titleLabel;
     private JLabel contentLabel;
 
-    public RemovePanel() {
+    public Remove() {
 
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
@@ -38,18 +41,27 @@ public class RemovePanel extends JDialog {
         add(CommonStyle.createTitleLabel(), BorderLayout.NORTH);
 
         // 내용 표시 패널
-        JPanel contentPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        JPanel contentPanel = new JPanel(new GridBagLayout());
         contentPanel.setBackground(Color.WHITE);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
 
         titleLabel = CommonStyle.createLabel("");
-        contentLabel = CommonStyle.createLabel("");
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+
+        contentLabel = CommonStyle.createLabel(" ");
+
+        gbc.gridx =1;
 
         contentPanel.add(titleLabel);
         contentPanel.add(contentLabel);
 
         add(contentPanel, BorderLayout.CENTER);
 
-        
 
         // 삭제, 닫기 버튼 패널
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -62,25 +74,18 @@ public class RemovePanel extends JDialog {
 
         btnPanel.add(removeBtn);
         btnPanel.add(closeBtn);
-
-        // 하단 공통 버튼 패널 생성
-        BottomPanelComponents bottomComp = CommonStyle.createBottomPanel();
-
-        JPanel bottomWrapper = new JPanel(new BorderLayout());
-        bottomWrapper.add(btnPanel, BorderLayout.NORTH); // 삭제/닫기 버튼 위쪽에
-        bottomWrapper.add(bottomComp.panel, BorderLayout.SOUTH); // 공통 하단 버튼 아래쪽에
-
-        add(bottomWrapper, BorderLayout.SOUTH); // 한 번만 SOUTH에 추가
+        
+        add(btnPanel, BorderLayout.SOUTH); // 한 번만 SOUTH에 추가
 
         // 삭제 버튼 클릭 이벤트
         removeBtn.addActionListener(e -> {
-            String title = DetailTodoManager.getInst().getSelectedTitle();
+            String title = TodoDetailManager.getInst().getSelectedTitle();
             if (title != null && !title.isEmpty()) {
                 int confirm = JOptionPane.showConfirmDialog(this,
                         "정말 삭제하시겠습니까?", "삭제 확인", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
-                    DetailTodoManager.getInst().getTodoListModel().removeElement(title);
-                    DetailTodoManager.getInst().getTodoContentMap().remove(title);
+                    TodoDetailManager.getInst().getTodoListModel().removeElement(title);
+                    TodoDetailManager.getInst().getTodoContentMap().remove(title);
                     new TodoDetailDAO().deleteTodoByTitle("12345", title);
                     // Session.getUserId();
                     dispose();
@@ -97,7 +102,7 @@ public class RemovePanel extends JDialog {
     // 패널이 화면에 보여질 때 호출해서 현재 선택된 할일 제목/내용 보여주도록
     public void updateData(String title) {
         String todoTitle = title;
-        String content = DetailTodoManager.getInst().getTodoContentMap().getOrDefault(title, "");
+        String content = TodoDetailManager.getInst().getTodoContentMap().getOrDefault(title, "");
         titleLabel.setText("할일 제목: " + todoTitle);
         contentLabel.setText("할일 내용: " + content);
 

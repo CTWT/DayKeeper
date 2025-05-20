@@ -1,36 +1,33 @@
-package DetailTodoList;
+package todoDetail;
 
-import java.awt.CardLayout;
-
-import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
+import common.CommonStyle;;
 
 /*
  * 생성자 : 유연우
  * 생성일 : 25.05.18
- * 파일명 : DetailMainFrame.java
+ * 파일명 : TodoDetail.java
  * 수정자 : 
  * 수정일 :
  * 설명 : Detail 관련 3개의 창 기본 설정 및 컨트롤을 담당하는 메인 프레임 클래스
  */
 
-public class DetailMainFrame extends JFrame {
+public class TodoDetail extends JFrame {
     // 관리할 각 패널
-    private DetailMainPanel mainPanel;
+    private DetailMain mainPanel;
 
 
     /**
      * DetailMainFrame 기본 생성자.
      * 프레임 크기 및 종료 동작 설정, 패널 초기화 및 CardLayout 설정을 수행한다.
      */
-    public DetailMainFrame() {
-        setTitle("DAY-KEEPER");
+    public TodoDetail() {
+        CommonStyle.createTitleLabel();
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        mainPanel = new DetailMainPanel();
+        mainPanel = new DetailMain();
 
         add(mainPanel);
         setVisible(true);
@@ -46,9 +43,13 @@ public class DetailMainFrame extends JFrame {
      */
     public static void main(String[] args) {
         javax.swing.SwingUtilities.invokeLater(() -> {
-            new DetailMainFrame();
+            new TodoDetail();
         });
     }
 
 }
+
+// Detailtodolist -> todoDetail 패키지
+// TodoDetailMain 만들기 -> todoDetail.java
+// UI 더더더 이쁘게 제작하기! - 리스트에 줄 긋기
 

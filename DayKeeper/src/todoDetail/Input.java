@@ -1,19 +1,25 @@
-package DetailTodoList;
+package todoDetail;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.LineBorder;
 import javax.swing.JOptionPane;
 
 import common.CommonStyle;
@@ -26,7 +32,7 @@ import common.CommonStyle;
  * 수정일 :
  * 설명 : 할일을 입력할 수 있는 패널 (제목과 내용)  
  */
-public class InputPanel extends JDialog {
+public class Input extends JDialog {
     private JTextField titleField;
     private JTextField contentField;
 
@@ -35,10 +41,10 @@ public class InputPanel extends JDialog {
      *
      * @param frame DetailMainFrame 참조
      */
-    public InputPanel() {
+    public Input() {
 
         setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
+        
         setSize(500, 500);
         
         setVisible(true);
@@ -51,27 +57,61 @@ public class InputPanel extends JDialog {
      * UI 구성 초기화
      */
     private void initUI() {
+        setBackground(Color.WHITE);
+
+        JLabel title = CommonStyle.createTitleLabel();
         // 상단 타이틀
-        add(CommonStyle.createTitleLabel(), BorderLayout.NORTH);
+        add(title, BorderLayout.NORTH);
 
         // ===== 중앙 입력 폼 =====
-        JPanel inputFormPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
+        JPanel inputFormPanel = new JPanel(new GridBagLayout());
         inputFormPanel.setBackground(Color.WHITE);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
 
+        // 할일 제목
         JLabel titleLabel = CommonStyle.createLabel("할일 제목:");
-        titleField = new JTextField(20);
-        CommonStyle.underline(titleField);
+        
+        JTextArea titleField = new JTextArea(1, 20);
+        titleField.setBorder(new LineBorder(Color.BLACK));
+        //CommonStyle.underline(titleField);
 
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        inputFormPanel.add(titleLabel, gbc);
+        
+        gbc.gridx = 1;
+        //gbc.gridy = 0;
+        inputFormPanel.add(titleField, gbc);
+        
+        // 할일 내용
         JLabel contentLabel = CommonStyle.createLabel("할일 내용:");
-        contentField = new JTextField(20);
-        CommonStyle.underline(contentField);
+        JTextArea contentField = new JTextArea(5, 20);
+        contentField.setBorder(new LineBorder(Color.BLACK));
+        JScrollPane scrollPane = new JScrollPane(contentField);
+        
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.NORTHWEST;;
+        inputFormPanel.add(contentLabel, gbc);
 
-        inputFormPanel.add(titleLabel);
-        inputFormPanel.add(titleField);
-        inputFormPanel.add(contentLabel);
-        inputFormPanel.add(contentField);
+        gbc.gridx = 1;
+        //gbc.gridy = 1;
+        inputFormPanel.add(scrollPane, gbc);
 
-        add(inputFormPanel, BorderLayout.CENTER);
+        // 중앙에 배치하기 위해 감싸는 패널 사용
+        JPanel centerWrapperPanel = new JPanel(new BorderLayout());
+        centerWrapperPanel.setBackground(Color.WHITE);
+        centerWrapperPanel.setBorder(BorderFactory.createEmptyBorder(40, 0, 0, 5)); // 위쪽 여백만
+
+        // inputFormPanel을 한 번만 add!
+        centerWrapperPanel.add(inputFormPanel, BorderLayout.CENTER);
+
+        // Frame에 추가
+        add(centerWrapperPanel, BorderLayout.CENTER);
+
 
         // ===== 하단 버튼 영역 =====
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -106,7 +146,7 @@ public class InputPanel extends JDialog {
 
                 if (title.isEmpty()) {
                     JOptionPane.showMessageDialog(
-                        InputPanel.this,
+                        Input.this,
                         "할일 제목을 입력하세요.",
                         "경고",
                         JOptionPane.WARNING_MESSAGE
@@ -114,9 +154,9 @@ public class InputPanel extends JDialog {
                     return;
                 }
 
-                if (DetailTodoManager.getInst().getTodoListModel().contains(title)) {
+                if (TodoDetailManager.getInst().getTodoListModel().contains(title)) {
                     JOptionPane.showMessageDialog(
-                        InputPanel.this,
+                        Input.this,
                         "이미 존재하는 제목입니다.",
                         "경고",
                         JOptionPane.WARNING_MESSAGE
@@ -125,9 +165,9 @@ public class InputPanel extends JDialog {
                 }
 
                 // 데이터 추가
-                DetailTodoManager.getInst().getTodoListModel().addElement(title);
-                DetailTodoManager.getInst().setSelectedTitle(title);
-                DetailTodoManager.getInst().getTodoContentMap().put(title, content);
+                TodoDetailManager.getInst().getTodoListModel().addElement(title);
+                TodoDetailManager.getInst().setSelectedTitle(title);
+                TodoDetailManager.getInst().getTodoContentMap().put(title, content);
 
                 // 입력 필드 초기화 후 메인 화면으로
                 clearFields();

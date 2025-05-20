@@ -1,4 +1,4 @@
-package DetailTodoList;
+package todoDetail;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -10,12 +10,13 @@ import dbConnection.DBManager;
 
 /**
  * 생성자 : 유연우  
- * 생성일 : 25.05.18  
+ * 생성일 : 25.05.19
  * 파일명 : TodoDAO.java  
  * 수정자 :  
  * 수정일 :  
  * 설명 : TODO 테이블에 대한 DB 작업을 담당하는 DAO 클래스
  */
+
 public class TodoDetailDAO {
     public static int nextInt;
     /**
@@ -88,8 +89,8 @@ public class TodoDetailDAO {
                 int id = rs.getInt(1);
                 String title =  rs.getString(2);
                 String detail =  rs.getString(3);
-                DetailTodoManager.getInst().getTodoContentMap().put(title, detail);
-                DetailTodoManager.getInst().getTodoListModel().addElement(title);
+                TodoDetailManager.getInst().getTodoContentMap().put(title, detail);
+                TodoDetailManager.getInst().getTodoListModel().addElement(title);
                 nextInt = Math.max(id,nextInt);
             }
             nextInt++;
