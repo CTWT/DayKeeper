@@ -21,7 +21,7 @@ import dbConnection.DBManager;
 public class PillDAO {
 
     public Boolean[] getWeeklyMedicationStatus(String userId) {
-        Boolean[] status = new Boolean[7]; // 월 ~ 일 
+        Boolean[] status = new Boolean[7]; // 월 ~ 일
 
         String sql = "SELECT pillYn, date FROM PILLYN WHERE id = ?";
         try (Connection conn = DBManager.getConnection();
@@ -33,20 +33,19 @@ public class PillDAO {
             while (rs.next()) {
                 String pillYn = rs.getString("pillYn");
                 boolean taken = "Y".equalsIgnoreCase(pillYn);
-                String dateStr = rs.getString("date");
 
-                LocalDate date = LocalDate.parse(dateStr);
+                LocalDate date = rs.getTimestamp("date").toLocalDateTime().toLocalDate();
                 LocalDate now = LocalDate.now();
                 DayOfWeek day = date.getDayOfWeek();
-                int index = day.getValue() - 1; // 월=0 ~ 일=6
+                int index = day.getValue() - 1;
 
-                // 이번 주 날짜만 반영
                 LocalDate monday = now.with(DayOfWeek.MONDAY);
                 LocalDate sunday = now.with(DayOfWeek.SUNDAY);
 
                 if (!date.isBefore(monday) && !date.isAfter(sunday)) {
                     status[index] = taken;
                 }
+
             }
 
         } catch (Exception e) {
