@@ -19,18 +19,21 @@ import dbConnection.DBManager;
 
 public class TodoDAO {
 
-    public static List<String[]> todoList(String id) {
-        List<String[]> list = new ArrayList<>();
+    public static List<TodoDTO> todoList(String id) {
+        List<TodoDTO> list = new ArrayList<>();
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "SELECT todoTitle, todoYn FROM TODO WHERE id = ? AND DATE(date) = CURDATE() ORDER BY todo_id")) {
+                        "SELECT todo_id, todoTitle, todoYn FROM TODO WHERE id = ? AND DATE(date) = CURDATE() ORDER BY todo_id")) {
             pstmt.setString(1, id);
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                String todoTitle = rs.getString("todoTitle");
-                String yn = rs.getString("todoYn");
-                list.add(new String[] { todoTitle, yn });
+                TodoDTO dto = new TodoDTO();
+                dto.setTodo_id(rs.getInt("todo_id"));
+                dto.setTodoTitle(rs.getString("todoTitle"));
+                dto.setTodoYn(rs.getString("todoYn"));
+
+                list.add(dto);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -38,31 +41,14 @@ public class TodoDAO {
         return list;
     }
 
-    public static List<String[]> todoDetailList(String id) {
-        List<String[]> list = new ArrayList<>();
+    public static void updateTodoYn(String todo_id, String id) {
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "SELECt todoTile, todoYN FROM TODO WHERE id = ? AND DATE(date) = CURDATE() ORDER BY todo_id")) {
-            pstmt.setString(1, id);
-            ResultSet rs = pstmt.executeQuery();
+                        "UPDATE todo SET todoYn = 'Y' WHERE todo_id = ? AND id = ?")) {
+            pstmt.setString(1, todo_id);
+            pstmt.setString(2, id);
 
-            while (rs.next()) {
-                String todoTitle = rs.getString("todoTitle");
-                String yn = rs.getString("todoYn");
-                list.add(new String[] { todoTitle, yn });
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    public static void insertDetailList(String id) {
-        try (Connection conn = DBManager.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "INSERT INTO TODO(todo_id, id, todoTitle , todoDetail, todoYn, date) VALUES(?, ?, ?, ?, ?, ?, now())")) {
-            pstmt.setString(1, id);
-
+            pstmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
