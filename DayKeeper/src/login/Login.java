@@ -156,6 +156,9 @@ public class Login extends JPanel {
             return;
         }
 
+        // 
+
+
         UserDAO dao = new UserDAO(); // UserDAO 객체 생성 후, 로그인 시도
         UserDTO user = new UserDTO();
         user.setId(id);
@@ -167,6 +170,8 @@ public class Login extends JPanel {
 
             BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
             frame.showScreen(ScreenType.TODOLIST);
-        }
+        } else {
+            messageLabel.setText("아이디 또는 비밀번호가 일치하지 않습니다."); // 오류 메시지 출력
+    }
     }
 }
