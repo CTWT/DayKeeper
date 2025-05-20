@@ -33,6 +33,7 @@ enum ModalName {
 public class Pill extends JPanel {
     private Map<Integer, JLabel> countLabelMap = new HashMap<>();
     private Integer detail_id;
+    private JLabel timeInfoLabel;
     JPanel centerPanel;
 
     public Pill() {
@@ -60,7 +61,7 @@ public class Pill extends JPanel {
 
         // ✅ 알람 시간 가져오기 및 포맷
         String alarmTimeText = getFormattedAlarmTime();
-        JLabel timeInfoLabel = new JLabel("⏰ 알람 시간 : " + alarmTimeText);
+        timeInfoLabel = new JLabel("⏰ 알람 시간 : " + alarmTimeText);
         timeInfoLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
         timeInfoLabel.setForeground(CommonStyle.PRIMARY_COLOR);
         timeInfoLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -214,7 +215,7 @@ public class Pill extends JPanel {
         } else if (modalName == ModalName.ADD) {
             dialog = new PillAddDialog(this);
         } else if (modalName == ModalName.TIMESETTING) {
-            dialog = new PillTimeSettingDialog(this);
+            dialog = new PillTimeSettingDialog(this,timeInfoLabel);
         }
 
         if (dialog != null) {

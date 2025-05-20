@@ -26,7 +26,7 @@ public class PillTimeSettingDialog extends JDialog {
     private JLabel selectedTimeLabel;
     private JButton setBtn;
 
-    public PillTimeSettingDialog(Pill parent) {
+    public PillTimeSettingDialog(Pill parent, JLabel timeInfoLabel) {
         setLayout(new BorderLayout());
         getContentPane().setBackground(CommonStyle.BACKGROUND_COLOR);
         setSize(500, 580);
@@ -68,7 +68,11 @@ public class PillTimeSettingDialog extends JDialog {
             }
         });
 
-        backBtn.addActionListener(e -> dispose());
+        backBtn.addActionListener(e->{
+            timeInfoLabel.setText(getCurrentTimeText());
+            timeInfoLabel.repaint();
+            dispose();
+        });
 
         JToggleButton ampmToggle = new JToggleButton("오전");
         ampmToggle.setFont(CommonStyle.TEXT_FONT.deriveFont(Font.BOLD, 14f));
@@ -79,7 +83,6 @@ public class PillTimeSettingDialog extends JDialog {
 
         ampmToggle.addActionListener(e -> {
             isPM = !isPM;
-            selectedTimeLabel.setText(getNoticeString());
             ampmToggle.setText(isPM ? "오후" : "오전");
         });
 
@@ -147,7 +150,6 @@ public class PillTimeSettingDialog extends JDialog {
                             selectedHour = i;
                             fixedAngle = Math.toRadians(i * 30 - 90);
                             repaint();
-                            selectedTimeLabel.setText(getNoticeString());
                             break;
                         }
                     }
@@ -220,13 +222,26 @@ public class PillTimeSettingDialog extends JDialog {
     }
 
     private String getNoticeString() {
-        if (selectedHour == -1) return "⏰ 설정 시간 : 00시";
-        String ampm = isPM ? "오전" : "오후";
-        int displayHour = selectedHour == 0 ? 12 : selectedHour;
-        return String.format("⏰ 설정 시간 : %s %02d시", ampm, displayHour);
+        String hour = new PillAlramDAO().getRegisteredTime();
+        if(hour.equals("--")) {
+            return "알람시간이 설정되지 않았습니다.";
+        }
+
+        String ampm = "";
+        int ihour = Integer.parseInt(hour);
+        
+        if(ihour > 12) {
+            ihour -= 12;
+            ampm = "오후";
+        } else {
+            ampm = "오전";
+        }
+
+        return String.format("⏰ 설정 시간 : %s %02d시", ampm, ihour);
     }
-public String getCurrentTimeText() {
-        return selectedTimeLabel.getText();
+
+    public String getCurrentTimeText() {
+        return getNoticeString();
     }
 }
 
