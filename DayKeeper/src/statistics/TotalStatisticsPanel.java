@@ -27,7 +27,7 @@ public class TotalStatisticsPanel extends JPanel {
         todoDAO = new StatisticsTodoDAO(); // 투두리스트 DAO 객체 생성
         pillDAO = new PhillDAO(); // 영양제 DAO 객체 생성
 
-        initComponents(userId); // UI 컴포넌트 초기화 메서드 호출
+        initComponents(userId, date); // UI 컴포넌트 초기화 메서드 호출
     }
 
     private String getTitleFromRate(double rate) {
@@ -47,13 +47,13 @@ public class TotalStatisticsPanel extends JPanel {
             return "의욕 실종";
     }
 
-    private void initComponents(String userId) {
+    private void initComponents(String userId, LocalDate date) {
 
         // DAO를 통해 투두리스트 전체 달성률을 퍼센트로 반환받음
-        double todoRateValue = todoDAO.getTotalTodo(userId);
+        double todoRateValue = todoDAO.getTotalTodo(userId, date);
 
         // DAO를 통해 영양제 복약률 전체 달성률을 퍼센트로 반환받음
-        double pillRateValue = pillDAO.getTotalPill(userId);
+        double pillRateValue = pillDAO.getTotalPill(userId, date);
 
         // 투두리스트 총 달성도를 표시하는 JLabel 생성, 정수형으로 변환해 텍스트에 포함
         JLabel todoRate = new JLabel(String.format("투두리스트 총 달성도: %.2f%% (%s) ",

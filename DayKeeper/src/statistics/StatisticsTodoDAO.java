@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -112,16 +113,21 @@ public class StatisticsTodoDAO {
         };
     }
 
-    public double getTotalTodo(String userId) {
+    public double getTotalTodo(String userId, LocalDate baseDate) {
         double rate = 0.0;
 
-        String sql = "SELECT COUNT(*) AS total, SUM(CASE WHEN todoYn = 'Y' THEN 1 ELSE 0 END) AS completed " +
-                "FROM TODO WHERE id = ?";
+        // baseDate 속한 주의 마지막 날(일요일)을 구함
+        LocalDate sunday = baseDate.with(DayOfWeek.SUNDAY);
+
+        String sql = "SELECT COUNT(*) AS total, " +
+                "SUM(CASE WHEN todoYn = 'Y' THEN 1 ELSE 0 END) AS completed " +
+                "FROM TODO WHERE id = ? AND date <= ?";
 
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, userId);
+            pstmt.setString(2, sunday.toString()); // 선택한 주의 일요일까지 포함
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {

@@ -4,6 +4,9 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+
+import common.CommonStyle;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -28,10 +31,13 @@ public class PillCheckPanel extends JPanel {
         setPreferredSize(new Dimension(400, 48)); // 크기 지정
         setBackground(Color.WHITE); // 배경 흰색
 
-        // DAO로부터 주간 복약 상태 배열 받아오기 (true=복약, false=미복약, null=없음)
-        Boolean[] status = new PhillDAO().getWeeklyMedicationStatus(userId);
+        // 기준일로부터 이번 주 월요일 구하기
+        LocalDate monday = date.with(DayOfWeek.MONDAY);
+
+        // 기준 주간 복약 상태 배열 받아오기 (DAO 메서드는 userId, 기준주 월요일 인자를 받도록 수정 필요)
+        Boolean[] status = new PhillDAO().getWeeklyMedicationStatus(userId, monday);
+
         LocalDate today = LocalDate.now();
-        LocalDate monday = today.with(DayOfWeek.MONDAY); // 이번주 월요일 기준 날짜 계산
 
         // 상단 행: 요일별 복약 상태 아이콘 표시
         for (int i = 0; i < 7; i++) {
@@ -41,7 +47,7 @@ public class PillCheckPanel extends JPanel {
 
             JLabel symbolLabel = new JLabel();
             symbolLabel.setHorizontalAlignment(SwingConstants.CENTER); // 가운데 정렬
-            symbolLabel.setFont(new Font("SansSerif", Font.BOLD, 14)); // 폰트 굵고 크게 설정
+            symbolLabel.setFont(CommonStyle.BUTTON_FONT); // 폰트 굵고 크게 설정
 
             phillbox.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2)); // 연회색 테두리
             LocalDate targetDate = monday.plusDays(i); // 해당 요일 날짜 계산
@@ -81,7 +87,7 @@ public class PillCheckPanel extends JPanel {
         for (int i = 0; i < 7; i++) {
             JLabel dayLabel = new JLabel(dayNames[i]);
             dayLabel.setHorizontalAlignment(SwingConstants.CENTER); // 가운데 정렬
-            dayLabel.setFont(new Font("SansSerif", Font.PLAIN, 12)); // 기본 폰트 크기
+            dayLabel.setFont(CommonStyle.TEXT_FONT); // 기본 폰트 크기
             add(dayLabel); // 패널에 요일 라벨 추가
         }
     }
