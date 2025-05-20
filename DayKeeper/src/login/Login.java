@@ -28,9 +28,9 @@ import config.ScreenType;
  * 생성자 : 문원주
  * 생성일 : 25.05.15
  * 파일명 : Login.java
- * 수정자 : 이주하
- * 수정일 : 25.05.15
- * 설명 : 로그인 기본 프레임 설정
+ * 수정자 : 문원주
+ * 수정일 : 25.05.20
+ * 설명 : Signup으로 돌아가는 버튼 fix
  */
 
 public class Login extends JPanel {
@@ -38,7 +38,6 @@ public class Login extends JPanel {
     private JPasswordField passwordField; // 비밀번호 입력 필드
     private JLabel messageLabel; // 오류 메시지 출력용 라벨
     private BaseFrame baseFrame;
-
 
     public Login() {
         initUI();
@@ -122,9 +121,7 @@ public class Login extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(Login.this);
-                frame.setContentPane(new Signup(frame));
-                frame.revalidate();
-                frame.repaint();
+                frame.showScreen(ScreenType.SIGNUP); // CardLayout으로 전환
             }
         });
 
@@ -145,8 +142,6 @@ public class Login extends JPanel {
         linkPanel.add(forgotLabel); // 링크 추가
         add(linkPanel, gbc); // 패널에 링크 추가
     }
-
-
 
     // 로그인 시도 메서드
     private void attemptLogin() {
@@ -169,25 +164,9 @@ public class Login extends JPanel {
             messageLabel.setText("");
             Session.setUserId(id);
             JOptionPane.showMessageDialog(this, "로그인 성공!");
-        
+
             BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
-            JPanel testPanel = new todoList.TodoList();
-        
-            frame.setContentPane(testPanel);
-            frame.revalidate();
-            frame.repaint();
+            frame.showScreen(ScreenType.TODOLIST);
         }
     }
-
-  /*  public class UserSearch {
-        public static String curUserID;
-    }
-*/
-
-    // 테스트용 메인 메서드
-    public static void main(String[] args) {
-        new BaseFrame();
-    } 
-
-
 }
