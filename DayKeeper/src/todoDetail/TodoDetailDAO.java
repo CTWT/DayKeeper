@@ -77,30 +77,30 @@ public class TodoDetailDAO {
         }
     }
 
-    public void loadTodoByUser(String userId){
-        String sql = "select todo_id, TodoTitle, TodoDetail from Todo";
+    // public void loadTodoByUser(String userId){
+    //     String sql = "select todo_id, TodoTitle, TodoDetail from Todo";
 
-        try (Connection conn = DBManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            ResultSet  rs = pstmt.executeQuery();
+    //     try (Connection conn = DBManager.getConnection();
+    //          PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    //         ResultSet  rs = pstmt.executeQuery();
 
-            while(rs.next())
-            {
-                int id = rs.getInt(1);
-                String title =  rs.getString(2);
-                String detail =  rs.getString(3);
-                TodoDetailManager.getInst().getTodoContentMap().put(title, detail);
-                TodoDetailManager.getInst().getTodoListModel().addElement(title);
-                nextInt = Math.max(id,nextInt);
-            }
-            nextInt++;
+    //         while(rs.next())
+    //         {
+    //             int id = rs.getInt(1);
+    //             String title =  rs.getString(2);
+    //             String detail =  rs.getString(3);
+    //             TodoDetailManager.getInst().getTodoContentMap().put(title, detail);
+    //             TodoDetailManager.getInst().getTodoListModel().addElement(title);
+    //             nextInt = Math.max(id,nextInt);
+    //         }
+    //         nextInt++;
             
 
-        } catch (SQLException e) {
-            System.err.println("[DELETE 실패] DB 삭제 중 오류 발생: " + e.getMessage());
-            e.printStackTrace();
+    //     } catch (SQLException e) {
+    //         System.err.println("[DELETE 실패] DB 삭제 중 오류 발생: " + e.getMessage());
+    //         e.printStackTrace();
 
-        }
-    }
+    //     }
+    // }
 
 }

@@ -26,6 +26,7 @@ import common.CommonStyle;
 import common.Session;
 import config.BaseFrame;
 import config.ScreenType;
+import todoDetail.TodoDetail;
 
 /*
  * 생성자 : 신인철
@@ -113,7 +114,10 @@ public class TodoList extends JPanel {
         // 하단 공통 버튼 설정
         CommonStyle.BottomPanelComponents bottom = CommonStyle.createBottomPanel();
 
-        bottom.todoDetail.addActionListener(e -> System.out.println("오늘할일상세보기 클릭됨"));
+        bottom.todoDetail.addActionListener(e -> {
+            BaseFrame statFrame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+            statFrame.showScreen(ScreenType.TODODETAIL);
+        });
         bottom.pillDetail.addActionListener(e -> {
             BaseFrame pillFrame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
             pillFrame.showScreen(ScreenType.PILL);

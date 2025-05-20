@@ -2,30 +2,32 @@ package todoDetail;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.swing.AbstractCellEditor;
-import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
+
+import java.awt.event.MouseEvent;
 
 import common.CommonStyle;
-import common.CommonStyle.BottomPanelComponents;
 import common.Session;
+import common.CommonStyle.BottomPanelComponents;
 import config.BaseFrame;
 import config.ScreenType;
 import todoList.TodoDAO;
@@ -42,29 +44,47 @@ import todoList.TodoDTO;
 
 public class TodoDetail extends JPanel {
 
-    private List<TodoDTO> todoList;
-
+    private List<TodoDTO> todoList; 
+   
+    // 리스트
+    private final DefaultListModel<String> titleListModel = new DefaultListModel<>();
+    private final DefaultListModel<String> contentListModel = new DefaultListModel<>();
+    private final Map<String, String> todoMap = new LinkedHashMap<>(); // 순서 유지
+    
     public TodoDetail() {
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
+        loadData();
+        
         // 상단 타이틀
         JLabel title = CommonStyle.createTitleLabel();
         title.setBorder(new EmptyBorder(20, 0, 0, 0));
         add(title, BorderLayout.NORTH);
-
-        // 중앙 영역 패널
-        JPanel centerPanel = new JPanel(new BorderLayout());
+        
+        // 중앙 영역 패널 - 리스트 패널 (왼쪽: 제목 / 오른쪽: 내용)
+        JPanel centerPanel = new JPanel(new GridLayout(1,2,10,0));
         centerPanel.setBackground(Color.WHITE);
         centerPanel.setBorder(new EmptyBorder(10, 100, 10, 100));
-
+        
+        
+        // 제목 리스트
+        JList<String> titleList = new JList<>(titleListModel);
+        JScrollPane titleScroll = new JScrollPane(titleList);
+        centerPanel.add(titleScroll);
+        
+        // 내용 리스트 (단일 선택된 제목의 내용 보여줌)
+        JList<String> contentList = new JList<>(contentListModel);
+        JScrollPane contentScroll = new JScrollPane(contentList);
+        centerPanel.add(contentScroll);
+        
         add(centerPanel, BorderLayout.CENTER);
-
+        
         // 하단 버튼 구성
         BottomPanelComponents bottom = CommonStyle.createBottomPanel();
 
         bottom.todoDetailInput.addActionListener(e -> {
-            JDialog d = new Input();
+            JDialog d = new TodoInput(this);
         });
         bottom.todoDetail.setVisible(false); // 현재 화면
         bottom.pillDetail.addActionListener(e -> {
@@ -78,6 +98,20 @@ public class TodoDetail extends JPanel {
         bottom.returnPage.setVisible(false);
 
         add(bottom.panel, BorderLayout.SOUTH);
+
+        //제목 더블클릭 시 삭제 다이얼로그
+        TodoDetail parent = this;
+        titleList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    String selected = titleList.getSelectedValue();
+                    if (selected != null) {
+                        new Remove(parent, selected);
+                    }
+                }
+            }
+        });
+
     }
 
     // main 테스트용
@@ -86,4 +120,38 @@ public class TodoDetail extends JPanel {
         f.setContentPane(new TodoDetail());
         f.setVisible(true);
     }
+
+    public void loadData(){
+        if(todoList != null){
+            todoList.clear();
+        }
+        todoList = TodoDAO.todoList(Session.getUserId());
+
+        Iterator<TodoDTO> iter = todoList.iterator();
+        while(iter.hasNext())
+        {
+            TodoDTO dto = iter.next();
+            
+            pushData(dto.getTodoTitle(), "detaildetail");
+        }
+    }
+
+    public void pushData(String title, String content)
+    {
+        titleListModel.addElement(title);
+        contentListModel.addElement(content);
+        todoMap.put(title, content);
+    }
+
+    public void deleteData(String title){
+        titleListModel.removeElement(title);
+        contentListModel.removeElement(todoMap.get(title));
+        todoMap.remove(title);
+    }
+
+    public Map<String,String> getTodoMap(){
+        return todoMap;
+    }
+
+
 }

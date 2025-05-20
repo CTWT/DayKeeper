@@ -29,8 +29,10 @@ public class Remove extends JDialog {
 
     private JLabel titleLabel;
     private JLabel contentLabel;
+    private TodoDetail parent;
 
-    public Remove() {
+    public Remove(TodoDetail parent,String selectedValue) {
+        this.parent = parent;
 
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
@@ -48,12 +50,14 @@ public class Remove extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
-        titleLabel = CommonStyle.createLabel("");
+        String selectedtitle = selectedValue;
+        titleLabel = CommonStyle.createLabel(selectedtitle);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
 
-        contentLabel = CommonStyle.createLabel(" ");
+        String selectedcontent = parent.getTodoMap().get(selectedValue);
+        contentLabel = CommonStyle.createLabel(selectedcontent);
 
         gbc.gridx =1;
 
@@ -74,20 +78,21 @@ public class Remove extends JDialog {
 
         btnPanel.add(removeBtn);
         btnPanel.add(closeBtn);
-        
+
         add(btnPanel, BorderLayout.SOUTH); // 한 번만 SOUTH에 추가
 
         // 삭제 버튼 클릭 이벤트
         removeBtn.addActionListener(e -> {
-            String title = TodoDetailManager.getInst().getSelectedTitle();
+            String title = selectedValue;
             if (title != null && !title.isEmpty()) {
                 int confirm = JOptionPane.showConfirmDialog(this,
                         "정말 삭제하시겠습니까?", "삭제 확인", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
-                    TodoDetailManager.getInst().getTodoListModel().removeElement(title);
-                    TodoDetailManager.getInst().getTodoContentMap().remove(title);
+                    
                     new TodoDetailDAO().deleteTodoByTitle("12345", title);
-                    // Session.getUserId();
+                    parent.getTodoMap().remove("title");
+                    parent.deleteData(title);
+                    parent.repaint();
                     dispose();
                 }
             }
@@ -102,10 +107,8 @@ public class Remove extends JDialog {
     // 패널이 화면에 보여질 때 호출해서 현재 선택된 할일 제목/내용 보여주도록
     public void updateData(String title) {
         String todoTitle = title;
-        String content = TodoDetailManager.getInst().getTodoContentMap().getOrDefault(title, "");
+        String content = parent.getTodoMap().get(title);
         titleLabel.setText("할일 제목: " + todoTitle);
         contentLabel.setText("할일 내용: " + content);
-
-        
     }
 }
