@@ -169,13 +169,9 @@ public class Login extends JPanel {
             messageLabel.setText("");
             Session.setUserId(id);
             JOptionPane.showMessageDialog(this, "로그인 성공!");
-        
+
             BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
-            JPanel testPanel = new todoList.TodoList();
-        
-            frame.setContentPane(testPanel);
-            frame.revalidate();
-            frame.repaint();
+            frame.showScreen(ScreenType.TODOLIST);
         }
     }
 
