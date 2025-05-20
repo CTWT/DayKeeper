@@ -37,8 +37,22 @@ public class Login extends JPanel {
     private JTextField usernameField; // 사용자 이름 입력 필드
     private JPasswordField passwordField; // 비밀번호 입력 필드
     private JLabel messageLabel; // 오류 메시지 출력용 라벨
+    private BaseFrame baseFrame;
+
 
     public Login() {
+        initUI();
+    }
+
+    public Login(BaseFrame baseFrame) {
+        this.baseFrame = baseFrame;
+        initUI();
+    }
+
+    private void initUI() {
+        if (baseFrame == null) {
+            baseFrame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+        }
         setLayout(new GridBagLayout()); // 레이아웃 설정
         setBackground(Color.WHITE); // 배경 흰색
 
@@ -53,7 +67,7 @@ public class Login extends JPanel {
         gbc.gridwidth = 2;
         add(header, gbc); // 패널에 추가
 
-        // ID 라벨
+        // ID라벨
         gbc.gridwidth = 1; // 열 너비 설정
         gbc.gridy++; // 위치 변경
         gbc.gridx = 0; // 첫 번째 열
@@ -74,7 +88,6 @@ public class Login extends JPanel {
         // 비밀번호 입력 필드
         gbc.gridx = 1; // 두 번째 열
         passwordField = new JPasswordField(); // 비밀번호 필드
-        passwordField.addActionListener(e -> attemptLogin()); // Enter 키 입력 시 로그인
         CommonStyle.underline(passwordField); // 밑줄 스타일
         add(passwordField, gbc);
 
@@ -107,9 +120,8 @@ public class Login extends JPanel {
         signupLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // new JoinDialog((JFrame) SwingUtilities.getWindowAncestor(Login.this));
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(Login.this);
-                frame.setContentPane(new Signup()); // Signup 패널로 전환
+                BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(Login.this);
+                frame.setContentPane(new Signup(frame));
                 frame.revalidate();
                 frame.repaint();
             }
@@ -133,6 +145,8 @@ public class Login extends JPanel {
         add(linkPanel, gbc); // 패널에 링크 추가
     }
 
+
+
     // 로그인 시도 메서드
     private void attemptLogin() {
         // 사용자로부터 입력받은 아이디와 비밀번호를 가져오고, 앞뒤 공백을 제거
@@ -151,25 +165,28 @@ public class Login extends JPanel {
         user.setId(id);
         user.setPw(pw);
         if (dao.login(user)) {
-            messageLabel.setText(""); // 로그인 성공 시 메시지 초기화
+            messageLabel.setText("");
             Session.setUserId(id);
             JOptionPane.showMessageDialog(this, "로그인 성공!");
+        
             BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
-            frame.showScreen(ScreenType.TODOLIST);
-        } else {
-            messageLabel.setText("아이디 또는 비밀번호가 잘못되었습니다.");
+            JPanel testPanel = new todoList.TodoList();
+        
+            frame.setContentPane(testPanel);
+            frame.revalidate();
+            frame.repaint();
         }
     }
 
-    /*
-     * public class UserSearch {
-     * public static String curUserID;
-     * }
-     */
+  /*  public class UserSearch {
+        public static String curUserID;
+    }
+*/
 
     // 테스트용 메인 메서드
     public static void main(String[] args) {
         new BaseFrame();
-    }
+    } 
+
 
 }

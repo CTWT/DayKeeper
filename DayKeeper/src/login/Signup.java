@@ -18,6 +18,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import config.BaseFrame;
+
 /*
  * 생성자 : 이주하
  * 생성일 : 25.05.15
@@ -32,6 +34,7 @@ public class Signup extends JPanel {
     private JTextField newIdField; // 사용자 이름 입력 필드
     private JPasswordField newPwField; // 비밀번호 입력 필드
     private JTextField usernameField; // 사용자 이름 입력 필드
+        private BaseFrame baseFrame;
 
     public Signup() {
         setLayout(new GridBagLayout()); // 레이아웃 설정
@@ -117,10 +120,9 @@ public class Signup extends JPanel {
         JButton backButton = new JButton("뒤로가기"); // 뒤로가기 버튼 생성
         common.CommonStyle.stylePrimaryButton(backButton);
         backButton.addActionListener(e -> {
-            JFrame frame = (JFrame) javax.swing.SwingUtilities.getWindowAncestor(this);
-            frame.setContentPane(new Login());
-            frame.revalidate();
-            frame.repaint();
+            baseFrame.setContentPane(new Login(baseFrame));
+            baseFrame.revalidate();
+            baseFrame.repaint();
         }); // 로그인 화면으로 돌아가기
         add(backButton, gbc);
 
@@ -139,10 +141,9 @@ public class Signup extends JPanel {
                 if (dao.insertUser(user)) {
                     JOptionPane.showMessageDialog(this, "회원가입이 완료되었습니다!");
                     // 로그인 화면으로 이동
-                    JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-                    frame.setContentPane(new Login());
-                    frame.revalidate();
-                    frame.repaint();
+                    baseFrame.setContentPane(new Login(baseFrame));
+                    baseFrame.revalidate();
+                    baseFrame.repaint();
                 } else {
                     JOptionPane.showMessageDialog(this, "회원가입에 실패했습니다.");
                 }
@@ -155,5 +156,11 @@ public class Signup extends JPanel {
         add(singupButton, gbc);
 
     }
+
+    public Signup(BaseFrame baseFrame) {
+        this();
+        this.baseFrame = baseFrame;
+    }
+
 
 }
