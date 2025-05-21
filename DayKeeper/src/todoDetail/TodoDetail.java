@@ -2,19 +2,19 @@ package todoDetail;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+//import java.awt.Dimension;
+//import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
-import java.util.ArrayList;
-import java.util.HashMap;
+//import java.util.ArrayList;
+//import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
+//import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -106,7 +106,7 @@ public class TodoDetail extends JPanel {
                 if (e.getClickCount() == 2) {
                     String selected = titleList.getSelectedValue();
                     if (selected != null) {
-                        new Remove(parent, selected);
+                        new TodoRemove(parent, selected);
                     }
                 }
             }

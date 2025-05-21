@@ -27,13 +27,13 @@ import common.CommonStyle;
  * 설명 : todolist 할일 확인 및 삭제 가능 창
  */
 
-public class Remove extends JDialog {
+public class TodoRemove extends JDialog {
 
     private JLabel requestTitle;
     private JLabel requestcontent;
     private TodoDetail parent;
 
-    public Remove(TodoDetail parent,String selectedValue) {
+    public TodoRemove(TodoDetail parent,String selectedValue) {
         this.parent = parent;
 
         setLayout(new BorderLayout());
