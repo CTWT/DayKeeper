@@ -118,7 +118,6 @@ public class TodoList extends JPanel {
         bottom.todoDetail.setVisible(true);
         bottom.pillDetail.setVisible(true);
         bottom.statistics.setVisible(true);
-        bottom.returnPage.setVisible(true);
 
         bottom.todoDetail.addActionListener(e -> {
             BaseFrame statFrame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
@@ -132,7 +131,6 @@ public class TodoList extends JPanel {
             BaseFrame statFrame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
             statFrame.showScreen(ScreenType.STATISTICS);
         });
-        bottom.returnPage.setVisible(false);
 
         add(bottom.panel, BorderLayout.SOUTH);
     }

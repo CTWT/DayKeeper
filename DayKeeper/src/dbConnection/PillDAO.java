@@ -33,7 +33,7 @@ public class PillDAO {
      * - 사용자의 ID를 기반으로 영양제 데이터를 조회하여 Map에 저장합니다.
      */
     public void loadDBData() {
-        String sql = "SELECT pill_id, id, pillName, pillAmount, date FROM Pill WHERE id = ?";
+        String sql = "SELECT pill_id, id, pillName, pillAmount, date FROM PILL WHERE id = ?";
         String curUserId = Session.getUserId(); // 현재 사용자 ID (예시)
 
         try (Connection con = DBManager.getConnection();

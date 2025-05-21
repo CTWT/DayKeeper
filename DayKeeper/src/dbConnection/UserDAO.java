@@ -58,7 +58,7 @@ public class UserDAO {
 
     // 아이디 중복확인
     public boolean isDuplicateId(String id) {
-        String sql = "SELECT id FROM user WHERE id = ?"; // 아이디 중복확인 쿼리
+        String sql = "SELECT id FROM USER WHERE id = ?"; // 아이디 중복확인 쿼리
 
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -75,7 +75,7 @@ public class UserDAO {
 
     // 이름으로 아이디 찾기
     public String findIdByName(String name) {
-        String sql = "SELECT id FROM user WHERE name = ?"; // 아이디 찾기 쿼리
+        String sql = "SELECT id FROM USER WHERE name = ?"; // 아이디 찾기 쿼리
 
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -95,7 +95,7 @@ public class UserDAO {
 
     // 아이디와 이름으로 비밀번호 찾기
     public String findPwByIdAndName(UserDTO user) {
-        String sql = "SELECT pw FROM user WHERE id = ? AND name = ?";
+        String sql = "SELECT pw FROM USER WHERE id = ? AND name = ?";
 
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {

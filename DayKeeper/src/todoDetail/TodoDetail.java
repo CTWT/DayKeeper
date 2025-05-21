@@ -115,13 +115,6 @@ public class TodoDetail extends JPanel {
 
     }
 
-    // main 테스트용
-    public static void main(String[] args) {
-        BaseFrame f = new BaseFrame();
-        f.setContentPane(new TodoDetail());
-        f.setVisible(true);
-    }
-
     public void loadData() {
         if (todoList != null) {
             todoList.clear();
