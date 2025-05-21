@@ -97,6 +97,17 @@ public class CommonStyle {
         comp.pillConsume = new JButton("💊 영양제 섭취");
         comp.returnPage = new JButton("돌아가기");
 
+        comp.todoDetailInput.setVisible(false);
+        comp.todoDetail.setVisible(false);
+        comp.todoList.setVisible(false);
+        comp.pillDetail.setVisible(false);
+        comp.statistics.setVisible(false);
+        comp.pillAdd.setVisible(false);
+        comp.pillReturnHome.setVisible(false);
+        comp.pillTimeSetting.setVisible(false);
+        comp.pillConsume.setVisible(false);
+        comp.returnPage.setVisible(false);
+
         stylePrimaryButton(comp.todoDetailInput);
         stylePrimaryButton(comp.todoDetail);
         stylePrimaryButton(comp.todoList);

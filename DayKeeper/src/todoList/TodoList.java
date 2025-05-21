@@ -114,6 +114,11 @@ public class TodoList extends JPanel {
         // 하단 공통 버튼 설정
         CommonStyle.BottomPanelComponents bottom = CommonStyle.createBottomPanel();
 
+        bottom.todoDetail.setVisible(true);
+        bottom.pillDetail.setVisible(true);
+        bottom.statistics.setVisible(true);
+        bottom.returnPage.setVisible(true);
+
         bottom.todoDetail.addActionListener(e -> {
             BaseFrame statFrame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
             statFrame.showScreen(ScreenType.TODODETAIL);

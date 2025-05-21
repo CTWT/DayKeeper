@@ -44,49 +44,52 @@ import todoList.TodoDTO;
 
 public class TodoDetail extends JPanel {
 
-    private List<TodoDTO> todoList; 
-   
+    private List<TodoDTO> todoList;
+
     // 리스트
     private final DefaultListModel<String> titleListModel = new DefaultListModel<>();
     private final DefaultListModel<String> contentListModel = new DefaultListModel<>();
     private final Map<String, String> todoMap = new LinkedHashMap<>(); // 순서 유지
-    
+
     public TodoDetail() {
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
         loadData();
-        
+
         // 상단 타이틀
         JLabel title = CommonStyle.createTitleLabel();
         title.setBorder(new EmptyBorder(20, 0, 0, 0));
         add(title, BorderLayout.NORTH);
-        
+
         // 중앙 영역 패널 - 리스트 패널 (왼쪽: 제목 / 오른쪽: 내용)
-        JPanel centerPanel = new JPanel(new GridLayout(1,2,10,0));
+        JPanel centerPanel = new JPanel(new GridLayout(1, 2, 10, 0));
         centerPanel.setBackground(Color.WHITE);
         centerPanel.setBorder(new EmptyBorder(10, 100, 10, 100));
-        
-        
+
         // 제목 리스트
         JList<String> titleList = new JList<>(titleListModel);
         JScrollPane titleScroll = new JScrollPane(titleList);
         centerPanel.add(titleScroll);
-        
+
         // // 내용 리스트 (단일 선택된 제목의 내용 보여줌)
         // JList<String> contentList = new JList<>(contentListModel);
         // JScrollPane contentScroll = new JScrollPane(contentList);
         // centerPanel.add(contentScroll);
-        
+
         add(centerPanel, BorderLayout.CENTER);
-        
+
         // 하단 버튼 구성
         BottomPanelComponents bottom = CommonStyle.createBottomPanel();
+
+        bottom.todoList.setVisible(true);
+        bottom.todoDetailInput.setVisible(true);
+        bottom.pillDetail.setVisible(true);
+        bottom.statistics.setVisible(true);
 
         bottom.todoDetailInput.addActionListener(e -> {
             JDialog d = new TodoInput(this);
         });
-        bottom.todoDetail.setVisible(false); // 현재 화면
         bottom.pillDetail.addActionListener(e -> {
             BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
             frame.showScreen(ScreenType.PILL);
@@ -95,11 +98,10 @@ public class TodoDetail extends JPanel {
             BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
             frame.showScreen(ScreenType.STATISTICS);
         });
-        bottom.returnPage.setVisible(false);
 
         add(bottom.panel, BorderLayout.SOUTH);
 
-        //제목 더블클릭 시 삭제 다이얼로그
+        // 제목 더블클릭 시 삭제 다이얼로그
         TodoDetail parent = this;
         titleList.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -121,37 +123,34 @@ public class TodoDetail extends JPanel {
         f.setVisible(true);
     }
 
-    public void loadData(){
-        if(todoList != null){
+    public void loadData() {
+        if (todoList != null) {
             todoList.clear();
         }
         todoList = TodoDAO.todoList(Session.getUserId());
 
         Iterator<TodoDTO> iter = todoList.iterator();
-        while(iter.hasNext())
-        {
+        while (iter.hasNext()) {
             TodoDTO dto = iter.next();
-            
+
             pushData(dto.getTodoTitle(), "detaildetail");
         }
     }
 
-    public void pushData(String title, String content)
-    {
+    public void pushData(String title, String content) {
         titleListModel.addElement(title);
         contentListModel.addElement(content);
         todoMap.put(title, content);
     }
 
-    public void deleteData(String title){
+    public void deleteData(String title) {
         titleListModel.removeElement(title);
         contentListModel.removeElement(todoMap.get(title));
         todoMap.remove(title);
     }
 
-    public Map<String,String> getTodoMap(){
+    public Map<String, String> getTodoMap() {
         return todoMap;
     }
-
 
 }
