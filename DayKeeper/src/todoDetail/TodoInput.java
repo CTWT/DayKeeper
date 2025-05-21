@@ -18,7 +18,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.JOptionPane;
 
@@ -32,17 +31,19 @@ import common.CommonStyle;
  * 수정일 :
  * 설명 : 할일을 입력할 수 있는 패널 (제목과 내용)  
  */
-public class Input extends JDialog {
-    private JTextField titleField;
-    private JTextField contentField;
+public class TodoInput extends JDialog {
+    private JTextArea titleField;
+    private JTextArea contentField;
+    private TodoDetail parent;
+    
 
     /**
      * InputPanel 생성자 - UI 초기화 및 이벤트 설정
      *
      * @param frame DetailMainFrame 참조
      */
-    public Input() {
-
+    public TodoInput(TodoDetail parent) {
+        this.parent = parent;
         setLayout(new BorderLayout());
         
         setSize(500, 500);
@@ -74,7 +75,7 @@ public class Input extends JDialog {
         // 할일 제목
         JLabel titleLabel = CommonStyle.createLabel("할일 제목:");
         
-        JTextArea titleField = new JTextArea(1, 20);
+        titleField = new JTextArea(1, 20);
         titleField.setBorder(new LineBorder(Color.BLACK));
         //CommonStyle.underline(titleField);
 
@@ -88,7 +89,7 @@ public class Input extends JDialog {
         
         // 할일 내용
         JLabel contentLabel = CommonStyle.createLabel("할일 내용:");
-        JTextArea contentField = new JTextArea(5, 20);
+        contentField = new JTextArea(5, 20);
         contentField.setBorder(new LineBorder(Color.BLACK));
         JScrollPane scrollPane = new JScrollPane(contentField);
         
@@ -146,7 +147,7 @@ public class Input extends JDialog {
 
                 if (title.isEmpty()) {
                     JOptionPane.showMessageDialog(
-                        Input.this,
+                        TodoInput.this,
                         "할일 제목을 입력하세요.",
                         "경고",
                         JOptionPane.WARNING_MESSAGE
@@ -154,20 +155,8 @@ public class Input extends JDialog {
                     return;
                 }
 
-                if (TodoDetailManager.getInst().getTodoListModel().contains(title)) {
-                    JOptionPane.showMessageDialog(
-                        Input.this,
-                        "이미 존재하는 제목입니다.",
-                        "경고",
-                        JOptionPane.WARNING_MESSAGE
-                    );
-                    return;
-                }
-
                 // 데이터 추가
-                TodoDetailManager.getInst().getTodoListModel().addElement(title);
-                TodoDetailManager.getInst().setSelectedTitle(title);
-                TodoDetailManager.getInst().getTodoContentMap().put(title, content);
+                parent.pushData(title, content);
 
                 // 입력 필드 초기화 후 메인 화면으로
                 clearFields();

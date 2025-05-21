@@ -7,14 +7,16 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.border.LineBorder;
 
 import common.CommonStyle;
-import common.CommonStyle.BottomPanelComponents;
 
 /*
  * 생성자 : 유연우
@@ -27,8 +29,8 @@ import common.CommonStyle.BottomPanelComponents;
 
 public class Remove extends JDialog {
 
-    private JLabel titleLabel;
-    private JLabel contentLabel;
+    private JLabel requestTitle;
+    private JLabel requestcontent;
     private TodoDetail parent;
 
     public Remove(TodoDetail parent,String selectedValue) {
@@ -50,21 +52,50 @@ public class Remove extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
-        String selectedtitle = selectedValue;
-        titleLabel = CommonStyle.createLabel(selectedtitle);
+        // 할일 제목
+        JLabel titleLabel = CommonStyle.createLabel("할일 제목:");
+        
+        requestTitle = new JLabel(selectedValue);
+        //requestTitle.setBorder(new LineBorder(Color.BLACK));
+        //CommonStyle.underline(titleField);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
+        contentPanel.add(titleLabel, gbc);
+        
+        gbc.gridx = 1;
+        //gbc.gridy = 0;
+        contentPanel.add(requestTitle, gbc);
+        
+        // 할일 내용
+        JLabel contentLabel = CommonStyle.createLabel("할일 내용:");
+        requestcontent = new JLabel();
+        //requestcontent.setBorder(new LineBorder(Color.BLACK));
+        //JScrollPane scrollPane = new JScrollPane(requestcontent);
+        
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.NORTHWEST;;
+        contentPanel.add(contentLabel, gbc);
+        
+        gbc.gridx = 1;
+        //gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.NORTHWEST;;
+        contentPanel.add(requestcontent, gbc);
 
-        String selectedcontent = parent.getTodoMap().get(selectedValue);
-        contentLabel = CommonStyle.createLabel(selectedcontent);
+        // 중앙에 배치하기 위해 감싸는 패널 사용
+        JPanel centerWrapperPanel = new JPanel(new BorderLayout());
+        centerWrapperPanel.setBackground(Color.WHITE);
+        centerWrapperPanel.setBorder(BorderFactory.createEmptyBorder(40, 0, 0, 5)); // 위쪽 여백만
 
-        gbc.gridx =1;
+        // contentPanel을 한 번만 add!
+        centerWrapperPanel.add(contentPanel, BorderLayout.CENTER);
 
-        contentPanel.add(titleLabel);
-        contentPanel.add(contentLabel);
 
-        add(contentPanel, BorderLayout.CENTER);
+        updateData(selectedValue);
+
+        // Frame에 추가
+        add(centerWrapperPanel, BorderLayout.CENTER);
 
 
         // 삭제, 닫기 버튼 패널
@@ -98,6 +129,8 @@ public class Remove extends JDialog {
             }
         });
 
+
+
         // 닫기 버튼 클릭 이벤트
         closeBtn.addActionListener(e -> {
             dispose();
@@ -108,7 +141,8 @@ public class Remove extends JDialog {
     public void updateData(String title) {
         String todoTitle = title;
         String content = parent.getTodoMap().get(title);
-        titleLabel.setText("할일 제목: " + todoTitle);
-        contentLabel.setText("할일 내용: " + content);
+        requestTitle.setText(todoTitle);
+        requestcontent.setText(content);
+
     }
 }

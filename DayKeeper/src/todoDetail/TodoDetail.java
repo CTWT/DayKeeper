@@ -73,10 +73,10 @@ public class TodoDetail extends JPanel {
         JScrollPane titleScroll = new JScrollPane(titleList);
         centerPanel.add(titleScroll);
         
-        // 내용 리스트 (단일 선택된 제목의 내용 보여줌)
-        JList<String> contentList = new JList<>(contentListModel);
-        JScrollPane contentScroll = new JScrollPane(contentList);
-        centerPanel.add(contentScroll);
+        // // 내용 리스트 (단일 선택된 제목의 내용 보여줌)
+        // JList<String> contentList = new JList<>(contentListModel);
+        // JScrollPane contentScroll = new JScrollPane(contentList);
+        // centerPanel.add(contentScroll);
         
         add(centerPanel, BorderLayout.CENTER);
         
