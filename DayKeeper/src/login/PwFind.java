@@ -17,6 +17,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import dbConnection.UserDAO;
+import dbConnection.UserDTO;
+
 /*
  * 생성자 : 이주하
  * 생성일 : 25.05.16

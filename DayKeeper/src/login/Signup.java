@@ -17,6 +17,8 @@ import javax.swing.SwingUtilities;
 
 import config.BaseFrame;
 import config.ScreenType;
+import dbConnection.UserDAO;
+import dbConnection.UserDTO;
 
 /*
  * 생성자 : 이주하

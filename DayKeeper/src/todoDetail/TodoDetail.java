@@ -6,6 +6,7 @@ import java.awt.Color;
 //import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 //import java.util.ArrayList;
 //import java.util.HashMap;
 import java.util.Iterator;
@@ -23,15 +24,13 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import java.awt.event.MouseEvent;
-
 import common.CommonStyle;
-import common.Session;
 import common.CommonStyle.BottomPanelComponents;
+import common.Session;
 import config.BaseFrame;
 import config.ScreenType;
-import todoList.TodoDAO;
-import todoList.TodoDTO;
+import dbConnection.TodoDAO;
+import dbConnection.TodoDTO;
 
 /*
  * 생성자 : 유연우

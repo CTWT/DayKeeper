@@ -1,9 +1,8 @@
-package login;
+package dbConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import dbConnection.DBManager; // DBManager 임포트
 
 /*
  * 생성자 : 문원주
@@ -18,7 +17,7 @@ public class UserDAO {
 
     // 로그인 메서드
     public boolean login(UserDTO user) {
-        String sql = "SELECT * FROM user WHERE id = ? AND pw = ?"; // 로그인 쿼리
+        String sql = "SELECT * FROM USER WHERE id = ? AND pw = ?"; // 로그인 쿼리
 
         // DB 연결
         try (Connection conn = DBManager.getConnection(); // DB 연결
@@ -40,7 +39,7 @@ public class UserDAO {
 
     // 회원가입
     public boolean insertUser(UserDTO user) {
-        String sql = "INSERT INTO user (id, pw, name, date) VALUES (?, ?, ?, ?)"; // 회원가입 쿼리
+        String sql = "INSERT INTO USER (id, pw, name, date) VALUES (?, ?, ?, ?)"; // 회원가입 쿼리
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
 

@@ -1,13 +1,13 @@
-package pill.pillDAO;
+package dbConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 
 import common.Session;
-import dbConnection.DBManager;
-import pill.pillManager.PillDTO;
 import pill.pillManager.PillManager;
 
 /*
@@ -16,7 +16,6 @@ import pill.pillManager.PillManager;
  * 파일명 : PillDAO.java
  * 설명 : Pill 에 대한 DAO
  */
-
 
 public class PillDAO {
 
@@ -38,7 +37,7 @@ public class PillDAO {
         String curUserId = Session.getUserId(); // 현재 사용자 ID (예시)
 
         try (Connection con = DBManager.getConnection();
-             PreparedStatement pstmt = con.prepareStatement(sql)) {
+                PreparedStatement pstmt = con.prepareStatement(sql)) {
 
             pstmt.setString(1, curUserId);
             ResultSet rs = pstmt.executeQuery();
@@ -67,11 +66,11 @@ public class PillDAO {
      * 영양제 개수가 0 이하인 데이터를 삭제합니다.
      */
     public void releaseData() {
-        String sql = "SELECT pill_id, pillAmount FROM pill WHERE id = ?";
+        String sql = "SELECT pill_id, pillAmount FROM PILL WHERE id = ?";
         String curUserId = Session.getUserId(); // 현재 사용자 ID (예시)
 
         try (Connection con = DBManager.getConnection();
-             PreparedStatement pstmt = con.prepareStatement(sql)) {
+                PreparedStatement pstmt = con.prepareStatement(sql)) {
 
             pstmt.setString(1, curUserId);
             ResultSet rs = pstmt.executeQuery();
@@ -101,10 +100,10 @@ public class PillDAO {
             PillManager.getInst().getPillsMap().remove(Integer.valueOf(id));
         }
 
-        String sql = "DELETE FROM pill WHERE pill_id = ?";
+        String sql = "DELETE FROM PILL WHERE pill_id = ?";
 
         try (Connection con = DBManager.getConnection();
-             PreparedStatement pstmt = con.prepareStatement(sql)) {
+                PreparedStatement pstmt = con.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
@@ -118,11 +117,11 @@ public class PillDAO {
      * 다음 삽입할 pill_id 값을 설정합니다.
      */
     private void settingNextInt() {
-        String sql = "SELECT pill_id FROM Pill WHERE id = ?";
+        String sql = "SELECT pill_id FROM PILL WHERE id = ?";
         String curUserId = Session.getUserId(); // 현재 사용자 ID (예시)
 
         try (Connection con = DBManager.getConnection();
-             PreparedStatement pstmt = con.prepareStatement(sql)) {
+                PreparedStatement pstmt = con.prepareStatement(sql)) {
 
             pstmt.setString(1, curUserId);
             ResultSet rs = pstmt.executeQuery();
@@ -147,7 +146,7 @@ public class PillDAO {
      */
     public void consumePill(Integer pillId, Integer amount) {
         try (Connection con = DBManager.getConnection()) {
-            String sql = "UPDATE pill SET pillAmount = pillAmount - ? WHERE pill_id = ?";
+            String sql = "UPDATE PILL SET pillAmount = pillAmount - ? WHERE pill_id = ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setInt(1, amount);
             pstmt.setInt(2, pillId);
@@ -165,7 +164,7 @@ public class PillDAO {
      */
     public Integer getPillAmount(Integer pillId) {
         try (Connection con = DBManager.getConnection()) {
-            String sql = "SELECT pillAmount FROM pill WHERE pill_id = ?";
+            String sql = "SELECT pillAmount FROM PILL WHERE pill_id = ?";
             PreparedStatement pstmt = con.prepareStatement(sql);
             pstmt.setInt(1, pillId);
             ResultSet rs = pstmt.executeQuery();
@@ -188,7 +187,7 @@ public class PillDAO {
         try (Connection con = DBManager.getConnection()) {
             if (PillManager.getInst().getDataByName(pillName) != null) {
                 // 이미 존재하는 영양제라면 수량 업데이트
-                String sql = "UPDATE pill SET pillAmount = ? WHERE pillName = ?";
+                String sql = "UPDATE PILL SET pillAmount = ? WHERE pillName = ?";
                 PreparedStatement pstmt = con.prepareStatement(sql);
                 int resultAmount = PillManager.getInst().getDataByName(pillName).getPillAmount() + amount;
                 pstmt.setInt(1, resultAmount);
@@ -196,7 +195,7 @@ public class PillDAO {
                 pstmt.executeUpdate();
             } else {
                 // 새로운 영양제라면 삽입
-                String sql = "INSERT INTO pill(pill_id, id, pillName, pillAmount, date) VALUES (?, ?, ?, ?, now())";
+                String sql = "INSERT INTO PILL(pill_id, id, pillName, pillAmount, date) VALUES (?, ?, ?, ?, now())";
                 PreparedStatement pstmt = con.prepareStatement(sql);
                 pstmt.setInt(1, new PillDAO().getNextInt());
                 pstmt.setString(2, Session.getUserId());
@@ -207,6 +206,72 @@ public class PillDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public Boolean[] getWeeklyMedicationStatus(String userId, LocalDate baseDate) {
+        Boolean[] status = new Boolean[7]; // 월 ~ 일
+
+        String sql = "SELECT pillYn, date FROM PILLYN WHERE id = ?";
+        try (Connection conn = DBManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String pillYn = rs.getString("pillYn");
+                boolean taken = "Y".equalsIgnoreCase(pillYn);
+
+                LocalDate recordDate = rs.getTimestamp("date").toLocalDateTime().toLocalDate();
+                LocalDate monday = baseDate.with(DayOfWeek.MONDAY);
+                LocalDate sunday = baseDate.with(DayOfWeek.SUNDAY);
+
+                if (!recordDate.isBefore(monday) && !recordDate.isAfter(sunday)) {
+                    int index = recordDate.getDayOfWeek().getValue() - 1; // 월~일 → 0~6
+                    status[index] = taken;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return status;
+    }
+
+    public double getTotalPill(String userId, LocalDate baseDate) {
+        double rate = 0.0;
+
+        // 기준 날짜의 주간 일요일을 기준으로 누적 복약률 계산
+        LocalDate sunday = baseDate.with(DayOfWeek.SUNDAY);
+
+        // 주어진 일요일 날짜까지 복약률 계산 (복용 수 / 전체 수)
+        String sql = "SELECT COUNT(*) AS total, " +
+                "SUM(CASE WHEN pillYn = 'Y' THEN 1 ELSE 0 END) AS taken " +
+                "FROM PILLYN WHERE id = ? AND date <= ?";
+
+        try (Connection conn = DBManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, userId);
+            pstmt.setString(2, sunday.toString()); // 기준 주간의 일요일까지
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    int total = rs.getInt("total");
+                    int taken = rs.getInt("taken");
+
+                    if (total > 0) {
+                        rate = (taken * 100.0) / total;
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return rate;
     }
 
     /**

@@ -1,12 +1,10 @@
-package todoList;
+package dbConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-
-import dbConnection.DBManager;
 
 /*
  * 생성자 : 신인철
@@ -28,7 +26,7 @@ public class TodoDAO {
         List<TodoDTO> list = new ArrayList<>();
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "SELECT todo_id, todoTitle, todoYn FROM TODO WHERE id = ? AND DATE(date) = CURDATE() ORDER BY todo_id")) {
+                        "SELECT todo_id, todoTitle, todoDetail, todoYn FROM TODO WHERE id = ? AND DATE(date) = CURDATE() ORDER BY todo_id")) {
             pstmt.setString(1, id);
             ResultSet rs = pstmt.executeQuery();
 
@@ -36,6 +34,7 @@ public class TodoDAO {
                 TodoDTO dto = new TodoDTO();
                 dto.setTodo_id(rs.getInt("todo_id"));
                 dto.setTodoTitle(rs.getString("todoTitle"));
+                dto.setTodoDetail(rs.getString("todoDetail"));
                 dto.setTodoYn(rs.getString("todoYn"));
 
                 list.add(dto);
@@ -54,7 +53,7 @@ public class TodoDAO {
     public static void updateTodoYn(String todo_id, String id) {
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "UPDATE todo SET todoYn = 'Y' WHERE todo_id = ? AND id = ?")) {
+                        "UPDATE TODO SET todoYn = 'Y' WHERE todo_id = ? AND id = ?")) {
             pstmt.setString(1, todo_id);
             pstmt.setString(2, id);
 

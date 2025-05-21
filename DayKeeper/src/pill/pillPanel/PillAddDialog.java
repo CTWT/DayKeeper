@@ -26,7 +26,7 @@ import javax.swing.SwingConstants;
 
 import common.CommonStyle;
 import config.ImgConfig;
-import pill.pillDAO.PillDAO;
+import dbConnection.PillDAO;
 import pill.pillManager.PillManager;
 
 /*
@@ -86,10 +86,10 @@ public class PillAddDialog extends JDialog {
         buttonGrid.setBorder(BorderFactory.createEmptyBorder(10, 40, 10, 40));
 
         String[] drugList = {
-            "루테인", "마그네슘", "멀티비타민",
-            "비오틴", "비타민C", "비타민D",
-            "칼슘", "아연", "오메가3",
-            "유산균", "철분", "홍삼"
+                "루테인", "마그네슘", "멀티비타민",
+                "비오틴", "비타민C", "비타민D",
+                "칼슘", "아연", "오메가3",
+                "유산균", "철분", "홍삼"
         };
 
         for (String drug : drugList) {

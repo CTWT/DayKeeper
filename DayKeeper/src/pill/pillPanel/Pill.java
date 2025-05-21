@@ -10,10 +10,10 @@ import common.CommonStyle.BottomPanelComponents;
 import config.BaseFrame;
 import config.ImgConfig;
 import config.ScreenType;
-import pill.pillDAO.PillDAO;
-import pill.pillDAO.PillYnDAO;
-import pill.pillDAO.PillAlramDAO;
-import pill.pillManager.PillDTO;
+import dbConnection.PillAlramDAO;
+import dbConnection.PillDAO;
+import dbConnection.PillDTO;
+import dbConnection.PillYnDAO;
 import pill.pillManager.PillManager;
 
 /*

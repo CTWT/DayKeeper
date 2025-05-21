@@ -6,7 +6,7 @@ import java.awt.event.*;
 import java.util.HashMap;
 
 import common.CommonStyle;
-import pill.pillDAO.PillAlramDAO;
+import dbConnection.PillAlramDAO;
 
 /*
  * 수업명 : Project DayKeeper
@@ -56,14 +56,17 @@ public class PillTimeSettingDialog extends JDialog {
 
         setBtn.addActionListener(e -> {
             if (selectedHour >= 0) {
-                int actualHour = isPM ? (selectedHour == 0 ? 12 : selectedHour + 12) : (selectedHour == 0 ? 0 : selectedHour);
+                int actualHour = isPM ? (selectedHour == 0 ? 12 : selectedHour + 12)
+                        : (selectedHour == 0 ? 0 : selectedHour);
                 alramDAO.registerAlarm(actualHour);
 
-                String msg = String.format("%s %02d시로 설정되었습니다.", isPM ? "오후" : "오전", selectedHour == 0 ? 12 : selectedHour);
+                String msg = String.format("%s %02d시로 설정되었습니다.", isPM ? "오후" : "오전",
+                        selectedHour == 0 ? 12 : selectedHour);
                 JOptionPane.showMessageDialog(PillTimeSettingDialog.this, msg, "알림", JOptionPane.INFORMATION_MESSAGE);
                 selectedTimeLabel.setText(getNoticeString());
             } else {
-                JOptionPane.showMessageDialog(PillTimeSettingDialog.this, "시간을 선택해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(PillTimeSettingDialog.this, "시간을 선택해주세요.", "경고",
+                        JOptionPane.WARNING_MESSAGE);
             }
         });
 
@@ -106,7 +109,8 @@ public class PillTimeSettingDialog extends JDialog {
                 protected void paintComponent(Graphics g) {
                     Graphics2D g2 = (Graphics2D) g.create();
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    GradientPaint gradient = new GradientPaint(0, 0, new Color(255, 255, 255), getWidth(), getHeight(), new Color(220, 230, 255));
+                    GradientPaint gradient = new GradientPaint(0, 0, new Color(255, 255, 255), getWidth(), getHeight(),
+                            new Color(220, 230, 255));
                     g2.setPaint(gradient);
                     g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
 
@@ -174,7 +178,8 @@ public class PillTimeSettingDialog extends JDialog {
             int cy = getHeight() / 2 + 40;
             int radius = 140;
 
-            GradientPaint clockGradient = new GradientPaint(cx - radius, cy - radius, new Color(245, 250, 255), cx + radius, cy + radius, new Color(220, 230, 255));
+            GradientPaint clockGradient = new GradientPaint(cx - radius, cy - radius, new Color(245, 250, 255),
+                    cx + radius, cy + radius, new Color(220, 230, 255));
             g2.setPaint(clockGradient);
             g2.fillOval(cx - radius, cy - radius, radius * 2, radius * 2);
 

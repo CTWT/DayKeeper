@@ -1,4 +1,4 @@
-package login;
+package dbConnection;
 
 public class UserDTO {
 

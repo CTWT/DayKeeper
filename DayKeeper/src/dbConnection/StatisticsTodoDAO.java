@@ -1,4 +1,4 @@
-package statistics;
+package dbConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,8 +9,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-
-import dbConnection.DBManager; // DB 연결을 위한 커스텀 유틸 클래스
 
 /**
  * 생성자 : 문원주

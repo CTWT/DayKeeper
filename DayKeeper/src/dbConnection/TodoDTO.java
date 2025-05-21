@@ -1,4 +1,4 @@
-package todoList;
+package dbConnection;
 
 public class TodoDTO {
 
@@ -7,6 +7,9 @@ public class TodoDTO {
 
     // 할일 타이틀
     private String todoTitle;
+
+    // 할일 상세 내용
+    private String todoDetail;
 
     // 할일 달성여부
     private String todoYn;
@@ -21,6 +24,14 @@ public class TodoDTO {
 
     public void setTodoTitle(String todoTitle) {
         this.todoTitle = todoTitle;
+    }
+
+    public String getTodoDetail() {
+        return todoDetail;
+    }
+
+    public void setTodoDetail(String todoDetail) {
+        this.todoDetail = todoDetail;
     }
 
     public void setTodo_id(int todo_id) {

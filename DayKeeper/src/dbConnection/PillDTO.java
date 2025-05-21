@@ -1,4 +1,5 @@
-package pill.pillManager;
+package dbConnection;
+
 import java.time.LocalDateTime;
 
 /*

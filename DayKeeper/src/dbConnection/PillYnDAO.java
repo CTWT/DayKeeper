@@ -1,4 +1,4 @@
-package pill.pillDAO;
+package dbConnection;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import common.Session;
-import dbConnection.DBManager;
 
 /*
  * 작성자 : 김관호
@@ -32,7 +31,7 @@ public class PillYnDAO {
             LocalDateTime time = LocalDateTime.now();
             Timestamp timestamp = Timestamp.valueOf(time);
             psmt.setTimestamp(1, timestamp);
-            psmt.setString(2, Session.getUserId()); //Login.UserSearch.curUserId;
+            psmt.setString(2, Session.getUserId()); // Login.UserSearch.curUserId;
             psmt.setString(3, YN);
             psmt.executeUpdate();
 
@@ -50,13 +49,13 @@ public class PillYnDAO {
         try (Connection con = DBManager.getConnection()) {
             String sql = "SELECT date from PILLYN where id = ?";
             PreparedStatement psmt = con.prepareStatement(sql);
-            psmt.setString(1, Session.getUserId()); //Login.UserSearch.curUserId;
+            psmt.setString(1, Session.getUserId()); // Login.UserSearch.curUserId;
             ResultSet rs = psmt.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 Timestamp tstamp = rs.getTimestamp(1);
                 Date ts = new Date(tstamp.getTime());
                 LocalDate curTime = LocalDate.now();
-                if(ts.toString().equals(curTime.toString())){
+                if (ts.toString().equals(curTime.toString())) {
                     updateYnToDB(YN, tstamp);
                 }
             }
@@ -72,7 +71,7 @@ public class PillYnDAO {
      */
     public void updateYnToDB(String YN, Timestamp tstamp) {
         try (Connection con = DBManager.getConnection()) {
-            String sql = "UPDATE PillYN SET pillYn = ? WHERE date = ?";
+            String sql = "UPDATE PILLYN SET pillYn = ? WHERE date = ?";
             PreparedStatement psmt = con.prepareStatement(sql);
             psmt.setString(1, YN); // Login.UserSearch.curUserId;
             psmt.setTimestamp(2, tstamp);
@@ -87,21 +86,21 @@ public class PillYnDAO {
      *
      * @return boolean
      */
-    public boolean checkConsume(){
+    public boolean checkConsume() {
         try (Connection con = DBManager.getConnection()) {
             String sql = "SELECT date, pillYn from PILLYN where id = ?";
             PreparedStatement psmt = con.prepareStatement(sql);
-            psmt.setString(1, Session.getUserId()); //Login.UserSearch.curUserId;
+            psmt.setString(1, Session.getUserId()); // Login.UserSearch.curUserId;
             ResultSet rs = psmt.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 Date ts = rs.getDate(1);
                 LocalDate curTime = LocalDate.now();
                 String Yn = rs.getString(2);
-                if(ts.toString().equals(curTime.toString())){
-                    if(Yn.equals("Y")){
+                if (ts.toString().equals(curTime.toString())) {
+                    if (Yn.equals("Y")) {
                         return true;
                     }
-                }                
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -113,18 +112,18 @@ public class PillYnDAO {
      * 오늘 날짜의 yn이 없다면 n을 삽입합니다.
      *
      */
-    public void insertInitialYNData(){
-         try (Connection con = DBManager.getConnection()) {
+    public void insertInitialYNData() {
+        try (Connection con = DBManager.getConnection()) {
             String sql = "SELECT date from PILLYN where id = ?";
             PreparedStatement psmt = con.prepareStatement(sql);
             psmt.setString(1, Session.getUserId());
             ResultSet rs = psmt.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 Date ts = rs.getDate(1);
                 LocalDate curTime = LocalDate.now();
-                if(ts.toString().equals(curTime.toString())){
+                if (ts.toString().equals(curTime.toString())) {
                     return;
-                }                
+                }
             }
 
             insertYnToDB("N");

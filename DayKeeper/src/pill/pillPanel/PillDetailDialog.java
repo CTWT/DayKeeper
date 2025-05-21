@@ -6,8 +6,8 @@ import javax.swing.border.TitledBorder;
 
 import common.CommonStyle;
 import config.ImgConfig;
-import pill.pillDAO.PillDAO;
-import pill.pillManager.PillDTO;
+import dbConnection.PillDAO;
+import dbConnection.PillDTO;
 import pill.pillManager.PillManager;
 
 import java.awt.*;
@@ -55,9 +55,8 @@ public class PillDetailDialog extends JDialog {
             imageLabel.setText("이미지 없음");
         }
         imageLabel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1),
-            BorderFactory.createEmptyBorder(5, 5, 5, 5)
-        ));
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         centerPanel.add(imageLabel);
         centerPanel.add(Box.createVerticalStrut(20));
 
@@ -102,7 +101,8 @@ public class PillDetailDialog extends JDialog {
      * @param content 내용
      */
     private JPanel makeInfoBox(String title, String content) {
-        if (content == null) content = "정보 없음";
+        if (content == null)
+            content = "정보 없음";
 
         JPanel box = new JPanel(new BorderLayout());
         box.setBackground(CommonStyle.BACKGROUND_COLOR);
@@ -117,10 +117,9 @@ public class PillDetailDialog extends JDialog {
         text.setBorder(new EmptyBorder(10, 15, 10, 15));
 
         TitledBorder border = BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200)),
-            title, TitledBorder.LEFT, TitledBorder.TOP,
-            CommonStyle.BUTTON_FONT, new Color(80, 80, 80)
-        );
+                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                title, TitledBorder.LEFT, TitledBorder.TOP,
+                CommonStyle.BUTTON_FONT, new Color(80, 80, 80));
 
         box.setBorder(border);
         box.add(text, BorderLayout.CENTER);

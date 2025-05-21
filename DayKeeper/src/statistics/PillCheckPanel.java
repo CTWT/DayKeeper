@@ -1,18 +1,18 @@
 package statistics;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import common.CommonStyle;
-
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
+import dbConnection.PillDAO;
 
 /**
  * 생성자 : 이주하

@@ -26,7 +26,8 @@ import common.CommonStyle;
 import common.Session;
 import config.BaseFrame;
 import config.ScreenType;
-import todoDetail.TodoDetail;
+import dbConnection.TodoDAO;
+import dbConnection.TodoDTO;
 
 /*
  * 생성자 : 신인철

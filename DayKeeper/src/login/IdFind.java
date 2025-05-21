@@ -8,18 +8,17 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Frame;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import common.Session;
+import dbConnection.UserDAO;
 
 /*
  * 생성자 : 이주하
@@ -60,6 +59,7 @@ public class IdFind extends JPanel {
 
     /**
      * 이름 입력 UI 패널 생성
+     * 
      * @return 입력 패널
      */
     private JPanel buildInputPanel() {
@@ -85,6 +85,7 @@ public class IdFind extends JPanel {
 
     /**
      * 결과를 보여주는 UI 패널 생성
+     * 
      * @return 결과 패널
      */
     private JPanel buildResultPanel() {
@@ -128,7 +129,6 @@ public class IdFind extends JPanel {
         }
     }
 
-    
     /**
      * "닫기" 버튼 클릭 시 이벤트 처리
      * - 메뉴 패널로 돌아감
@@ -149,8 +149,9 @@ public class IdFind extends JPanel {
 
     /**
      * 공통 라벨+입력필드 패널 생성
+     * 
      * @param labelText 라벨 텍스트
-     * @param field 입력 필드
+     * @param field     입력 필드
      * @return 패널
      */
     private JPanel LabeledField(String labelText, JTextField field) {
@@ -165,7 +166,8 @@ public class IdFind extends JPanel {
 
     /**
      * 공통 버튼 포함 패널 생성 및 이벤트 리스너 등록
-     * @param text 버튼 텍스트
+     * 
+     * @param text     버튼 텍스트
      * @param listener 버튼 클릭 이벤트
      * @return 패널
      */

@@ -1,17 +1,14 @@
 package login;
 
-import login.PwFind;
-import login.IdFind;
-
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Cursor;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -38,8 +35,9 @@ public class FindInfo extends JDialog {
     private final PwFind pwFindInstance = new PwFind();
     private final IdFind idFindInstance = new IdFind();
 
-     /**
+    /**
      * 생성자: FindInfo 기본 레이아웃 및 패널
+     * 
      * @param parent 부모 프레임
      */
     public FindInfo(Frame parent) {
@@ -58,8 +56,9 @@ public class FindInfo extends JDialog {
         add(cardPanel, BorderLayout.CENTER);
     }
 
-     /**
+    /**
      * 메인 메뉴 패널 생성 (타이틀, 전환 버튼, 닫기 버튼 포함)
+     * 
      * @return 메뉴 패널
      */
     private JPanel buildMenuPanel() {
@@ -89,6 +88,7 @@ public class FindInfo extends JDialog {
 
     /**
      * 타이틀 패널 생성
+     * 
      * @param title 타이틀 텍스트
      * @return 타이틀 패널
      */
@@ -107,6 +107,7 @@ public class FindInfo extends JDialog {
 
     /**
      * 아이디 찾기/비밀번호 찾기 전환 버튼 패널 생성
+     * 
      * @return 버튼 패널
      */
     private JPanel createSwitchButtons() {
@@ -122,7 +123,7 @@ public class FindInfo extends JDialog {
         // "비밀번호 찾기" 버튼 생성 및 이벤트 연결
         JButton findPwButton = createStyledButton("비밀번호 찾기", e -> {
             pwFindInstance.reset(); // 입력값 초기화
-            showPanel("PWFIND");    // 비밀번호 찾기 패널로 전환
+            showPanel("PWFIND"); // 비밀번호 찾기 패널로 전환
         });
 
         panel.add(findIdButton);
@@ -133,6 +134,7 @@ public class FindInfo extends JDialog {
 
     /**
      * 닫기 버튼 패널 생성
+     * 
      * @return 닫기 버튼 패널
      */
     private JPanel createCloseButton() {
@@ -154,7 +156,8 @@ public class FindInfo extends JDialog {
 
     /**
      * 공통 스타일의 버튼 생성
-     * @param text 버튼 텍스트
+     * 
+     * @param text   버튼 텍스트
      * @param action 버튼 클릭 시 액션 리스너
      * @return 스타일 적용된 버튼
      */
@@ -174,6 +177,7 @@ public class FindInfo extends JDialog {
 
     /**
      * 카드 레이아웃에서 지정한 이름의 패널로 전환
+     * 
      * @param name 패널 이름
      */
     private void showPanel(String name) {
