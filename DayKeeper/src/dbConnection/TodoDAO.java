@@ -62,4 +62,42 @@ public class TodoDAO {
             e.printStackTrace();
         }
     }
+
+    /**
+     * 
+     * @param todo_id 할일 id
+     * @param id      유저 id
+     */
+    public static void deleteTodo(String todo_id, String id) {
+        try (Connection conn = DBManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "DELETE FROM TODO WHERE todo_id = ? and id = ?")) {
+            pstmt.setString(1, todo_id);
+            pstmt.setString(2, id);
+
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 
+     * @param id         유저 id
+     * @param todoTitle  할일 제목
+     * @param todoDetail 할일 상세 내용
+     */
+    public static void insertTodo(String id, String todoTitle, String todoDetail) {
+        try (Connection conn = DBManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "INSERT INTO TODO(id, todoTitle, todoDetail, todoYn, date) VALUES(?, ?, ?, 'N', NOW())")) {
+            pstmt.setString(1, id);
+            pstmt.setString(2, todoTitle);
+            pstmt.setString(3, todoDetail);
+
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
