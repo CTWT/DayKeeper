@@ -15,6 +15,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import common.CommonStyle;
+import common.Session;
+import dbConnection.TodoDAO;
+import dbConnection.TodoDTO;
 
 /*
  * 생성자 : 유연우
@@ -118,10 +121,8 @@ public class TodoRemove extends JDialog {
                         "정말 삭제하시겠습니까?", "삭제 확인", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
 
-                    new TodoDetailDAO().deleteTodoByTitle("12345", title);
-                    parent.getTodoMap().remove("title");
-                    parent.deleteData(title);
-                    parent.repaint();
+                    TodoDTO todoid = null;
+                    TodoDAO.deleteTodo(String.valueOf(todoid.getTodo_id()), Session.getUserId());
                     dispose();
                 }
             }

@@ -232,12 +232,12 @@ public class Pill extends JPanel {
         BottomPanelComponents comp = CommonStyle.createBottomPanel();
 
         comp.pillAdd.setVisible(true);
-        comp.pillReturnHome.setVisible(true);
+        comp.returnHome.setVisible(true);
         comp.pillTimeSetting.setVisible(true);
         comp.pillConsume.setVisible(true);
 
         comp.pillAdd.addActionListener(e -> OpenModal(ModalName.ADD));
-        comp.pillReturnHome.addActionListener(e -> {
+        comp.returnHome.addActionListener(e -> {
             BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
             frame.showScreen(ScreenType.TODOLIST);
         });

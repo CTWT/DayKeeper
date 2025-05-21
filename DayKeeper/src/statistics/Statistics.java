@@ -87,6 +87,9 @@ public class Statistics extends JPanel {
         // ─── SOUTH 구성 (화면 하단 버튼들) ───
         CommonStyle.BottomPanelComponents bottom = CommonStyle.createBottomPanel(); // 공통 하단 버튼 패널 구성
 
+        bottom.todoList.setVisible(true); // 메인 화면 버튼 추가
+        bottom.pillDetail.setVisible(true); // 영양제 화면 버튼 추가
+
         // 메인화면 버튼 클릭 시 기본 화면(투두)로 전환
         bottom.todoList.addActionListener(e -> {
             BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this); // 상위 프레임 얻기
@@ -100,14 +103,10 @@ public class Statistics extends JPanel {
         });
 
         // 돌아가기 버튼 클릭 시 기본 화면(투두)으로 전환
-        bottom.returnPage.addActionListener(e -> {
-            BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this); // 상위 프레임 얻기
-            frame.showScreen(ScreenType.TODOLIST); // 투두 화면으로 이동
+        bottom.returnHome.addActionListener(e -> {
+            BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+            frame.showScreen(ScreenType.TODOLIST);
         });
-
-        bottom.todoList.setVisible(true); // 메인 화면 버튼 추가
-        bottom.pillDetail.setVisible(true); // 영양제 화면 버튼 추가
-        bottom.returnPage.setVisible(true); // 돌아가기 버튼 추가
 
         this.add(bottom.panel, BorderLayout.SOUTH); // SOUTH에 하단 패널 추가
     }

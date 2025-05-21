@@ -43,11 +43,10 @@ public class CommonStyle {
         public JButton pillAdd;
         public JButton pillTimeSetting;
         public JButton pillConsume;
-        public JButton pillReturnHome;
+        public JButton returnHome;
         public JButton pillDetail;
-        //
         public JButton statistics;
-        public JButton returnPage;
+        // public JButton returnPage;
     }
 
     // 공통 버튼 스타일
@@ -92,7 +91,7 @@ public class CommonStyle {
         comp.pillDetail = new JButton("영양제 정보");
         comp.statistics = new JButton("통계");
         comp.pillAdd = new JButton("➕ 추가");
-        comp.pillReturnHome = new JButton("🏠 처음으로");
+        comp.returnHome = new JButton("🏠 처음으로");
         comp.pillTimeSetting = new JButton("⏱ 시간 설정");
         comp.pillConsume = new JButton("💊 영양제 섭취");
         // comp.returnPage = new JButton("돌아가기");
@@ -103,7 +102,7 @@ public class CommonStyle {
         comp.pillDetail.setVisible(false);
         comp.statistics.setVisible(false);
         comp.pillAdd.setVisible(false);
-        comp.pillReturnHome.setVisible(false);
+        comp.returnHome.setVisible(false);
         comp.pillTimeSetting.setVisible(false);
         comp.pillConsume.setVisible(false);
         // comp.returnPage.setVisible(false);
@@ -115,7 +114,7 @@ public class CommonStyle {
         stylePrimaryButton(comp.pillAdd);
         stylePrimaryButton(comp.pillConsume);
         stylePrimaryButton(comp.pillDetail);
-        stylePrimaryButton(comp.pillReturnHome);
+        stylePrimaryButton(comp.returnHome);
         stylePrimaryButton(comp.pillTimeSetting);
         // stylePrimaryButton(comp.returnPage);
 
@@ -127,7 +126,7 @@ public class CommonStyle {
         bottomPanel.add(comp.statistics);
         bottomPanel.add(comp.pillAdd);
         bottomPanel.add(comp.pillConsume);
-        bottomPanel.add(comp.pillReturnHome);
+        bottomPanel.add(comp.returnHome);
         bottomPanel.add(comp.pillTimeSetting);
         // bottomPanel.add(comp.returnPage);
 
