@@ -40,7 +40,6 @@ public class Pill extends JPanel {
     public Pill() {
         setLayout(new BorderLayout());
         setBackground(CommonStyle.BACKGROUND_COLOR);
-
         update();
 
         // 타이틀 패널
@@ -48,24 +47,21 @@ public class Pill extends JPanel {
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
         titlePanel.setBackground(CommonStyle.BACKGROUND_COLOR);
 
-        JLabel titleLabel = new JLabel("DAY-KEEPER", SwingConstants.CENTER);
-        titleLabel.setFont(CommonStyle.TITLE_FONT);
-        titleLabel.setForeground(CommonStyle.PRIMARY_COLOR);
+        JLabel titleLabel = CommonStyle.createTitleLabel();
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPanel subTitleWrapper = new JPanel(new BorderLayout());
         subTitleWrapper.setBackground(CommonStyle.BACKGROUND_COLOR);
         subTitleWrapper.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
 
-        JLabel subTitleLabel = new JLabel("등록된 영양제");
-        subTitleLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+        JLabel subTitleLabel = CommonStyle.createLabel("등록된 영양제");
+        subTitleLabel.setFont(CommonStyle.BUTTON_FONT);
 
-        // ✅ 알람 시간 가져오기 및 포맷
         String alarmTimeText = getFormattedAlarmTime();
-        timeInfoLabel = new JLabel("⏰ 알람 시간 : " + alarmTimeText);
-        timeInfoLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
-        timeInfoLabel.setForeground(CommonStyle.PRIMARY_COLOR);
+        timeInfoLabel = CommonStyle.createLabel("⏰ 알람 시간 : " + alarmTimeText);
         timeInfoLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        timeInfoLabel.setForeground(CommonStyle.PRIMARY_COLOR);
+        timeInfoLabel.setFont(CommonStyle.BUTTON_FONT);
 
         subTitleWrapper.add(subTitleLabel, BorderLayout.WEST);
         subTitleWrapper.add(timeInfoLabel, BorderLayout.EAST);
@@ -74,7 +70,6 @@ public class Pill extends JPanel {
         titlePanel.add(titleLabel);
         titlePanel.add(Box.createVerticalStrut(10));
         titlePanel.add(subTitleWrapper);
-
         add(titlePanel, BorderLayout.NORTH);
 
         // 스크롤 영역
@@ -90,9 +85,8 @@ public class Pill extends JPanel {
         scrollPane.getVerticalScrollBar().setUnitIncrement(40);
         add(scrollPane, BorderLayout.CENTER);
 
-        // 하단 버튼 패널
+        // 하단 버튼
         BottomPanelComponents bottomComponents = createBottomPanel();
-
         add(bottomComponents.panel, BorderLayout.SOUTH);
     }
 
@@ -122,12 +116,11 @@ public class Pill extends JPanel {
         labelPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
         labelPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        JLabel nameLabel = new JLabel(pillName, SwingConstants.CENTER);
+        JLabel nameLabel = CommonStyle.createLabel(pillName);
         nameLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel countLabel = new JLabel("남은 수량: " + amount, SwingConstants.CENTER);
-        countLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        JLabel countLabel = CommonStyle.createLabel("남은 수량: " + amount);
         countLabel.setForeground(CommonStyle.PRIMARY_COLOR);
         countLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         countLabelMap.put(pillId, countLabel);
@@ -145,8 +138,8 @@ public class Pill extends JPanel {
             String url = "pill/" + pillName;
             JLabel iconLabel = ImgConfig.imgLabelComponent(url, 145, 145);
             iconLabel.setBounds(2, 2, 145, 145);
-
             iconLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
             iconLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -157,8 +150,9 @@ public class Pill extends JPanel {
 
             card.add(iconLabel);
         } catch (Exception e) {
-            JLabel errorLabel = new JLabel("이미지 없음", SwingConstants.CENTER);
+            JLabel errorLabel = CommonStyle.createLabel("이미지 없음");
             errorLabel.setBounds(10, 60, 130, 30);
+            errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
             card.add(errorLabel);
         }
 
@@ -237,10 +231,12 @@ public class Pill extends JPanel {
     private BottomPanelComponents createBottomPanel() {
         BottomPanelComponents comp = CommonStyle.createBottomPanel();
 
-        comp.pillAdd.setVisible(true);
-        comp.pillReturnHome.setVisible(true);
-        comp.pillTimeSetting.setVisible(true);
-        comp.pillConsume.setVisible(true);
+        comp.todoDetailInput.setVisible(false);
+        comp.todoDetail.setVisible(false);
+        comp.todoList.setVisible(false);
+        comp.pillDetail.setVisible(false);
+        comp.statistics.setVisible(false);
+        comp.returnPage.setVisible(false);
 
         comp.pillAdd.addActionListener(e -> OpenModal(ModalName.ADD));
         comp.pillReturnHome.addActionListener(e -> {
@@ -249,7 +245,6 @@ public class Pill extends JPanel {
         });
         comp.pillTimeSetting.addActionListener(e -> OpenModal(ModalName.TIMESETTING));
 
-        // 영양제를 이미 섭취했으면 메세지 띄우고 아니라면 영양제 섭취
         comp.pillConsume.addActionListener(e -> {
             if (PillManager.getInst().getPillsMap().size() <= 0) {
                 JOptionPane.showMessageDialog(this, "먼저 영양제를 추가해주세요.");

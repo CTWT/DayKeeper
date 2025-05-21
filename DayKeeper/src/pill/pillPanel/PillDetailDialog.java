@@ -12,7 +12,6 @@ import pill.pillManager.PillManager;
 
 import java.awt.*;
 
-
 /*
  * 수업명 : Project DayKeeper
  * 이름 : 임해균
@@ -21,10 +20,7 @@ import java.awt.*;
  * 수정자 : 김관호
  * 수정일 : 2025.05.19
  * 파일명 : PillDetailDialog.java
- * 설명 : 여러 영양제를 동시에 선택하여 일괄 등록할 수 있는 패널
- *       - 버튼 다중 선택 가능
- *       - 수량은 스피너로 공통 입력
- *       - DB에 한 번에 여러 약 insert 처리
+ * 설명 : 영양제 상세 정보 보기 및 삭제 기능 제공
  */
 
 public class PillDetailDialog extends JDialog {
@@ -39,9 +35,8 @@ public class PillDetailDialog extends JDialog {
         int amount = new PillDAO().getPillAmount(parent.getDetailId());
 
         // 상단 제목
-        JLabel titleLabel = new JLabel(pillName + " (" + amount + "개 남음)", SwingConstants.CENTER);
-        titleLabel.setFont(CommonStyle.TITLE_FONT);
-        titleLabel.setForeground(CommonStyle.PRIMARY_COLOR);
+        JLabel titleLabel = CommonStyle.createTitleLabel();
+        titleLabel.setText(pillName + " (" + amount + "개 남음)");
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         add(titleLabel, BorderLayout.NORTH);
 
@@ -88,10 +83,9 @@ public class PillDetailDialog extends JDialog {
         deleteBtn.setFont(CommonStyle.TEXT_FONT);
         deleteBtn.setBackground(new Color(255, 230, 230));
         deleteBtn.setFocusPainted(false);
-        deleteBtn.addActionListener(e->{
+        deleteBtn.addActionListener(e -> {
             deleteData(parent);
             parent.update();
-            //JOptionPane.showMessageDialog(this, "영양제가 삭제되었습니다.");
             dispose();
         });
 
@@ -103,9 +97,9 @@ public class PillDetailDialog extends JDialog {
 
     /**
      * 설명/복용 팁 박스 생성
-     * 
-     * @param title 제목
-     * @param content 문자열
+     *
+     * @param title   제목
+     * @param content 내용
      */
     private JPanel makeInfoBox(String title, String content) {
         if (content == null) content = "정보 없음";
@@ -135,10 +129,10 @@ public class PillDetailDialog extends JDialog {
 
     /**
      * 현재 디테일 패널에 대한 영양제를 삭제합니다.
-     * 
-     * @param parent 부모패널
+     *
+     * @param parent 부모 패널
      */
-    private void deleteData(Pill parent){
+    private void deleteData(Pill parent) {
         new PillDAO().deleteDataById(parent.getDetailId());
     }
 }

@@ -36,13 +36,12 @@ import pill.pillManager.PillManager;
  * 작성일 : 2025.05.16
  * 수정자 : 김관호
  * 수정일 : 2025.05.19
- * 파일명 : AddPillPanel.java
+ * 파일명 : PillAddDialog.java
  * 설명 : 여러 영양제를 동시에 선택하여 일괄 등록할 수 있는 패널
  *       - 버튼 다중 선택 가능
  *       - 수량은 스피너로 공통 입력
  *       - DB에 한 번에 여러 약 insert 처리
  */
-
 
 public class PillAddDialog extends JDialog {
     private JLabel nameLabel;

@@ -59,9 +59,6 @@ public class PillTimeSettingDialog extends JDialog {
                 int actualHour = isPM ? (selectedHour == 0 ? 12 : selectedHour + 12) : (selectedHour == 0 ? 0 : selectedHour);
                 alramDAO.registerAlarm(actualHour);
 
-                // 시간 고정 제거 (재설정 가능하도록)
-                // timeFixed = true;
-
                 String msg = String.format("%s %02d시로 설정되었습니다.", isPM ? "오후" : "오전", selectedHour == 0 ? 12 : selectedHour);
                 JOptionPane.showMessageDialog(PillTimeSettingDialog.this, msg, "알림", JOptionPane.INFORMATION_MESSAGE);
                 selectedTimeLabel.setText(getNoticeString());
@@ -143,7 +140,6 @@ public class PillTimeSettingDialog extends JDialog {
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    // 시간 고정 기능 제거
                     Point click = e.getPoint();
                     for (int i = 0; i < 12; i++) {
                         Point p = hourPoints.get(i);
