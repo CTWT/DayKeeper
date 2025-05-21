@@ -237,12 +237,10 @@ public class Pill extends JPanel {
     private BottomPanelComponents createBottomPanel() {
         BottomPanelComponents comp = CommonStyle.createBottomPanel();
 
-        comp.todoDetailInput.setVisible(false);
-        comp.todoDetail.setVisible(false);
-        comp.todoList.setVisible(false);
-        comp.pillDetail.setVisible(false);
-        comp.statistics.setVisible(false);
-        comp.returnPage.setVisible(false);
+        comp.pillAdd.setVisible(true);
+        comp.pillReturnHome.setVisible(true);
+        comp.pillTimeSetting.setVisible(true);
+        comp.pillConsume.setVisible(true);
 
         comp.pillAdd.addActionListener(e -> OpenModal(ModalName.ADD));
         comp.pillReturnHome.addActionListener(e -> {
