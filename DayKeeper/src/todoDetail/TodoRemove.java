@@ -2,7 +2,9 @@ package todoDetail;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -57,8 +59,13 @@ public class TodoRemove extends JDialog {
         // 할일 제목
         JLabel titleLabel = CommonStyle.createLabel("할일 제목:");
 
+        // ==== TodoRemove.java 수정 영역 시작 ====
         requestTitle = new JLabel(selectedValue);
         requestTitle.setBorder(new LineBorder(Color.BLACK));
+
+        // 폰트 크기 및 라벨 크기 조절 (추가)
+        requestTitle.setFont(new Font("Arial", Font.BOLD, 24));
+        requestTitle.setPreferredSize(new Dimension(350, 40));
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -117,6 +124,7 @@ public class TodoRemove extends JDialog {
                 if (confirm == JOptionPane.YES_OPTION) {
                     TodoDAO.deleteTodo(todoId);
                     parent.deleteData(todoId);
+                    parent.loadData();
                     dispose();
                 }
             }
@@ -124,7 +132,7 @@ public class TodoRemove extends JDialog {
 
         // 닫기 버튼 클릭 이벤트
         closeBtn.addActionListener(e -> {
-            dispose();
+            setVisible(false);
         });
     }
 

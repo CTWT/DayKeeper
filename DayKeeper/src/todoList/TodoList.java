@@ -118,9 +118,9 @@ public class TodoList extends JPanel {
         cardContainer.removeAll();
 
         for (TodoDTO dto : todoList) {
-            TodoCardPanel card = new TodoCardPanel(dto, this::handleComplete);
+            TodoCardPanel card = new TodoCardPanel(dto, this::handleComplete); // 2개 인자 생성자 호출
             card.setPreferredSize(new Dimension(200, 100)); // 카드 크기 고정 (선택)
-            cardContainer.add(card);
+
             cardContainer.add(card);
         }
 

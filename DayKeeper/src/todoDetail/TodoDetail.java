@@ -4,19 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-
-import org.w3c.dom.events.MouseEvent;
 
 import common.CommonStyle;
 import common.CommonStyle.BottomPanelComponents;
@@ -49,7 +45,7 @@ public class TodoDetail extends JPanel {
 
         // 하단 버튼
         BottomPanelComponents bottom = CommonStyle.createBottomPanel();
-        bottom.todoList.setVisible(true);
+        bottom.returnHome.setVisible(true);
         bottom.todoDetailInput.setVisible(true);
         bottom.pillDetail.setVisible(true);
         bottom.statistics.setVisible(true);
@@ -57,7 +53,7 @@ public class TodoDetail extends JPanel {
         bottom.todoDetailInput.addActionListener(e -> {
             new TodoInput(this);
         });
-        bottom.todoList.addActionListener(e -> {
+        bottom.returnHome.addActionListener(e -> {
             BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
             frame.showScreen(ScreenType.TODOLIST);
         });
@@ -71,12 +67,6 @@ public class TodoDetail extends JPanel {
         });
 
         add(bottom.panel, BorderLayout.SOUTH);
-
-        // 제목 더블클릭 시 삭제 다이얼로그
-        
-
-        
-
 
         // 데이터 로딩
         loadData();
@@ -98,7 +88,29 @@ public class TodoDetail extends JPanel {
         cardContainer.repaint();
     }
 
-    
+    private void addTodoToView(String title, String content) {
+        for (TodoDTO dto : todoList) {
+            if (dto.getTodoTitle().equals(title) && dto.getTodoDetail().equals(content)) {
+                TodoCardPanel card = new TodoCardPanel(dto, (id) -> {
+                    int result = JOptionPane.showConfirmDialog(this, "삭제하시겠습니까?", "삭제 확인", JOptionPane.YES_NO_OPTION);
+                    if (result == JOptionPane.YES_OPTION) {
+                        TodoDAO.deleteTodo(id);
+                        deleteData(id);
+                        loadData(); // 카드 재로딩
+                    }
+                }, false, (clickedDto) -> {
+                    // ==== 더블클릭 시 TodoRemove 창 띄우기 시작 ====
+                    new TodoRemove(this, clickedDto.getTodo_id(), clickedDto.getTodoTitle());
+                    // ==== 더블클릭 시 TodoRemove 창 띄우기 끝 ====
+                });
+
+                card.setPreferredSize(new Dimension(200, 100));
+                cardContainer.add(card);
+                todoMap.put(title, content);
+                break;
+            }
+        }
+    }
 
     public void pushData(String title, String content) {
         TodoDAO.insertTodo(Session.getUserId(), title, content);

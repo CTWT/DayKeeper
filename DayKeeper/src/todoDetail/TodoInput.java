@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -19,7 +18,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import common.CommonStyle;
@@ -75,7 +73,7 @@ public class TodoInput extends JDialog {
         gbc.anchor = GridBagConstraints.WEST;
 
         // 할일 제목
-        JLabel titleLabel = CommonStyle.createLabel("할일 제목:"); 
+        JLabel titleLabel = CommonStyle.createLabel("할일 제목:");
         // 할일 제목
         titleField = new JTextArea(1, 20);
         titleField.setLineWrap(true);
@@ -97,7 +95,7 @@ public class TodoInput extends JDialog {
 
         // 할일 내용
         JLabel contentLabel = CommonStyle.createLabel("할일 내용:");
-        
+
         contentField = new JTextArea(5, 20);
         contentField.setLineWrap(true);
         contentField.setWrapStyleWord(true);
