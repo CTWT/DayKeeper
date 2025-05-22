@@ -44,8 +44,8 @@ public class CommonStyle {
 
     // 공통 폰트
     public static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 40);
-    public static final Font BUTTON_FONT = new Font("SansSerif", Font.BOLD, 14);
-    public static final Font TEXT_FONT = new Font("SansSerif", Font.PLAIN, 13);
+    public static final Font BUTTON_FONT = new Font("SansSerif", Font.BOLD, 18);
+    public static final Font TEXT_FONT = new Font("SansSerif", Font.BOLD, 16);
 
     // 하단 버튼 정보를 담기 위한 내부 클래스
     public static class BottomPanelComponents {
@@ -129,7 +129,7 @@ public class CommonStyle {
             }
         });
 
-        button.setPreferredSize(new Dimension(120, 40));
+        button.setPreferredSize(new Dimension(135, 40));
     }
 
     // 공통 텍스트필드 밑줄 스타일
@@ -158,7 +158,7 @@ public class CommonStyle {
         BottomPanelComponents comp = new BottomPanelComponents();
 
         comp.todoDetailInput = new JButton("오늘 할일 입력");
-        comp.todoDetail = new JButton("오늘할일상세보기");
+        comp.todoDetail = new JButton("상세보기");
         comp.todoList = new JButton("메인화면");
         comp.pillDetail = new JButton("영양제 정보");
         comp.statistics = new JButton("통계");
