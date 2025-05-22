@@ -23,7 +23,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import common.CommonStyle;
-import common.Session;
 import config.BaseFrame;
 import config.ScreenType;
 import dbConnection.TodoDAO;
@@ -138,7 +137,7 @@ public class TodoList extends JPanel {
     // 현재 사용자의 해당하는 할 일 리스트 조회
     private void refreshTodoList() {
         try {
-            todoList = TodoDAO.todoList(Session.getUserId());
+            todoList = TodoDAO.todoList();
             if (todoList == null) {
                 todoList = new ArrayList<>();
             }
@@ -227,7 +226,7 @@ public class TodoList extends JPanel {
                         TodoDTO item = todoList.get(editingRow);
                         item.setTodoYn("Y");
 
-                        TodoDAO.updateTodoYn(String.valueOf(item.getTodo_id()), Session.getUserId());
+                        TodoDAO.updateTodoYn(item.getTodo_id());
 
                         SwingUtilities.invokeLater(() -> {
                             refreshTodoList();

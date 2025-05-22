@@ -2,20 +2,15 @@ package todoDetail;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-//import java.awt.Dimension;
-//import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-//import java.util.ArrayList;
-//import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.DefaultListModel;
-//import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -46,8 +41,13 @@ public class TodoDetail extends JPanel {
     private List<TodoDTO> todoList;
 
     // 리스트
-    private final DefaultListModel<String> titleListModel = new DefaultListModel<>();
-    private final DefaultListModel<String> contentListModel = new DefaultListModel<>();
+    // private final DefaultListModel<String> titleListModel = new
+    // DefaultListModel<>();
+    // private final DefaultListModel<String> contentListModel = new
+    // DefaultListModel<>();
+
+    private final DefaultListModel<TodoDTO> titleList = new DefaultListModel<>();
+
     private final Map<String, String> todoMap = new LinkedHashMap<>(); // 순서 유지
 
     public TodoDetail() {
@@ -67,8 +67,8 @@ public class TodoDetail extends JPanel {
         centerPanel.setBorder(new EmptyBorder(10, 100, 10, 100));
 
         // 제목 리스트
-        JList<String> titleList = new JList<>(titleListModel);
-        JScrollPane titleScroll = new JScrollPane(titleList);
+        JList<TodoDTO> tList = new JList<>(titleList);
+        JScrollPane titleScroll = new JScrollPane(tList);
         centerPanel.add(titleScroll);
 
         // // 내용 리스트 (단일 선택된 제목의 내용 보여줌)
@@ -87,7 +87,12 @@ public class TodoDetail extends JPanel {
         bottom.statistics.setVisible(true);
 
         bottom.todoDetailInput.addActionListener(e -> {
-            JDialog d = new TodoInput(this);
+            JDialog todoinput = new TodoInput(this);
+        });
+
+        bottom.todoList.addActionListener(e -> {
+            BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+            frame.showScreen(ScreenType.TODOLIST);
         });
         bottom.pillDetail.addActionListener(e -> {
             BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
@@ -102,12 +107,13 @@ public class TodoDetail extends JPanel {
 
         // 제목 더블클릭 시 삭제 다이얼로그
         TodoDetail parent = this;
-        titleList.addMouseListener(new MouseAdapter() {
+
+        tList.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    String selected = titleList.getSelectedValue();
-                    if (selected != null) {
-                        new TodoRemove(parent, selected);
+                    TodoDTO selectedDTO = tList.getSelectedValue();
+                    if (selectedDTO != null) {
+                        new TodoRemove(parent, selectedDTO.getTodo_id(), selectedDTO.getTodoTitle());
                     }
                 }
             }
@@ -115,30 +121,64 @@ public class TodoDetail extends JPanel {
 
     }
 
+    // 초기화면 생성 ?
     public void loadData() {
         if (todoList != null) {
             todoList.clear();
         }
-        todoList = TodoDAO.todoList(Session.getUserId());
+        todoList = TodoDAO.todoList();
 
         Iterator<TodoDTO> iter = todoList.iterator();
         while (iter.hasNext()) {
             TodoDTO dto = iter.next();
 
-            pushData(dto.getTodoTitle(), "detaildetail");
+            addTodoToView(dto.getTodoTitle(), dto.getTodoDetail());
+        }
+    }
+
+    private void addTodoToView(String title, String content) {
+        // todoList에 이미 todo_id가 들어 있는 DTO가 있음
+        for (TodoDTO dto : todoList) {
+            if (dto.getTodoTitle().equals(title) && dto.getTodoDetail().equals(content)) {
+                titleList.addElement(dto); // todo_id 포함된 객체 추가
+                todoMap.put(title, content);
+                break;
+            }
         }
     }
 
     public void pushData(String title, String content) {
-        titleListModel.addElement(title);
-        contentListModel.addElement(content);
-        todoMap.put(title, content);
+        // DB에 삽입
+        TodoDAO.insertTodo(Session.getUserId(), title, content);
+
+        // 최신 DB 리스트 다시 불러옴
+        todoList = TodoDAO.todoList();
+
+        // 뷰에 다시 반영
+        addTodoToView(title, content);
     }
 
-    public void deleteData(String title) {
-        titleListModel.removeElement(title);
-        contentListModel.removeElement(todoMap.get(title));
-        todoMap.remove(title);
+    public void deleteData(int todoId) {
+        for (int i = 0; i < titleList.getSize(); i++) {
+            TodoDTO dto = titleList.getElementAt(i);
+            if (dto.getTodo_id() == todoId) {
+                titleList.remove(i);
+                break;
+            }
+        }
+        todoList.removeIf(dto -> dto.getTodo_id() == todoId);
+        todoMap.entrySet().removeIf(entry -> {
+            return entry.getKey().equals(getTitleById(todoId));
+        });
+    }
+
+    private String getTitleById(int todoId) {
+        for (TodoDTO dto : todoList) {
+            if (dto.getTodo_id() == todoId) {
+                return dto.getTodoTitle();
+            }
+        }
+        return null;
     }
 
     public Map<String, String> getTodoMap() {

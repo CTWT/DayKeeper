@@ -15,9 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import common.CommonStyle;
-import common.Session;
 import dbConnection.TodoDAO;
-import dbConnection.TodoDTO;
 
 /*
  * 생성자 : 유연우
@@ -33,9 +31,11 @@ public class TodoRemove extends JDialog {
     private JLabel requestTitle;
     private JLabel requestcontent;
     private TodoDetail parent;
+    private int todoId;
 
-    public TodoRemove(TodoDetail parent, String selectedValue) {
+    public TodoRemove(TodoDetail parent, int todoId, String selectedValue) {
         this.parent = parent;
+        this.todoId = todoId;
 
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
@@ -57,33 +57,25 @@ public class TodoRemove extends JDialog {
         JLabel titleLabel = CommonStyle.createLabel("할일 제목:");
 
         requestTitle = new JLabel(selectedValue);
-        // requestTitle.setBorder(new LineBorder(Color.BLACK));
-        // CommonStyle.underline(titleField);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
         contentPanel.add(titleLabel, gbc);
 
         gbc.gridx = 1;
-        // gbc.gridy = 0;
         contentPanel.add(requestTitle, gbc);
 
         // 할일 내용
         JLabel contentLabel = CommonStyle.createLabel("할일 내용:");
         requestcontent = new JLabel();
-        // requestcontent.setBorder(new LineBorder(Color.BLACK));
-        // JScrollPane scrollPane = new JScrollPane(requestcontent);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.NORTHWEST;
-        ;
         contentPanel.add(contentLabel, gbc);
 
         gbc.gridx = 1;
-        // gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.NORTHWEST;
-        ;
         contentPanel.add(requestcontent, gbc);
 
         // 중앙에 배치하기 위해 감싸는 패널 사용
@@ -120,9 +112,8 @@ public class TodoRemove extends JDialog {
                 int confirm = JOptionPane.showConfirmDialog(this,
                         "정말 삭제하시겠습니까?", "삭제 확인", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
-
-                    TodoDTO todoid = null;
-                    TodoDAO.deleteTodo(String.valueOf(todoid.getTodo_id()), Session.getUserId());
+                    TodoDAO.deleteTodo(todoId);
+                    parent.deleteData(todoId);
                     dispose();
                 }
             }

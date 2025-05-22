@@ -8,18 +8,16 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
-import java.sql.Timestamp;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.LineBorder;
-import javax.swing.JOptionPane;
 
 import common.CommonStyle;
 
@@ -42,15 +40,16 @@ public class TodoInput extends JDialog {
      * @param frame DetailMainFrame 참조
      */
     public TodoInput(TodoDetail parent) {
+        super((JDialog) null, true);
         this.parent = parent;
         setLayout(new BorderLayout());
 
         setSize(500, 500);
 
-        setVisible(true);
-
         initUI();
         initEvent();
+
+        setVisible(true);
     }
 
     /**
@@ -142,10 +141,10 @@ public class TodoInput extends JDialog {
         // 저장 버튼 클릭 시: 제목 유효성 검사 및 리스트에 추가
         saveBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String title = titleField.getText().trim();
-                String content = contentField.getText().trim();
+                String todoTitle = titleField.getText().trim();
+                String TodoContent = contentField.getText().trim();
 
-                if (title.isEmpty()) {
+                if (todoTitle.isEmpty()) {
                     JOptionPane.showMessageDialog(
                             TodoInput.this,
                             "할일 제목을 입력하세요.",
@@ -155,7 +154,7 @@ public class TodoInput extends JDialog {
                 }
 
                 // 데이터 추가
-                parent.pushData(title, content);
+                parent.pushData(todoTitle, TodoContent);
 
                 // 입력 필드 초기화 후 메인 화면으로
                 clearFields();

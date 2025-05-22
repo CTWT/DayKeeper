@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import common.Session;
+
 /*
  * 생성자 : 신인철
  * 생성일 : 25.05.15
@@ -22,12 +24,12 @@ public class TodoDAO {
      * @param id 유저 id
      * @return
      */
-    public static List<TodoDTO> todoList(String id) {
+    public static List<TodoDTO> todoList() {
         List<TodoDTO> list = new ArrayList<>();
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "SELECT todo_id, todoTitle, todoDetail, todoYn FROM TODO WHERE id = ? AND DATE(date) = CURDATE() ORDER BY todo_id")) {
-            pstmt.setString(1, id);
+            pstmt.setString(1, Session.getUserId());
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
@@ -50,12 +52,12 @@ public class TodoDAO {
      * @param todo_id 할일 id
      * @param id      유저 id
      */
-    public static void updateTodoYn(String todo_id, String id) {
+    public static void updateTodoYn(int todo_id) {
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "UPDATE TODO SET todoYn = 'Y' WHERE todo_id = ? AND id = ?")) {
-            pstmt.setString(1, todo_id);
-            pstmt.setString(2, id);
+            pstmt.setInt(1, todo_id);
+            pstmt.setString(2, Session.getUserId());
 
             pstmt.executeUpdate();
         } catch (Exception e) {
@@ -68,12 +70,12 @@ public class TodoDAO {
      * @param todo_id 할일 id
      * @param id      유저 id
      */
-    public static void deleteTodo(String todo_id, String id) {
+    public static void deleteTodo(int todo_id) {
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "DELETE FROM TODO WHERE todo_id = ? and id = ?")) {
-            pstmt.setString(1, todo_id);
-            pstmt.setString(2, id);
+            pstmt.setInt(1, todo_id);
+            pstmt.setString(2, Session.getUserId());
 
             pstmt.executeUpdate();
         } catch (Exception e) {

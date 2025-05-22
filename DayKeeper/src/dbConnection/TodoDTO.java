@@ -46,4 +46,8 @@ public class TodoDTO {
         this.todoYn = todoYn;
     }
 
+    @Override
+    public String toString() {
+        return todoTitle;
+    }
 }
