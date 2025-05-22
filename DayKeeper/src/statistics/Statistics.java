@@ -45,7 +45,7 @@ public class Statistics extends JPanel {
 
         String[] weekOptions = { "이번 주", "지난 주", "2주 전", "3주 전" }; // 콤보박스 선택지 배열
         JComboBox<String> weekSelector = new JComboBox<>(weekOptions); // 콤보박스 생성
-        weekSelector.setPreferredSize(new Dimension(100, 25)); // 콤보박스 크기 지정
+        weekSelector.setPreferredSize(new Dimension(100, 20)); // 콤보박스 크기 지정
         JPanel comboPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT)); // 콤보박스 패널 우측 정렬
         comboPanel.setBackground(CommonStyle.BACKGROUND_COLOR); // 배경색 설정
         comboPanel.add(weekSelector); // 콤보박스 추가
@@ -128,7 +128,7 @@ public class Statistics extends JPanel {
 
         // 2. 복약 체크 패널 구성
         PillCheckPanel pillPanel = new PillCheckPanel(Session.getUserId(), baseDate); // 사용자 ID와 기준일 전달
-        pillPanel.setPreferredSize(new Dimension(400, 48)); // 크기 설정
+        pillPanel.setPreferredSize(new Dimension(400, 35)); // 크기 설정
         JPanel pillWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER)); // 감싸는 패널
         pillWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, -10, 0)); // 여백 설정
         pillWrapper.setBackground(CommonStyle.BACKGROUND_COLOR); // 배경색 설정
