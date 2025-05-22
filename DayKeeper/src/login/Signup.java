@@ -1,6 +1,7 @@
 package login;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -47,7 +48,7 @@ public class Signup extends JPanel {
         JLabel headLabel = new JLabel("Sign Up", SwingConstants.CENTER); // 회원가입 제목
         headLabel.setFont(new Font("SansSerif", Font.BOLD, 40)); // 제목 폰트 크기
         headLabel.setForeground(new Color(30, 100, 180)); // 파란색 계열
-        gbc.gridx = 0;
+        gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         add(headLabel, gbc); // 패널에 추가
@@ -69,6 +70,7 @@ public class Signup extends JPanel {
         gbc.gridx = 3; // 세 번째 열
         JButton checkButton = new JButton("중복확인");
         common.CommonStyle.stylePrimaryButton(checkButton);
+        checkButton.setPreferredSize(new Dimension(90, 30));
         checkButton.addActionListener(e -> {
             String id = newIdField.getText();
 
