@@ -1,23 +1,15 @@
+// 기존 import 그대로 유지
 package pill.pillPanel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Point2D;
+import java.awt.MultipleGradientPaint;
 import java.util.HashMap;
 
 import common.CommonStyle;
 import dbConnection.PillAlramDAO;
-
-/*
- * 수업명 : Project DayKeeper
- * 이름 : 임해균
- * 작성자 : 임해균
- * 작성일 : 2025.05.16
- * 수정자 : 임해균
- * 수정일 : 2025.05.20
- * 파일명 : PillTimeSettingDialog.java
- * 설명 : 복용 시간 시각화 다이얼로그 (설정 시간 + 시계 스타일 강조 버전)
- */
 
 public class PillTimeSettingDialog extends JDialog {
     private int selectedHour = -1;
@@ -47,8 +39,8 @@ public class PillTimeSettingDialog extends JDialog {
         setBtn = new JButton("시간 설정");
         JButton backBtn = new JButton("닫기");
 
-        setBtn.setPreferredSize(new Dimension(120, 40));
-        backBtn.setPreferredSize(new Dimension(120, 40));
+        setBtn.setPreferredSize(new Dimension(135, 40));
+        backBtn.setPreferredSize(new Dimension(135, 40));
 
         CommonStyle.stylePrimaryButton(setBtn);
         CommonStyle.styleExitButton(backBtn);
@@ -75,16 +67,15 @@ public class PillTimeSettingDialog extends JDialog {
             dispose();
         });
 
-        JToggleButton ampmToggle = new JToggleButton("오전");
-        ampmToggle.setFont(CommonStyle.TEXT_FONT.deriveFont(Font.BOLD, 14f));
-        ampmToggle.setForeground(CommonStyle.PRIMARY_COLOR);
-        ampmToggle.setBackground(new Color(240, 240, 255));
-        ampmToggle.setBorder(BorderFactory.createLineBorder(CommonStyle.PRIMARY_COLOR));
-        ampmToggle.setPreferredSize(new Dimension(80, 40));
+        // ✅ 오전/오후 토글 버튼 개선
+        JToggleButton ampmToggle = new JToggleButton("🌞 오전");
+        ampmToggle.setFont(CommonStyle.BUTTON_FONT);
+        ampmToggle.setPreferredSize(new Dimension(135, 40));
+        CommonStyle.stylePrimaryButton(ampmToggle);
 
         ampmToggle.addActionListener(e -> {
             isPM = !isPM;
-            ampmToggle.setText(isPM ? "오후" : "오전");
+            ampmToggle.setText(isPM ? "🌙 오후" : "🌞 오전");
         });
 
         bottomPanel.add(ampmToggle);
@@ -177,10 +168,20 @@ public class PillTimeSettingDialog extends JDialog {
             int cy = getHeight() / 2 + 40;
             int radius = 140;
 
+            // ✅ 시계 원 그라데이션 배경
             GradientPaint clockGradient = new GradientPaint(cx - radius, cy - radius, new Color(245, 250, 255),
                     cx + radius, cy + radius, new Color(220, 230, 255));
             g2.setPaint(clockGradient);
             g2.fillOval(cx - radius, cy - radius, radius * 2, radius * 2);
+
+            // ✅ 외곽 라디얼 그라데이션 효과
+            Point2D center = new Point2D.Float(cx, cy);
+            float[] dist = {0.95f, 1.0f};
+            Color[] colors = {new Color(0, 0, 0, 0), new Color(30, 100, 180, 60)};
+            RadialGradientPaint outerGlow = new RadialGradientPaint(center, radius + 5, dist, colors,
+                    MultipleGradientPaint.CycleMethod.NO_CYCLE);
+            g2.setPaint(outerGlow);
+            g2.fillOval(cx - radius - 5, cy - radius - 5, (radius + 5) * 2, (radius + 5) * 2);
 
             hourPoints.clear();
             g2.setFont(CommonStyle.BUTTON_FONT.deriveFont(Font.BOLD, 15f));
