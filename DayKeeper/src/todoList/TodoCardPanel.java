@@ -23,7 +23,7 @@ public class TodoCardPanel extends JPanel {
         setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
         JLabel titleLabel = new JLabel(dto.getTodoTitle(), SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 25));
         add(titleLabel, BorderLayout.CENTER);
 
         JButton statusBtn = new JButton("미완료");
