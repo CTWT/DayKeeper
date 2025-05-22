@@ -23,7 +23,7 @@ public class Pill extends JPanel {
     private JLabel timeInfoLabel;
     private JPanel centerPanel;
     private JScrollPane scrollPane;
-    private boolean isHorizontal = false;
+    private boolean isHorizontal = true;
 
     public Pill() {
         setLayout(new BorderLayout());
@@ -49,8 +49,8 @@ public class Pill extends JPanel {
         subTitleLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
         // 🌓 토글 버튼
-        JButton toggleButton = new JButton("🌓");
-        toggleButton.setPreferredSize(new Dimension(40, 30));
+        JButton toggleButton = new JButton("🌓 크기 변환");
+        toggleButton.setPreferredSize(new Dimension(140, 30));
         toggleButton.setFocusPainted(false);
         toggleButton.setContentAreaFilled(false);
         toggleButton.setBorder(null);
