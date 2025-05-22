@@ -2,7 +2,9 @@ package todoDetail;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -17,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import common.CommonStyle;
@@ -72,11 +75,17 @@ public class TodoInput extends JDialog {
         gbc.anchor = GridBagConstraints.WEST;
 
         // 할일 제목
-        JLabel titleLabel = CommonStyle.createLabel("할일 제목:");
-
+        JLabel titleLabel = CommonStyle.createLabel("할일 제목:"); 
+        // 할일 제목
         titleField = new JTextArea(1, 20);
+        titleField.setLineWrap(true);
+        titleField.setWrapStyleWord(true);
         titleField.setBorder(new LineBorder(Color.BLACK));
-        // CommonStyle.underline(titleField);
+
+        // 크기 고정
+        titleField.setPreferredSize(new Dimension(300, 30));
+        titleField.setMinimumSize(new Dimension(300, 30));
+        titleField.setMaximumSize(new Dimension(300, 30));
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -88,9 +97,21 @@ public class TodoInput extends JDialog {
 
         // 할일 내용
         JLabel contentLabel = CommonStyle.createLabel("할일 내용:");
+        
         contentField = new JTextArea(5, 20);
+        contentField.setLineWrap(true);
+        contentField.setWrapStyleWord(true);
         contentField.setBorder(new LineBorder(Color.BLACK));
+
+        // 크기 고정
+        contentField.setPreferredSize(new Dimension(300, 100));
+        contentField.setMinimumSize(new Dimension(300, 100));
+        contentField.setMaximumSize(new Dimension(300, 100));
+
         JScrollPane scrollPane = new JScrollPane(contentField);
+        scrollPane.setPreferredSize(new Dimension(300, 100));
+        scrollPane.setMinimumSize(new Dimension(300, 100));
+        scrollPane.setMaximumSize(new Dimension(300, 100));
 
         gbc.gridx = 0;
         gbc.gridy = 1;
