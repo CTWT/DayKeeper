@@ -133,6 +133,84 @@ public class CommonStyle {
         button.setPreferredSize(new Dimension(135, 40));
     }
 
+    public static void styleAddPillButton(JButton button) {
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setForeground(Color.WHITE);
+        button.setFont(BUTTON_FONT);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // 초기 토글 상태 설정
+        button.putClientProperty("toggled", false);
+
+        // 클릭 동작은 ActionListener로 처리 (더 안정적)
+        button.addActionListener(e -> {
+            boolean toggled = (boolean) button.getClientProperty("toggled");
+            button.putClientProperty("toggled", !toggled);
+            button.repaint(); // UI 다시 그리기
+        });
+
+        // rollover 및 pressed 등 효과는 MouseListener로 유지
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.repaint();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.repaint();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                button.repaint();
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                button.repaint();
+            }
+        });
+
+        button.setUI(new BasicButtonUI() {
+            @Override
+            public void paint(Graphics g, JComponent c) {
+                AbstractButton b = (AbstractButton) c;
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                int width = b.getWidth();
+                int height = b.getHeight();
+
+                boolean toggled = (boolean) b.getClientProperty("toggled");
+
+                Color baseColor = toggled ? PRIMARY_COLOR.darker().darker() : PRIMARY_COLOR;
+                if (b.getModel().isRollover()) {
+                    baseColor = toggled ? baseColor.brighter() : baseColor.darker();
+                }
+
+                GradientPaint gp = new GradientPaint(0, 0, baseColor.brighter(), 0, height, baseColor);
+                g2.setPaint(gp);
+                g2.fillRoundRect(0, 0, width, height, 20, 20);
+
+                FontMetrics fm = g2.getFontMetrics();
+                Rectangle stringBounds = fm.getStringBounds(b.getText(), g2).getBounds();
+                int textX = (width - stringBounds.width) / 2;
+                int textY = (height - stringBounds.height) / 2 + fm.getAscent();
+
+                g2.setColor(b.getForeground());
+                g2.setFont(b.getFont());
+                g2.drawString(b.getText(), textX, textY);
+
+                g2.dispose();
+            }
+        });
+
+        button.setPreferredSize(new Dimension(135, 40));
+    }
+
     // 공통 텍스트필드 밑줄 스타일
     public static void underline(JTextField field) {
         field.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));

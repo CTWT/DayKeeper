@@ -96,7 +96,7 @@ public class PillAddDialog extends JDialog {
 
         for (String drug : drugList) {
             JButton btn = new JButton(drug);
-            CommonStyle.stylePrimaryButton(btn);
+            CommonStyle.styleAddPillButton(btn);
             btn.setFont(CommonStyle.TEXT_FONT);
             btn.addActionListener(e -> toggleDrugSelection(drug));
             buttonMap.put(drug, btn);
