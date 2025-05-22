@@ -133,7 +133,7 @@ public class PillAddDialog extends JDialog {
         bottomPanel.add(confirmBtn);
 
         // 뒤로가기 버튼
-        JButton backBtn = new JButton("뒤로");
+        JButton backBtn = new JButton("닫기");
         backBtn.setPreferredSize(new Dimension(80, 35));
         backBtn.setFont(CommonStyle.TEXT_FONT);
         backBtn.setBackground(Color.LIGHT_GRAY);

@@ -45,7 +45,7 @@ public class PillTimeSettingDialog extends JDialog {
         bottomPanel.setBackground(CommonStyle.BACKGROUND_COLOR);
 
         setBtn = new JButton("시간 설정");
-        JButton backBtn = new JButton("뒤로");
+        JButton backBtn = new JButton("닫기");
 
         setBtn.setPreferredSize(new Dimension(120, 40));
         backBtn.setPreferredSize(new Dimension(120, 40));
