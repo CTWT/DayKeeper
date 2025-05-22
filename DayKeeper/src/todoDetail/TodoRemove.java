@@ -13,6 +13,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 
 import common.CommonStyle;
 import dbConnection.TodoDAO;
@@ -57,6 +58,7 @@ public class TodoRemove extends JDialog {
         JLabel titleLabel = CommonStyle.createLabel("할일 제목:");
 
         requestTitle = new JLabel(selectedValue);
+        requestTitle.setBorder(new LineBorder(Color.BLACK));
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -68,6 +70,7 @@ public class TodoRemove extends JDialog {
         // 할일 내용
         JLabel contentLabel = CommonStyle.createLabel("할일 내용:");
         requestcontent = new JLabel();
+        requestcontent.setBorder(new LineBorder(Color.BLACK));
 
         gbc.gridx = 0;
         gbc.gridy = 1;
