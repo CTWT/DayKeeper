@@ -3,7 +3,9 @@ package todoList;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.time.LocalDateTime;
@@ -66,9 +68,7 @@ public class TodoList extends JPanel {
         // 패널 전체를 상단에 추가
         add(topPanel, BorderLayout.NORTH);
 
-        // 카드 컨테이너 (WrapLayout 필요)
-        cardContainer = new JPanel();
-        cardContainer.setLayout(new BoxLayout(cardContainer, BoxLayout.Y_AXIS));
+        cardContainer = new JPanel(new GridLayout(0, 2, 20, 20)); // (rows=auto, cols=2, hgap, vgap)
         cardContainer.setBackground(Color.WHITE);
 
         JScrollPane scrollPane = new JScrollPane(cardContainer,
@@ -77,6 +77,7 @@ public class TodoList extends JPanel {
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         add(scrollPane, BorderLayout.CENTER);
+
         // 할 일 로딩 및 카드 추가
         loadAndRenderCards();
 
@@ -118,6 +119,8 @@ public class TodoList extends JPanel {
 
         for (TodoDTO dto : todoList) {
             TodoCardPanel card = new TodoCardPanel(dto, this::handleComplete);
+            card.setPreferredSize(new Dimension(200, 100)); // 카드 크기 고정 (선택)
+            cardContainer.add(card);
             cardContainer.add(card);
         }
 
