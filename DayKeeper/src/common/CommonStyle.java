@@ -1,31 +1,11 @@
 package common;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.FlowLayout;
-import java.awt.Font;
-
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.plaf.basic.BasicButtonUI;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.Arrays;
 import java.util.List;
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import javax.swing.*;
+import javax.swing.plaf.basic.BasicButtonUI;
 
 /*
  * 생성자 : 신인철
@@ -33,7 +13,7 @@ import java.awt.RenderingHints;
  * 파일명 : CommonStyle.java
  * 수정자 : 임해균
  * 수정일 : 25.05.22
- * 설명 : swing 공통 스타일 형식 지정 + 버튼 아이콘 상수 적용
+ * 설명 : Swing 공통 스타일 형식 지정 + 버튼 아이콘 상수 및 스타일 오버로딩
  */
 public class CommonStyle {
 
@@ -50,7 +30,7 @@ public class CommonStyle {
     public static final Font BUTTON_FONT = new Font("SansSerif", Font.BOLD, 18);
     public static final Font TEXT_FONT = new Font("SansSerif", Font.BOLD, 16);
 
-    // ✅ 공통 이모지 아이콘 상수
+    // 공통 아이콘 이모지
     public static final String ICON_ADD = "➕";
     public static final String ICON_PILL = "💊";
     public static final String ICON_HOME = "🏠";
@@ -70,79 +50,28 @@ public class CommonStyle {
         public JButton statistics;
     }
 
-    // 공통 버튼 스타일
+    // 공통 버튼 스타일 (JButton)
     public static void stylePrimaryButton(JButton button) {
-        button.setContentAreaFilled(false);
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-        button.setForeground(Color.WHITE);
-        button.setFont(BUTTON_FONT);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        button.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                button.setBackground(PRIMARY_COLOR.darker());
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                button.setBackground(PRIMARY_COLOR);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                button.setBackground(PRIMARY_COLOR.darker().darker());
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                button.setBackground(PRIMARY_COLOR.darker());
-            }
-        });
-
-        button.setUI(new BasicButtonUI() {
-            @Override
-            public void paint(Graphics g, JComponent c) {
-                AbstractButton b = (AbstractButton) c;
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-                int width = b.getWidth();
-                int height = b.getHeight();
-
-                Color baseColor = b.getModel().isPressed() ? PRIMARY_COLOR.darker().darker()
-                        : b.getModel().isRollover() ? PRIMARY_COLOR.darker() : PRIMARY_COLOR;
-
-                GradientPaint gp = new GradientPaint(0, 0, baseColor.brighter(), 0, height, baseColor);
-                g2.setPaint(gp);
-                g2.fillRoundRect(0, 0, width, height, 20, 20);
-
-                FontMetrics fm = g2.getFontMetrics();
-                Rectangle stringBounds = fm.getStringBounds(b.getText(), g2).getBounds();
-                int textX = (width - stringBounds.width) / 2;
-                int textY = (height - stringBounds.height) / 2 + fm.getAscent();
-
-                g2.setColor(b.getForeground());
-                g2.setFont(b.getFont());
-                g2.drawString(b.getText(), textX, textY);
-
-                g2.dispose();
-            }
-        });
-
-        button.setPreferredSize(new Dimension(135, 40));
+        applyButtonStyle(button, PRIMARY_COLOR);
     }
 
+    // ✅ 공통 버튼 스타일 (JToggleButton) 오버로딩
+    public static void stylePrimaryButton(JToggleButton button) {
+        applyButtonStyle(button, PRIMARY_COLOR);
+    }
+
+    // 공통 닫기 버튼 스타일
     public static void styleExitButton(JButton button) {
-        applyColorButtonStyle(button, EXIT_COLOR);
+        applyButtonStyle(button, EXIT_COLOR);
     }
 
+    // 공통 삭제 버튼 스타일
     public static void styleDeleteButton(JButton button) {
-        applyColorButtonStyle(button, DELETE_COLOR);
+        applyButtonStyle(button, DELETE_COLOR);
     }
 
-    private static void applyColorButtonStyle(JButton button, Color color) {
+    // 내부 버튼 스타일 공통 로직
+    private static void applyButtonStyle(AbstractButton button, Color color) {
         button.setContentAreaFilled(false);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
@@ -197,7 +126,6 @@ public class CommonStyle {
                 g2.setColor(b.getForeground());
                 g2.setFont(b.getFont());
                 g2.drawString(b.getText(), textX, textY);
-
                 g2.dispose();
             }
         });
@@ -227,7 +155,7 @@ public class CommonStyle {
         return label;
     }
 
-    // 공통 하단 버튼 패널
+    // 공통 하단 버튼 구성
     public static BottomPanelComponents createBottomPanel() {
         BottomPanelComponents comp = new BottomPanelComponents();
 
@@ -236,8 +164,6 @@ public class CommonStyle {
         comp.todoList = new JButton("메인화면");
         comp.pillDetail = new JButton("영양제 정보");
         comp.statistics = new JButton("통계");
-
-        // ✅ 이모지 상수 적용
         comp.pillAdd = new JButton(ICON_ADD + " 추가");
         comp.returnHome = new JButton(ICON_HOME + " 처음으로");
         comp.pillTimeSetting = new JButton(ICON_TIME + " 시간 설정");
@@ -252,7 +178,8 @@ public class CommonStyle {
                 comp.pillAdd,
                 comp.returnHome,
                 comp.pillTimeSetting,
-                comp.pillConsume);
+                comp.pillConsume
+        );
 
         for (JButton btn : buttons) {
             btn.setVisible(false);
