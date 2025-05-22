@@ -38,19 +38,19 @@ public class TotalStatisticsPanel extends JPanel {
     // 달성률(rate)에 따른 타이틀 텍스트(HTML) 반환 메서드
     private String getTitleTextFromRate(double rate) {
         if (rate >= 100)
-            return "<span style='color:#FFD700; font-weight:bold; font-size:16pt;'>퍼펙트 케어러</span>";
+            return "<span style='color:#FFD700; font-weight:bold; font-size:18pt;'>퍼펙트 케어러</span>";
         else if (rate >= 90)
-            return "<span style='color:#00008B; font-weight:bold; font-size:15pt;'>완벽을 향해</span>";
+            return "<span style='color:#00008B; font-weight:bold; font-size:17pt;'>완벽을 향해</span>";
         else if (rate >= 70)
-            return "<span style='color:#8B0000; font-weight:bold; font-size:14pt;'>꾸준한 관리인</span>";
+            return "<span style='color:#8B0000; font-weight:bold; font-size:16pt;'>꾸준한 관리인</span>";
         else if (rate >= 50)
-            return "<span style='color:#4B0082; font-weight:bold; font-size:14pt;'>타노스도 인정한 균형</span>";
+            return "<span style='color:#4B0082; font-weight:bold; font-size:16pt;'>타노스도 인정한 균형</span>";
         else if (rate >= 30)
-            return "<span style='color:#808080; font-style:italic; font-size:13pt;'>관리가 소홀한 자</span>";
+            return "<span style='color:#808080; font-style:italic; font-size:15pt;'>관리가 소홀한 자</span>";
         else if (rate >= 10)
-            return "<span style='color:#000000; font-style:italic; font-size:11pt;'>리스트 방치중</span>";
+            return "<span style='color:#000000; font-style:italic; font-size:13pt;'>리스트 방치중</span>";
         else
-            return "<span style='color:#666666; font-style:italic; font-size:11pt; text-decoration: line-through;'>의욕 실종</span>";
+            return "<span style='color:#666666; font-style:italic; font-size:13pt; text-decoration: line-through;'>의욕 실종</span>";
     }
 
     private void initComponents(String userId, LocalDate date) { // UI 컴포넌트 초기화 메서드
@@ -64,15 +64,15 @@ public class TotalStatisticsPanel extends JPanel {
         // 투두리스트 달성도 타이틀 JLabel 생성, HTML 텍스트 적용
         JLabel todoTitleLabel = new JLabel(
                 String.format("<html>%s</html>", getTitleTextFromRate(todoRateValue)));
-        todoTitleLabel.setFont(CommonStyle.BUTTON_FONT);
+        todoTitleLabel.setFont(CommonStyle.TEXT_FONT);
 
         // 투두리스트 달성도 앞부분 텍스트 라벨 ("투두리스트 총 달성도: xx.xx% (")
         JLabel todoPrefixLabel = new JLabel(String.format("투두리스트 총 달성도: %.2f%% (", todoRateValue));
-        todoPrefixLabel.setFont(CommonStyle.BUTTON_FONT);
+        todoPrefixLabel.setFont(CommonStyle.TEXT_FONT);
 
         // 투두리스트 달성도 닫는 괄호 라벨 ")"
         JLabel todoSuffixLabel = new JLabel(")");
-        todoSuffixLabel.setFont(CommonStyle.BUTTON_FONT);
+        todoSuffixLabel.setFont(CommonStyle.TEXT_FONT);
 
         // 투두리스트 관련 라벨들을 한 줄에 붙이기 위한 패널 (FlowLayout, 좌측 정렬, 간격 0)
         JPanel todoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -85,15 +85,15 @@ public class TotalStatisticsPanel extends JPanel {
         // 영양제 복약률 타이틀 JLabel 생성, HTML 텍스트 적용
         JLabel medTitleLabel = new JLabel(
                 String.format("<html>%s</html>", getTitleTextFromRate(pillRateValue)));
-        medTitleLabel.setFont(CommonStyle.BUTTON_FONT);
+        medTitleLabel.setFont(CommonStyle.TEXT_FONT);
 
         // 영양제 복약률 앞부분 텍스트 라벨 ("복약률 총 달성도: xx.xx% (")
         JLabel medPrefixLabel = new JLabel(String.format("복약률 총 달성도: %.2f%% (", pillRateValue));
-        medPrefixLabel.setFont(CommonStyle.BUTTON_FONT);
+        medPrefixLabel.setFont(CommonStyle.TEXT_FONT);
 
         // 영양제 복약률 닫는 괄호 라벨 ")"
         JLabel medSuffixLabel = new JLabel(")");
-        medSuffixLabel.setFont(CommonStyle.BUTTON_FONT);
+        medSuffixLabel.setFont(CommonStyle.TEXT_FONT);
 
         // 영양제 관련 라벨들을 한 줄에 붙이기 위한 패널 (FlowLayout, 좌측 정렬, 간격 0)
         JPanel medPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));

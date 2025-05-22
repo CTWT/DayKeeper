@@ -87,11 +87,11 @@ public class Statistics extends JPanel {
         // ─── SOUTH 구성 (화면 하단 버튼들) ───
         CommonStyle.BottomPanelComponents bottom = CommonStyle.createBottomPanel(); // 공통 하단 버튼 패널 구성
 
-        bottom.todoList.setVisible(true); // 메인 화면 버튼 추가
+        bottom.returnHome.setVisible(true); // 홈으로 버튼 추가
         bottom.pillDetail.setVisible(true); // 영양제 화면 버튼 추가
 
-        // 메인화면 버튼 클릭 시 기본 화면(투두)로 전환
-        bottom.todoList.addActionListener(e -> {
+        // 홈으로 버튼 클릭 시 기본 화면(투두)로 전환
+        bottom.returnHome.addActionListener(e -> {
             BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this); // 상위 프레임 얻기
             frame.showScreen(ScreenType.TODOLIST); // 투두 화면으로 이동
         });
@@ -100,12 +100,6 @@ public class Statistics extends JPanel {
         bottom.pillDetail.addActionListener(e -> {
             BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this); // 상위 프레임 얻기
             frame.showScreen(ScreenType.PILL); // 복약 화면으로 이동
-        });
-
-        // 돌아가기 버튼 클릭 시 기본 화면(투두)으로 전환
-        bottom.returnHome.addActionListener(e -> {
-            BaseFrame frame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
-            frame.showScreen(ScreenType.TODOLIST);
         });
 
         this.add(bottom.panel, BorderLayout.SOUTH); // SOUTH에 하단 패널 추가
@@ -128,7 +122,7 @@ public class Statistics extends JPanel {
 
         // 2. 복약 체크 패널 구성
         PillCheckPanel pillPanel = new PillCheckPanel(Session.getUserId(), baseDate); // 사용자 ID와 기준일 전달
-        pillPanel.setPreferredSize(new Dimension(400, 35)); // 크기 설정
+        pillPanel.setPreferredSize(new Dimension(400, 50)); // 크기 설정
         JPanel pillWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER)); // 감싸는 패널
         pillWrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, -10, 0)); // 여백 설정
         pillWrapper.setBackground(CommonStyle.BACKGROUND_COLOR); // 배경색 설정

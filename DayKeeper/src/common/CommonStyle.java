@@ -17,7 +17,8 @@ import javax.swing.plaf.basic.BasicButtonUI;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
+import java.util.Arrays;
+import java.util.List;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.GradientPaint;
@@ -167,15 +168,20 @@ public class CommonStyle {
         comp.pillTimeSetting = new JButton("⏱ 시간 설정");
         comp.pillConsume = new JButton("💊 영양제 섭취");
 
-        comp.todoDetailInput.setVisible(false);
-        comp.todoDetail.setVisible(false);
-        comp.todoList.setVisible(false);
-        comp.pillDetail.setVisible(false);
-        comp.statistics.setVisible(false);
-        comp.pillAdd.setVisible(false);
-        comp.returnHome.setVisible(false);
-        comp.pillTimeSetting.setVisible(false);
-        comp.pillConsume.setVisible(false);
+        List<JButton> buttons = Arrays.asList(
+                comp.todoDetailInput,
+                comp.todoDetail,
+                comp.todoList,
+                comp.pillDetail,
+                comp.statistics,
+                comp.pillAdd,
+                comp.returnHome,
+                comp.pillTimeSetting,
+                comp.pillConsume);
+
+        for (JButton btn : buttons) {
+            btn.setVisible(false);
+        }
 
         stylePrimaryButton(comp.todoDetailInput);
         stylePrimaryButton(comp.todoDetail);
@@ -188,15 +194,14 @@ public class CommonStyle {
         stylePrimaryButton(comp.pillTimeSetting);
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        bottomPanel.add(comp.todoDetailInput);
-        bottomPanel.add(comp.todoDetail);
-        bottomPanel.add(comp.todoList);
-        bottomPanel.add(comp.pillDetail);
-        bottomPanel.add(comp.statistics);
-        bottomPanel.add(comp.pillAdd);
-        bottomPanel.add(comp.pillConsume);
-        bottomPanel.add(comp.returnHome);
-        bottomPanel.add(comp.pillTimeSetting);
+        bottomPanel.add(comp.returnHome); // 1. 홈
+        bottomPanel.add(comp.todoDetailInput); // 2. 투두 추가
+        bottomPanel.add(comp.todoDetail); // 3. 투두 상세
+        bottomPanel.add(comp.pillAdd); // 4. 영양제 추가
+        bottomPanel.add(comp.pillDetail); // 5. 영양제 상세
+        bottomPanel.add(comp.pillTimeSetting); // 6. 시간 설정
+        bottomPanel.add(comp.pillConsume); // 7. 복용
+        bottomPanel.add(comp.statistics); // 8. 통계
 
         comp.panel = bottomPanel;
         return comp;
