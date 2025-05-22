@@ -5,12 +5,26 @@ import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.Font;
 
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.plaf.basic.BasicButtonUI;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 
 /*
  * 생성자 : 신인철
@@ -51,13 +65,71 @@ public class CommonStyle {
 
     // 공통 버튼 스타일
     public static void stylePrimaryButton(JButton button) {
-        button.setBackground(PRIMARY_COLOR);
-        button.setForeground(Color.WHITE);
+        button.setContentAreaFilled(false); // 기본 배경 비활성화 (커스터마이징 위함)
+        button.setFocusPainted(false); // 포커스 테두리 제거
+        button.setBorderPainted(false); // 기본 테두리 제거
+        button.setForeground(Color.WHITE); // 텍스트 색상
         button.setFont(BUTTON_FONT);
-        button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setBorder(BorderFactory.createLineBorder(PRIMARY_COLOR, 10, true)); // 둥근 테두리
-        button.setOpaque(true);
+
+        // 마우스 리스너 추가 (hover, pressed 효과)
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(PRIMARY_COLOR.darker()); // hover 시 색상 진하게
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(PRIMARY_COLOR); // 원래 색상
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                button.setBackground(PRIMARY_COLOR.darker().darker()); // 눌림 색상
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                button.setBackground(PRIMARY_COLOR.darker()); // 눌렀다 뗄 때 hover 상태
+            }
+        });
+
+        // 둥근 테두리 & 배경 효과 커스터마이징을 위한 UI 덮어쓰기
+        button.setUI(new BasicButtonUI() {
+            @Override
+            public void paint(Graphics g, JComponent c) {
+                AbstractButton b = (AbstractButton) c;
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                int width = b.getWidth();
+                int height = b.getHeight();
+
+                // 버튼 색상
+                Color baseColor = b.getModel().isPressed() ? PRIMARY_COLOR.darker().darker()
+                        : b.getModel().isRollover() ? PRIMARY_COLOR.darker() : PRIMARY_COLOR;
+
+                // 그라데이션 효과
+                GradientPaint gp = new GradientPaint(0, 0, baseColor.brighter(), 0, height, baseColor);
+                g2.setPaint(gp);
+                g2.fillRoundRect(0, 0, width, height, 20, 20); // 둥근 사각형
+
+                // 텍스트 출력
+                FontMetrics fm = g2.getFontMetrics();
+                Rectangle stringBounds = fm.getStringBounds(b.getText(), g2).getBounds();
+                int textX = (width - stringBounds.width) / 2;
+                int textY = (height - stringBounds.height) / 2 + fm.getAscent();
+
+                g2.setColor(b.getForeground());
+                g2.setFont(b.getFont());
+                g2.drawString(b.getText(), textX, textY);
+
+                g2.dispose();
+            }
+        });
+
+        button.setPreferredSize(new Dimension(120, 40));
     }
 
     // 공통 텍스트필드 밑줄 스타일
