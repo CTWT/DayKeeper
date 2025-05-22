@@ -117,13 +117,11 @@ public class PillDAO {
      * 다음 삽입할 pill_id 값을 설정합니다.
      */
     private void settingNextInt() {
-        String sql = "SELECT pill_id FROM PILL WHERE id = ?";
-        String curUserId = Session.getUserId(); // 현재 사용자 ID (예시)
+        String sql = "SELECT pill_id FROM PILL";
 
         try (Connection con = DBManager.getConnection();
                 PreparedStatement pstmt = con.prepareStatement(sql)) {
 
-            pstmt.setString(1, curUserId);
             ResultSet rs = pstmt.executeQuery();
 
             // 가장 큰 pill_id 값을 가져와 다음 ID 설정
