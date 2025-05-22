@@ -117,6 +117,7 @@ public class Login extends JPanel {
         JLabel signupLabel = new JLabel(CommonStyle.ICON_SIGNUP + "회원가입"); // 회원가입
         signupLabel.setForeground(CommonStyle.LINK_COLOR); // 파란색
         signupLabel.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 클릭 가능 커서
+        signupLabel.setFont(CommonStyle.BUTTON_FONT.deriveFont(15f)); // ✅ 폰트 크기 확대
 
         // 회원가입 라벨을 클릭하면 현재 로그인 패널이 속한 최상위 프레임을 부모로 하여
         // JoinDialog(회원가입 창)를 모달로 띄움
@@ -131,6 +132,7 @@ public class Login extends JPanel {
         JLabel forgotLabel = new JLabel(CommonStyle.ICON_FIND + "아이디&비밀번호 찾기"); // 아이디&비밀번호 찾기
         forgotLabel.setForeground(CommonStyle.LINK_COLOR); // 파란색
         forgotLabel.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 클릭 가능 커서
+        forgotLabel.setFont(CommonStyle.BUTTON_FONT.deriveFont(15f)); // ✅ 폰트 크기 확대
 
         // 회원가입 라벨을 클릭하면 현재 로그인 패널이 속한 최상위 프레임을 부모로 하여
         // ForgotDialog(아이디&비밀번호 찾기창)를 모달로 띄움
@@ -158,8 +160,6 @@ public class Login extends JPanel {
             messageLabel.setText("아이디와 비밀번호를 모두 입력하세요."); // 오류 메시지 출력
             return;
         }
-
-        //
 
         UserDAO dao = new UserDAO(); // UserDAO 객체 생성 후, 로그인 시도
         UserDTO user = new UserDTO();
