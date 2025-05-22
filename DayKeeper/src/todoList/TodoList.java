@@ -3,24 +3,22 @@ package todoList;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.util.ArrayList;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 
 import common.CommonStyle;
 import config.BaseFrame;
@@ -39,79 +37,58 @@ import dbConnection.TodoDTO;
 
 public class TodoList extends JPanel {
 
-    private DefaultTableModel model;
-    private JTable table;
-    private List<TodoDTO> todoList; // DTO 리스트로 변경
-
-    private final String[] columnNames = { "할 일", "상태" };
+    private JPanel cardContainer;
+    private List<TodoDTO> todoList;
 
     public TodoList() {
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
-        // 상단 타이틀
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+        topPanel.setBackground(Color.WHITE);
+
+        // 상단 제목
         JLabel title = CommonStyle.createTitleLabel();
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
         title.setBorder(new EmptyBorder(20, 0, 0, 0));
-        add(title, BorderLayout.NORTH);
+        topPanel.add(title);
 
-        // 중앙 영역 패널
-        JPanel centerPanel = new JPanel(new BorderLayout());
-        centerPanel.setBackground(Color.WHITE);
-        centerPanel.setBorder(new EmptyBorder(10, 100, 10, 100));
+        // 날짜/시간
+        JLabel dateTimeLabel = new JLabel(
+                "접속시간 : " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                SwingConstants.CENTER);
+        dateTimeLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        dateTimeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        dateTimeLabel.setBorder(new EmptyBorder(5, 0, 10, 0));
+        topPanel.add(dateTimeLabel);
 
-        // 서브 타이틀
-        JLabel subTitle = new JLabel("todo-list");
-        subTitle.setFont(new Font("Arial", Font.BOLD, 16));
-        centerPanel.add(subTitle, BorderLayout.NORTH);
+        // 패널 전체를 상단에 추가
+        add(topPanel, BorderLayout.NORTH);
 
-        // DB에서 목록 불러오기
-        refreshTodoList();
+        // 카드 컨테이너 (WrapLayout 필요)
+        cardContainer = new JPanel();
+        cardContainer.setLayout(new BoxLayout(cardContainer, BoxLayout.Y_AXIS));
+        cardContainer.setBackground(Color.WHITE);
 
-        // 테이블 모델 생성
-        model = new DefaultTableModel(columnNames, 0) {
+        JScrollPane scrollPane = new JScrollPane(cardContainer,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        add(scrollPane, BorderLayout.CENTER);
+        // 할 일 로딩 및 카드 추가
+        loadAndRenderCards();
+
+        // ✅ 화면이 다시 보여질 때마다 자동 새로고침
+        addComponentListener(new ComponentAdapter() {
             @Override
-            public boolean isCellEditable(int row, int column) {
-                if (column == 1) {
-                    String yn = getValueAt(row, column).toString();
-                    return "N".equals(yn);
-                }
-                return false;
+            public void componentShown(ComponentEvent e) {
+                refresh(); // 자동 갱신
             }
+        });
 
-            @Override
-            public void setValueAt(Object aValue, int row, int column) {
-                super.setValueAt(aValue, row, column);
-
-                if (column == 1 && "Y".equals(aValue)) {
-                    if (todoList != null && row < todoList.size()) {
-
-                        // 리스트 재조회 및 테이블 갱신
-                        refreshTodoList();
-                        refreshTodoListModel();
-                    }
-                }
-            }
-        };
-
-        refreshTodoListModel();
-
-        table = new JTable(model);
-        table.getTableHeader().setDefaultRenderer(new HeaderWithBorderRenderer());
-        table.setGridColor(Color.LIGHT_GRAY); // 또는 원하는 색상
-        table.setIntercellSpacing(new Dimension(8, 4));
-        table.setRowHeight(28);
-
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        scrollPane.setPreferredSize(new Dimension(600, 200));
-        centerPanel.add(scrollPane, BorderLayout.CENTER);
-
-        table.getColumn("상태").setCellRenderer(new ButtonRenderer());
-        table.getColumn("상태").setCellEditor(new ButtonEditor(table, model));
-
-        add(centerPanel, BorderLayout.CENTER);
-
-        // 하단 공통 버튼 설정
+        // 하단 공통 버튼
         CommonStyle.BottomPanelComponents bottom = CommonStyle.createBottomPanel();
 
         bottom.todoDetail.setVisible(true);
@@ -119,150 +96,48 @@ public class TodoList extends JPanel {
         bottom.statistics.setVisible(true);
 
         bottom.todoDetail.addActionListener(e -> {
-            BaseFrame statFrame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
-            statFrame.showScreen(ScreenType.TODODETAIL);
+            BaseFrame f = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+            f.showScreen(ScreenType.TODODETAIL);
         });
         bottom.pillDetail.addActionListener(e -> {
-            BaseFrame pillFrame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
-            pillFrame.showScreen(ScreenType.PILL);
+            BaseFrame f = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+            f.showScreen(ScreenType.PILL);
         });
         bottom.statistics.addActionListener(e -> {
-            BaseFrame statFrame = (BaseFrame) SwingUtilities.getWindowAncestor(this);
-            statFrame.showScreen(ScreenType.STATISTICS);
+            BaseFrame f = (BaseFrame) SwingUtilities.getWindowAncestor(this);
+            f.showScreen(ScreenType.STATISTICS);
         });
 
         add(bottom.panel, BorderLayout.SOUTH);
     }
 
-    // 현재 사용자의 해당하는 할 일 리스트 조회
-    private void refreshTodoList() {
+    // 카드 로딩 메서드
+    private void loadAndRenderCards() {
+        todoList = TodoDAO.todoList();
+        cardContainer.removeAll();
+
+        for (TodoDTO dto : todoList) {
+            TodoCardPanel card = new TodoCardPanel(dto, this::handleComplete);
+            cardContainer.add(card);
+        }
+
+        cardContainer.revalidate();
+        cardContainer.repaint();
+    }
+
+    // 완료 처리 후 새로고침
+    private void handleComplete(int todoId) {
         try {
-            todoList = TodoDAO.todoList();
-            if (todoList == null) {
-                todoList = new ArrayList<>();
-            }
+            TodoDAO.updateTodoYn(todoId); // void 메서드 호출
+            loadAndRenderCards(); // 성공했다고 가정하고 화면 갱신
         } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "완료 처리 실패: " + e.getMessage());
             e.printStackTrace();
-            todoList = new ArrayList<>();
         }
     }
 
-    // 리스트 내용을 테이블 모델 반영
-    private void refreshTodoListModel() {
-        if (model == null)
-            return;
-
-        model.setRowCount(0); // 기존 데이터 제거
-
-        for (TodoDTO item : todoList) {
-            model.addRow(new Object[] { item.getTodoTitle(), item.getTodoYn() });
-        }
-        model.fireTableDataChanged(); // UI갱신
-    }
-
-    class HeaderWithBorderRenderer extends JLabel implements TableCellRenderer {
-        public HeaderWithBorderRenderer() {
-            setFont(new Font("맑은 고딕", Font.BOLD, 13));
-            setOpaque(true);
-            setBackground(new Color(240, 240, 240));
-            setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1)); // 테두리 지정
-            setHorizontalAlignment(CENTER);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
-            setText(value.toString());
-            return this;
-        }
-    }
-
-    // 버튼 랜더링 N이면 버튼 Y면 텍스트 라벨
-    class ButtonRenderer extends JButton implements TableCellRenderer {
-        public ButtonRenderer() {
-            setOpaque(true);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                boolean hasFocus, int row, int column) {
-            String val = value != null ? value.toString() : "";
-            if ("N".equals(val)) {
-                setText("미완료");
-                setEnabled(true);
-                return this;
-            } else {
-                return new JLabel("완료");
-            }
-        }
-    }
-
-    // 상태 컬럼 편집
-    class ButtonEditor extends AbstractCellEditor implements TableCellEditor {
-
-        private JButton button;
-        private String currentValue;
-        private DefaultTableModel model;
-        private JTable table;
-        private int editingRow, editingColumn;
-
-        // 생성자
-        public ButtonEditor(JTable table, DefaultTableModel model) {
-            this.table = table;
-            this.model = model;
-
-            button = new JButton();
-            button.addActionListener(e -> {
-                if ("N".equals(currentValue)) {
-                    int result = JOptionPane.showConfirmDialog(
-                            null,
-                            "해당 할일을 완료 처리 하시겠습니까? \n완료하면 더 이상 수정할 수 없습니다.",
-                            "할일 완료하기",
-                            JOptionPane.YES_NO_OPTION);
-
-                    if (result == JOptionPane.YES_OPTION) {
-                        model.setValueAt("Y", editingRow, editingColumn);
-
-                        TodoDTO item = todoList.get(editingRow);
-                        item.setTodoYn("Y");
-
-                        TodoDAO.updateTodoYn(item.getTodo_id());
-
-                        SwingUtilities.invokeLater(() -> {
-                            refreshTodoList();
-                            refreshTodoListModel();
-                        });
-
-                        refreshTodoList();
-                        refreshTodoListModel();
-                    }
-                    fireEditingStopped();
-                } else {
-                    fireEditingStopped();
-                }
-            });
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            return currentValue;
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row,
-                int column) {
-            currentValue = value != null ? value.toString() : "N";
-            editingRow = row;
-            editingColumn = column;
-
-            if ("N".equals(currentValue)) {
-                button.setText("미완료");
-                return button;
-            } else {
-                SwingUtilities.invokeLater(this::fireEditingStopped);
-                return new JLabel("완료");
-            }
-        }
+    public void refresh() {
+        loadAndRenderCards(); // 재 로딩
     }
 
     public static void main(String[] args) {
