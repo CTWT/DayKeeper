@@ -65,7 +65,10 @@ public class TodoRemove extends JDialog {
 
         // 폰트 크기 및 라벨 크기 조절 (추가)
         requestTitle.setFont(new Font("Arial", Font.BOLD, 24));
-        requestTitle.setPreferredSize(new Dimension(350, 40));
+        requestTitle.setPreferredSize(new Dimension(300, 30));
+        requestTitle.setMinimumSize(new Dimension(300, 30));
+        requestTitle.setMaximumSize(new Dimension(300, 30));
+
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -78,6 +81,10 @@ public class TodoRemove extends JDialog {
         JLabel contentLabel = CommonStyle.createLabel("할일 내용:");
         requestcontent = new JLabel();
         requestcontent.setBorder(new LineBorder(Color.BLACK));
+        requestcontent.setVerticalAlignment(JLabel.TOP); // 다중 줄 내용 위 정렬
+        requestcontent.setPreferredSize(new Dimension(300, 100));
+        requestcontent.setMinimumSize(new Dimension(300, 100));
+        requestcontent.setMaximumSize(new Dimension(300, 100));
 
         gbc.gridx = 0;
         gbc.gridy = 1;
