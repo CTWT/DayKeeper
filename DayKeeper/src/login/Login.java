@@ -2,6 +2,7 @@ package login;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -97,7 +98,7 @@ public class Login extends JPanel {
         gbc.gridy++; // 위치 변경
         gbc.gridx = 0; // 첫 번째 열
         gbc.gridwidth = 2; // 두 열에 걸쳐 버튼 배치
-        JButton loginButton = new JButton("LOGIN"); // 로그인 버튼 생성
+        JButton loginButton = new JButton(CommonStyle.ICON_LOGIN + "LOGIN"); // 로그인 버튼 생성
         CommonStyle.stylePrimaryButton(loginButton);
         loginButton.addActionListener(e -> attemptLogin()); // 클릭 이벤트
         add(loginButton, gbc);
@@ -113,7 +114,7 @@ public class Login extends JPanel {
         JPanel linkPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0)); // 링크 패널
         linkPanel.setBackground(Color.WHITE); // 배경 흰색
 
-        JLabel signupLabel = new JLabel("회원가입"); // 회원가입
+        JLabel signupLabel = new JLabel(CommonStyle.ICON_SIGNUP + "회원가입"); // 회원가입
         signupLabel.setForeground(CommonStyle.LINK_COLOR); // 파란색
         signupLabel.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 클릭 가능 커서
 
@@ -127,7 +128,7 @@ public class Login extends JPanel {
             }
         });
 
-        JLabel forgotLabel = new JLabel("아이디&비밀번호 찾기"); // 아이디&비밀번호 찾기
+        JLabel forgotLabel = new JLabel(CommonStyle.ICON_FIND + "아이디&비밀번호 찾기"); // 아이디&비밀번호 찾기
         forgotLabel.setForeground(CommonStyle.LINK_COLOR); // 파란색
         forgotLabel.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 클릭 가능 커서
 

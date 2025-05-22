@@ -35,6 +35,13 @@ public class CommonStyle {
     public static final String ICON_PILL = "💊";
     public static final String ICON_HOME = "🏠";
     public static final String ICON_TIME = "⏱";
+    public static final String ICON_LOGIN = "🔐";
+    public static final String ICON_SIGNUP = "✍";
+    public static final String ICON_FIND = "🕵";
+    public static final String ICON_DETAIL = "🔍";
+    public static final String ICON_PILLINFO = "💊";
+    public static final String ICON_STATISTICS = "📊";
+    public static final String ICON_TODO = "📝";
 
     // 하단 버튼 정보를 담기 위한 내부 클래스
     public static class BottomPanelComponents {
@@ -237,11 +244,11 @@ public class CommonStyle {
     public static BottomPanelComponents createBottomPanel() {
         BottomPanelComponents comp = new BottomPanelComponents();
 
-        comp.todoDetailInput = new JButton("오늘 할일 입력");
-        comp.todoDetail = new JButton("상세보기");
-        comp.todoList = new JButton("메인화면");
-        comp.pillDetail = new JButton("영양제 정보");
-        comp.statistics = new JButton("통계");
+        comp.todoDetailInput = new JButton(ICON_TODO + "오늘 할일 입력");
+        comp.todoDetail = new JButton(ICON_DETAIL + "상세보기");
+        comp.todoList = new JButton(ICON_HOME + "메인화면");
+        comp.pillDetail = new JButton(ICON_PILLINFO + "영양제 정보");
+        comp.statistics = new JButton(ICON_STATISTICS + "통계");
         comp.pillAdd = new JButton(ICON_ADD + " 추가");
         comp.returnHome = new JButton(ICON_HOME + " 처음으로");
         comp.pillTimeSetting = new JButton(ICON_TIME + " 시간 설정");
