@@ -19,7 +19,7 @@ public class TodoCardPanel extends JPanel {
     public TodoCardPanel(TodoDTO dto, Consumer<Integer> onComplete) {
         setPreferredSize(new Dimension(180, 100));
         setLayout(new BorderLayout());
-        setBackground(new Color(255, 255, 240));
+        setBackground(new Color(245, 250, 255));
         setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
         JLabel titleLabel = new JLabel(dto.getTodoTitle(), SwingConstants.CENTER);
