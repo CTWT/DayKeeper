@@ -244,7 +244,7 @@ public class CommonStyle {
     public static BottomPanelComponents createBottomPanel() {
         BottomPanelComponents comp = new BottomPanelComponents();
 
-        comp.todoDetailInput = new JButton(ICON_TODO + "오늘 할일 입력");
+        comp.todoDetailInput = new JButton(ICON_TODO + "할일 입력");
         comp.todoDetail = new JButton(ICON_DETAIL + "상세보기");
         comp.todoList = new JButton(ICON_HOME + "메인화면");
         comp.pillDetail = new JButton(ICON_PILLINFO + "영양제 정보");
