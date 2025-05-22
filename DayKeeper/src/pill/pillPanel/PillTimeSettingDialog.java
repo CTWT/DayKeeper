@@ -51,8 +51,7 @@ public class PillTimeSettingDialog extends JDialog {
         backBtn.setPreferredSize(new Dimension(120, 40));
 
         CommonStyle.stylePrimaryButton(setBtn);
-        backBtn.setFont(CommonStyle.TEXT_FONT);
-        backBtn.setBackground(Color.LIGHT_GRAY);
+        CommonStyle.styleExitButton(backBtn);
 
         setBtn.addActionListener(e -> {
             if (selectedHour >= 0) {

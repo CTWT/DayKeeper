@@ -42,6 +42,8 @@ public class CommonStyle {
     public static final Color BACKGROUND_COLOR = Color.WHITE;
     public static final Color ERROR_COLOR = Color.RED;
     public static final Color LINK_COLOR = Color.BLUE.darker();
+    public static final Color EXIT_COLOR = Color.GRAY;
+    public static final Color DELETE_COLOR = new Color(200, 54, 54);
 
     // 공통 폰트
     public static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 40);
@@ -110,6 +112,144 @@ public class CommonStyle {
                 // 버튼 색상
                 Color baseColor = b.getModel().isPressed() ? PRIMARY_COLOR.darker().darker()
                         : b.getModel().isRollover() ? PRIMARY_COLOR.darker() : PRIMARY_COLOR;
+
+                // 그라데이션 효과
+                GradientPaint gp = new GradientPaint(0, 0, baseColor.brighter(), 0, height, baseColor);
+                g2.setPaint(gp);
+                g2.fillRoundRect(0, 0, width, height, 20, 20); // 둥근 사각형
+
+                // 텍스트 출력
+                FontMetrics fm = g2.getFontMetrics();
+                Rectangle stringBounds = fm.getStringBounds(b.getText(), g2).getBounds();
+                int textX = (width - stringBounds.width) / 2;
+                int textY = (height - stringBounds.height) / 2 + fm.getAscent();
+
+                g2.setColor(b.getForeground());
+                g2.setFont(b.getFont());
+                g2.drawString(b.getText(), textX, textY);
+
+                g2.dispose();
+            }
+        });
+
+        button.setPreferredSize(new Dimension(135, 40));
+    }
+
+    // 공통 닫기 버튼 스타일
+    public static void styleExitButton(JButton button) {
+        button.setContentAreaFilled(false); // 기본 배경 비활성화 (커스터마이징 위함)
+        button.setFocusPainted(false); // 포커스 테두리 제거
+        button.setBorderPainted(false); // 기본 테두리 제거
+        button.setForeground(Color.WHITE); // 텍스트 색상
+        button.setFont(BUTTON_FONT);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // 마우스 리스너 추가 (hover, pressed 효과)
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(EXIT_COLOR.darker()); // hover 시 색상 진하게
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(EXIT_COLOR); // 원래 색상
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                button.setBackground(EXIT_COLOR.darker().darker()); // 눌림 색상
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                button.setBackground(EXIT_COLOR.darker()); // 눌렀다 뗄 때 hover 상태
+            }
+        });
+
+        // 둥근 테두리 & 배경 효과 커스터마이징을 위한 UI 덮어쓰기
+        button.setUI(new BasicButtonUI() {
+            @Override
+            public void paint(Graphics g, JComponent c) {
+                AbstractButton b = (AbstractButton) c;
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                int width = b.getWidth();
+                int height = b.getHeight();
+
+                // 버튼 색상
+                Color baseColor = b.getModel().isPressed() ? EXIT_COLOR.darker().darker()
+                        : b.getModel().isRollover() ? EXIT_COLOR.darker() : EXIT_COLOR;
+
+                // 그라데이션 효과
+                GradientPaint gp = new GradientPaint(0, 0, baseColor.brighter(), 0, height, baseColor);
+                g2.setPaint(gp);
+                g2.fillRoundRect(0, 0, width, height, 20, 20); // 둥근 사각형
+
+                // 텍스트 출력
+                FontMetrics fm = g2.getFontMetrics();
+                Rectangle stringBounds = fm.getStringBounds(b.getText(), g2).getBounds();
+                int textX = (width - stringBounds.width) / 2;
+                int textY = (height - stringBounds.height) / 2 + fm.getAscent();
+
+                g2.setColor(b.getForeground());
+                g2.setFont(b.getFont());
+                g2.drawString(b.getText(), textX, textY);
+
+                g2.dispose();
+            }
+        });
+
+        button.setPreferredSize(new Dimension(135, 40));
+    }
+
+    // 공통 버튼 스타일
+    public static void styleDeleteButton(JButton button) {
+        button.setContentAreaFilled(false); // 기본 배경 비활성화 (커스터마이징 위함)
+        button.setFocusPainted(false); // 포커스 테두리 제거
+        button.setBorderPainted(false); // 기본 테두리 제거
+        button.setForeground(Color.WHITE); // 텍스트 색상
+        button.setFont(BUTTON_FONT);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // 마우스 리스너 추가 (hover, pressed 효과)
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(DELETE_COLOR.darker()); // hover 시 색상 진하게
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(DELETE_COLOR); // 원래 색상
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                button.setBackground(DELETE_COLOR.darker().darker()); // 눌림 색상
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                button.setBackground(DELETE_COLOR.darker()); // 눌렀다 뗄 때 hover 상태
+            }
+        });
+
+        // 둥근 테두리 & 배경 효과 커스터마이징을 위한 UI 덮어쓰기
+        button.setUI(new BasicButtonUI() {
+            @Override
+            public void paint(Graphics g, JComponent c) {
+                AbstractButton b = (AbstractButton) c;
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                int width = b.getWidth();
+                int height = b.getHeight();
+
+                // 버튼 색상
+                Color baseColor = b.getModel().isPressed() ? DELETE_COLOR.darker().darker()
+                        : b.getModel().isRollover() ? DELETE_COLOR.darker() : DELETE_COLOR;
 
                 // 그라데이션 효과
                 GradientPaint gp = new GradientPaint(0, 0, baseColor.brighter(), 0, height, baseColor);

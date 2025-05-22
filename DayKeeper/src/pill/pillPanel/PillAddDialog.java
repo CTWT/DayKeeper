@@ -24,6 +24,8 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
+import org.w3c.dom.events.MouseEvent;
+
 import common.CommonStyle;
 import config.ImgConfig;
 import dbConnection.PillDAO;
@@ -137,6 +139,7 @@ public class PillAddDialog extends JDialog {
         backBtn.setPreferredSize(new Dimension(80, 35));
         backBtn.setFont(CommonStyle.TEXT_FONT);
         backBtn.setBackground(Color.LIGHT_GRAY);
+        CommonStyle.styleExitButton(backBtn);
         backBtn.addActionListener(e -> dispose());
         bottomPanel.add(backBtn);
 

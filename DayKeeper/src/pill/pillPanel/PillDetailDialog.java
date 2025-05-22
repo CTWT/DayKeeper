@@ -78,10 +78,7 @@ public class PillDetailDialog extends JDialog {
         backBtn.setPreferredSize(new Dimension(90, 35));
         backBtn.addActionListener(e -> dispose());
 
-        deleteBtn.setPreferredSize(new Dimension(90, 35));
-        deleteBtn.setFont(CommonStyle.TEXT_FONT);
-        deleteBtn.setBackground(new Color(255, 230, 230));
-        deleteBtn.setFocusPainted(false);
+        CommonStyle.styleDeleteButton(deleteBtn);
         deleteBtn.addActionListener(e -> {
             deleteData(parent);
             parent.update();
