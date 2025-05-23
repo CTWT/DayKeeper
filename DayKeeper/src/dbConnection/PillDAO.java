@@ -1,11 +1,15 @@
 package dbConnection;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 
 import common.Session;
 import pill.pillManager.PillManager;
@@ -209,11 +213,19 @@ public class PillDAO {
     public Boolean[] getWeeklyMedicationStatus(String userId, LocalDate baseDate) {
         Boolean[] status = new Boolean[7]; // 월 ~ 일
 
-        String sql = "SELECT pillYn, date FROM PILLYN WHERE id = ?";
+        String sql = "SELECT pillYn, date FROM PILLYN WHERE id = ? AND date BETWEEN ? AND ?";
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+            // 주간 범위 설정
+            LocalDate monday = baseDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+            LocalDate sunday = baseDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+            // SQL 파라미터 세팅
             pstmt.setString(1, userId);
+            pstmt.setTimestamp(2, Timestamp.valueOf(monday.atStartOfDay()));
+            pstmt.setTimestamp(3, Timestamp.valueOf(sunday.atTime(LocalTime.MAX)));
+
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
@@ -221,13 +233,8 @@ public class PillDAO {
                 boolean taken = "Y".equalsIgnoreCase(pillYn);
 
                 LocalDate recordDate = rs.getTimestamp("date").toLocalDateTime().toLocalDate();
-                LocalDate monday = baseDate.with(DayOfWeek.MONDAY);
-                LocalDate sunday = baseDate.with(DayOfWeek.SUNDAY);
-
-                if (!recordDate.isBefore(monday) && !recordDate.isAfter(sunday)) {
-                    int index = recordDate.getDayOfWeek().getValue() - 1; // 월~일 → 0~6
-                    status[index] = taken;
-                }
+                int index = recordDate.getDayOfWeek().getValue() - 1; // 월~일 → 0~6
+                status[index] = taken;
             }
 
         } catch (Exception e) {
@@ -240,33 +247,67 @@ public class PillDAO {
     public double getTotalPill(String userId, LocalDate baseDate) {
         double rate = 0.0;
 
-        // 기준 날짜의 주간 일요일을 기준으로 누적 복약률 계산
-        LocalDate sunday = baseDate.with(DayOfWeek.SUNDAY);
+        // 기준 주간의 일요일 설정
+        LocalDate endDate = baseDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+        LocalDate startDate = null;
 
-        // 주어진 일요일 날짜까지 복약률 계산 (복용 수 / 전체 수)
-        String sql = "SELECT COUNT(*) AS total, " +
-                "SUM(CASE WHEN pillYn = 'Y' THEN 1 ELSE 0 END) AS taken " +
-                "FROM PILLYN WHERE id = ? AND date <= ?";
+        // 먼저 해당 사용자의 최초 복약 기록일 조회
+        String getStartDateSql = "SELECT MIN(DATE(date)) AS startDate FROM PILLYN WHERE id = ?";
 
         try (Connection conn = DBManager.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(getStartDateSql)) {
 
             pstmt.setString(1, userId);
-            pstmt.setString(2, sunday.toString()); // 기준 주간의 일요일까지
+            ResultSet rs = pstmt.executeQuery();
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    int total = rs.getInt("total");
-                    int taken = rs.getInt("taken");
+            if (rs.next()) {
+                startDate = rs.getDate("startDate").toLocalDate();
+            }
 
-                    if (total > 0) {
-                        rate = (taken * 100.0) / total;
-                    }
-                }
+            if (startDate == null) {
+                return 0.0; // 복약 기록이 하나도 없는 경우
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
+            return 0.0;
+        }
+
+        // 날짜별로 복약 여부 확인
+        int totalDays = 0;
+        int takenDays = 0;
+
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            totalDays++;
+
+            String checkSql = "SELECT pillYn FROM PILLYN WHERE id = ? AND DATE(date) = ?";
+            try (Connection conn = DBManager.getConnection();
+                    PreparedStatement pstmt = conn.prepareStatement(checkSql)) {
+
+                pstmt.setString(1, userId);
+                pstmt.setDate(2, Date.valueOf(date));
+                ResultSet rs = pstmt.executeQuery();
+
+                boolean taken = false;
+                while (rs.next()) {
+                    if ("Y".equalsIgnoreCase(rs.getString("pillYn"))) {
+                        taken = true;
+                        break;
+                    }
+                }
+
+                if (taken) {
+                    takenDays++;
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // 복약률 계산
+        if (totalDays > 0) {
+            rate = (takenDays * 100.0) / totalDays;
         }
 
         return rate;
