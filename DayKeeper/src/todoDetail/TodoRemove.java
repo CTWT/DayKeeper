@@ -128,6 +128,9 @@ public class TodoRemove extends JDialog {
 
         add(btnPanel, BorderLayout.SOUTH); // 한 번만 SOUTH에 추가
 
+        revalidate();
+        repaint();
+
         // 삭제 버튼 클릭 이벤트
         removeBtn.addActionListener(e -> {
             String title = selectedValue;
