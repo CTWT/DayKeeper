@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -46,9 +45,8 @@ public class TodoRemove extends JDialog {
 
         // 모달창을 화면 중앙에 띄움
         setLocationRelativeTo(null);
-        
-        setVisible(true);
 
+        setVisible(true);
 
         // 상단 타이틀
         add(CommonStyle.createTitleLabel(), BorderLayout.NORTH);
@@ -69,23 +67,22 @@ public class TodoRemove extends JDialog {
         requestTitle.setBorder(new LineBorder(Color.BLACK));
 
         // 폰트 크기 및 라벨 크기 조절 (추가)
-        requestTitle.setFont(new Font("Arial", Font.PLAIN, 20));
+        requestTitle.setFont(CommonStyle.TEXT_FONT);
         requestTitle.setPreferredSize(new Dimension(300, 30));
         requestTitle.setMinimumSize(new Dimension(300, 30));
         requestTitle.setMaximumSize(new Dimension(300, 30));
-        
-        
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         contentPanel.add(titleLabel, gbc);
-        
+
         gbc.gridx = 1;
         contentPanel.add(requestTitle, gbc);
-        
+
         // 할일 내용
         JLabel contentLabel = CommonStyle.createLabel("할일 내용:");
         requestcontent = new JLabel();
-        requestcontent.setFont(new Font("Arial", Font.PLAIN, 20));
+        requestcontent.setFont(CommonStyle.TEXT_FONT);
         requestcontent.setBorder(new LineBorder(Color.BLACK));
         requestcontent.setVerticalAlignment(JLabel.TOP); // 다중 줄 내용 위 정렬
         requestcontent.setPreferredSize(new Dimension(300, 100));

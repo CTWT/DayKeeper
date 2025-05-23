@@ -3,7 +3,6 @@ package todoList;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.function.Consumer;
@@ -15,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import common.CommonStyle;
 import dbConnection.TodoDTO;
 
 public class TodoCardPanel extends JPanel {
@@ -26,7 +26,7 @@ public class TodoCardPanel extends JPanel {
         setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
         JLabel titleLabel = new JLabel(dto.getTodoTitle(), SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 25));
+        titleLabel.setFont(CommonStyle.TEXT_FONT);
         add(titleLabel, BorderLayout.CENTER);
 
         // 버튼 표시 여부에 따라 버튼 생성

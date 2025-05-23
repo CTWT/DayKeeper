@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -59,7 +58,7 @@ public class TodoList extends JPanel {
         JLabel dateTimeLabel = new JLabel(
                 "접속시간 : " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                 SwingConstants.CENTER);
-        dateTimeLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        dateTimeLabel.setFont(CommonStyle.TEXT_FONT);
         dateTimeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         dateTimeLabel.setBorder(new EmptyBorder(5, 0, 10, 0));
         topPanel.add(dateTimeLabel);
