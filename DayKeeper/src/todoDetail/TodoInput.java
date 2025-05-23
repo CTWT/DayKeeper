@@ -56,6 +56,8 @@ public class TodoInput extends JDialog {
         initUI();
         initEvent();
 
+        // 모달창을 화면 중앙에 띄움
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 

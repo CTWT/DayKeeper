@@ -43,7 +43,12 @@ public class TodoRemove extends JDialog {
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
         setSize(500, 500);
+
+        // 모달창을 화면 중앙에 띄움
+        setLocationRelativeTo(null);
+        
         setVisible(true);
+
 
         // 상단 타이틀
         add(CommonStyle.createTitleLabel(), BorderLayout.NORTH);
