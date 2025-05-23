@@ -4,13 +4,18 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -18,6 +23,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.border.LineBorder;
 
 import common.CommonStyle;
@@ -76,27 +82,29 @@ public class TodoInput extends JDialog {
         JLabel titleLabel = CommonStyle.createLabel("할일 제목:");
         // 할일 제목
         titleField = new JTextArea(1, 20);
+        titleField.setFont(new Font("Arial", Font.PLAIN, 20));
         titleField.setLineWrap(true);
         titleField.setWrapStyleWord(true);
         titleField.setBorder(new LineBorder(Color.BLACK));
-
+        
         // 크기 고정
         titleField.setPreferredSize(new Dimension(300, 30));
         titleField.setMinimumSize(new Dimension(300, 30));
         titleField.setMaximumSize(new Dimension(300, 30));
-
+        
         gbc.gridx = 0;
         gbc.gridy = 0;
         inputFormPanel.add(titleLabel, gbc);
-
+        
         gbc.gridx = 1;
         // gbc.gridy = 0;
         inputFormPanel.add(titleField, gbc);
-
+        
         // 할일 내용
         JLabel contentLabel = CommonStyle.createLabel("할일 내용:");
-
+        
         contentField = new JTextArea(5, 20);
+        contentField.setFont(new Font("Arial", Font.PLAIN, 20));
         contentField.setLineWrap(true);
         contentField.setWrapStyleWord(true);
         contentField.setBorder(new LineBorder(Color.BLACK));
@@ -110,6 +118,21 @@ public class TodoInput extends JDialog {
         scrollPane.setPreferredSize(new Dimension(300, 100));
         scrollPane.setMinimumSize(new Dimension(300, 100));
         scrollPane.setMaximumSize(new Dimension(300, 100));
+
+        // Tap 키를 누르면 contentField로 포커스 이동
+        // Tab 키를 누르면 contentField로 포커스 이동
+        InputMap im = titleField.getInputMap(JTextArea.WHEN_FOCUSED);
+        ActionMap am = titleField.getActionMap();
+
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "moveToContent");
+        am.put("moveToContent", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                contentField.requestFocusInWindow();
+            }
+        });
+
+        
 
         gbc.gridx = 0;
         gbc.gridy = 1;
