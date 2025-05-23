@@ -1,12 +1,14 @@
 package dbConnection;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -114,18 +116,44 @@ public class StatisticsTodoDAO {
     public double getTotalTodo(String userId, LocalDate baseDate) {
         double rate = 0.0;
 
-        // baseDate 속한 주의 마지막 날(일요일)을 구함
-        LocalDate sunday = baseDate.with(DayOfWeek.SUNDAY);
+        LocalDate startDate = null;
+        LocalDate endDate = baseDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
+        // TODO 테이블에서 최초 기록일 구하기
+        String findStartDateSql = "SELECT MIN(DATE(date)) AS startDate FROM TODO WHERE id = ?";
+
+        try (Connection conn = DBManager.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(findStartDateSql)) {
+
+            pstmt.setString(1, userId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    Date sqlStartDate = rs.getDate("startDate");
+                    if (sqlStartDate != null) {
+                        startDate = sqlStartDate.toLocalDate();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0.0;
+        }
+
+        if (startDate == null) {
+            return 0.0; // 기록이 없으면 0%
+        }
+
+        // 해당 범위에 대한 todo 달성률 계산
         String sql = "SELECT COUNT(*) AS total, " +
                 "SUM(CASE WHEN todoYn = 'Y' THEN 1 ELSE 0 END) AS completed " +
-                "FROM TODO WHERE id = ? AND date <= ?";
+                "FROM TODO WHERE id = ? AND DATE(date) BETWEEN ? AND ?";
 
         try (Connection conn = DBManager.getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, userId);
-            pstmt.setString(2, sunday.toString()); // 선택한 주의 일요일까지 포함
+            pstmt.setDate(2, Date.valueOf(startDate));
+            pstmt.setDate(3, Date.valueOf(endDate));
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
